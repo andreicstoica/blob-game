@@ -16,6 +16,7 @@ export interface MapState {
     /** helper to read cell idx = y*size + x */
     get: (x: number, y: number) => CellStatus
     set: (x: number, y: number, status: CellStatus) => void
+    setPhase: (phase: 'primordial' | 'colonial' | 'cosmic') => void
 }
 
 export const useMap = create<MapState>()(
@@ -39,6 +40,10 @@ export const useMap = create<MapState>()(
             set: (x, y, status) =>
                 set(s => {
                     s.cells[y * size + x].status = status
+                }),
+            setPhase: (phase) =>
+                set(s => {
+                    s.phase = phase
                 }),
         }
     })

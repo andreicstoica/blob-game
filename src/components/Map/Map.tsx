@@ -1,17 +1,27 @@
-import { type RefObject, useRef } from "react";
-import { useMapSelector } from "./engine/mapState";
+import { useRef, useEffect, useState } from "react";
+import { useMapSelector } from "../../engine/mapState";
 import PetriLayer from "./layers/PetriLayer";
 import EarthLayer from "./layers/EarthLayer";
 import CosmicLayer from "./layers/CosmicLayer";
-import usePanZoom from "./hooks"; // small helper
 
 export default function Map({ className }: { className?: string }) {
   /** read-only phase */
   const phase = useMapSelector((s) => s.phase);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { width, height } = usePanZoom(
-    canvasRef as RefObject<HTMLCanvasElement>
-  ); // returns view + sets CSS
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        const { clientWidth, clientHeight } = containerRef.current;
+        setDimensions({ width: clientWidth, height: clientHeight });
+      }
+    };
+
+    updateDimensions();
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
+  }, []);
 
   let Layer: React.FC<{ width: number; height: number }>;
   if (phase === "primordial") Layer = PetriLayer;
@@ -19,11 +29,8 @@ export default function Map({ className }: { className?: string }) {
   else Layer = CosmicLayer;
 
   return (
-    <div className={`relative ${className}`}>
-      {/* Single canvas reused across layers for performance */}
-      <canvas ref={canvasRef} width={width} height={height} />
-      {/* Layer draws into the same canvas context */}
-      <Layer width={width} height={height} />
+    <div ref={containerRef} className={`relative w-full h-full ${className}`}>
+      <Layer width={dimensions.width} height={dimensions.height} />
     </div>
   );
 }
