@@ -1,9 +1,9 @@
 import "./globals.css";
 
 import Blob from "./components/Blob/Blob";
-import { Nutrients } from "./components/Food/Nutrients";
-import { GameHUD } from "./components/GameHUD";
-import { ScaleIndicator } from "./components/ScaleIndicator";
+import { Nutrients } from "./components/Nutrients";
+import { GameHUD } from "./components/HUD/GameHUD";
+import { ScaleIndicator } from "./components/HUD/ScaleIndicator";
 import { useGame } from "./hooks/useGame";
 import { useMapSelector } from "./engine/mapState";
 import { useMemo } from "react";
