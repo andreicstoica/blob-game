@@ -7,13 +7,6 @@ interface NutrientsProps {
 
 export const Nutrients: React.FC<NutrientsProps> = ({ nutrients }) => {
   const visibleNutrients = nutrients.filter(n => !n.consumed);
-  
-  // Debug logging
-  console.log('Nutrients component render:', {
-    totalNutrients: nutrients.length,
-    visibleNutrients: visibleNutrients.length,
-    sampleNutrient: visibleNutrients[0]
-  });
 
   return (
     <>

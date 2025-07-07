@@ -74,11 +74,6 @@ const Blob = React.memo(({
     eatingStateRef.current = eatingState;
   }, [eatingState]);
 
-  // Debug log for nearbyFood
-  useEffect(() => {
-    console.log("Blob received nearbyFood:", nearbyFood);
-  }, [nearbyFood]);
-
   // Food detection and eating logic
   useEffect(() => {
     if (nearbyFood.length === 0 || eatingState.isEating) return;

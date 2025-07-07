@@ -4,6 +4,7 @@ import Blob from './components/Blob/Blob';
 import { Nutrients } from './components/Nutrients';
 import { GameHUD } from './components/GameHUD';
 import { useGame } from './hooks/useGame';
+import { AnimationLayer } from './components/Animations/AnimationLayer.tsx';
 
 function App() {
   const { 
@@ -18,14 +19,6 @@ function App() {
   // Calculate blob position (center of screen)
   const blobPosition = { x: 400, y: 300 }; // Center of 800x600 screen
   const nearbyNutrients = getNearbyNutrientsForBlob(blobPosition);
-
-  // Debug logging
-  console.log('App.tsx render:', {
-    totalNutrients: gameState.nutrients.length,
-    visibleNutrients: gameState.nutrients.filter(n => !n.consumed).length,
-    nearbyNutrients: nearbyNutrients.length,
-    sampleNutrient: gameState.nutrients[0]
-  });
 
   return (
     <div className="w-screen h-screen relative">
@@ -47,6 +40,8 @@ function App() {
         />
       </div>
       <Nutrients nutrients={gameState.nutrients} />
+
+      <AnimationLayer />
       
       {/* Temporary debug display */}
       <div className="absolute top-4 left-4 bg-black/80 text-white p-3 rounded text-sm z-50 font-mono">
