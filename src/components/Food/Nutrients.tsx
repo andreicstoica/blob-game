@@ -1,9 +1,9 @@
-import type { NutrientState } from "../engine/game";
+import type { NutrientState } from "../../engine/game";
 
 // Import bacteria images
-import brownBacteria from "../assets/bacteria/brown-bacteria.png";
-import greenBacteria from "../assets/bacteria/green-bacteria.png";
-import purpleBacteria from "../assets/bacteria/purple-bacteria.png";
+import brownBacteria from "../../assets/bacteria/brown-bacteria.png";
+import greenBacteria from "../../assets/bacteria/green-bacteria.png";
+import purpleBacteria from "../../assets/bacteria/purple-bacteria.png";
 
 interface NutrientsProps {
   nutrients: NutrientState[];

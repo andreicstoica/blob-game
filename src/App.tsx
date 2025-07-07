@@ -1,7 +1,7 @@
 import "./globals.css";
 
 import Blob from "./components/Blob/Blob";
-import { Nutrients } from "./components/Nutrients";
+import { Nutrients } from "./components/Food/Nutrients";
 import { GameHUD } from "./components/GameHUD";
 import { ScaleIndicator } from "./components/ScaleIndicator";
 import { useGame } from "./hooks/useGame";
