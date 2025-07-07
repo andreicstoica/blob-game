@@ -1,7 +1,7 @@
 import "./globals.css";
-import { AnimationLayer } from './components/Animations/AnimationLayer';
+import { AnimationLayer } from "./components/Animations/AnimationLayer";
 import Blob from "./components/Blob/Blob";
-import { Nutrients } from "./components/Nutrients";
+import { Nutrients } from "./components/Food/Nutrients";
 import { GameHUD } from "./components/HUD/GameHUD";
 import { ScaleIndicator } from "./components/HUD/ScaleIndicator";
 import { useGame } from "./hooks/useGame";
@@ -20,13 +20,13 @@ function App() {
 
   const phase = useMapSelector((s) => s.phase);
 
-  // Calculate zoom based on blob size
+  // Simple zoom calculation for world scaling
   const blobSize = Math.max(50, gameState.biomass * 10);
   const zoom = useMemo(() => {
-    const baseZoom = 1.0;
-    const zoomFactor = Math.max(0.15, baseZoom - (blobSize - 50) / 200);
-    return zoomFactor;
-  }, [blobSize]);
+    // Simple logarithmic zoom for world scaling
+    const biomass = gameState.biomass;
+    return Math.max(0.15, 1.0 - Math.log10(biomass + 1) * 0.3);
+  }, [gameState.biomass]);
 
   // Blob position is always at center (0,0) in its coordinate system
   const blobPosition = { x: 0, y: 0 };
@@ -62,10 +62,10 @@ function App() {
         onBuyUpgrade={handleBuyUpgrade}
       />
 
-      {/* Scale Indicator */}
-      <ScaleIndicator zoom={zoom} blobSize={blobSize} />
+      {/* Scale Indicator - pass biomass instead of zoom */}
+      <ScaleIndicator biomass={gameState.biomass} blobSize={blobSize} />
 
-       <AnimationLayer /> 
+      <AnimationLayer />
     </div>
   );
 }
