@@ -1,0 +1,38 @@
+/* Slime Sovereign © 2025 MIT */
+/* Gradient tokens (2:1 ratio hues) */
+
+:root {
+    /* Primordial - Dark */
+    --bg-prim-start: #081218;
+    --bg-prim-end: #0b1b24;
+    /* Primordial - Light */
+    --bg-prim-light-start: #d1e9f0;
+    --bg-prim-light-end: #e8f4f8;
+
+    /* Colonial - Dark */
+    --bg-col-start: #0f1d40;
+    --bg-col-end: #152c57;
+    /* Colonial - Light */
+    --bg-col-light-start: #d1e0ff;
+    --bg-col-light-end: #e8f0ff;
+
+    /* Cosmic - Dark */
+    --bg-cos-start: #1b0032;
+    --bg-cos-end: #2e0050;
+    /* Cosmic - Light */
+    --bg-cos-light-start: #f0d1ff;
+    --bg-cos-light-end: #f8e8ff;
+
+    /* Runtime-overwritten var (don't edit manually) */
+    --_bg-gradient: linear-gradient(160deg, #000, #111);
+}
+
+/* Put gradient on <html>, so it spans everything */
+html,
+body,
+#root {
+    height: 100%;
+    margin: 0;
+    background: var(--_bg-gradient);
+    transition: background 800ms ease;
+}
