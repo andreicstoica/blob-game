@@ -1,4 +1,3 @@
-import './App.css'
 import CycleMaps from "./components/CycleMaps";
 import { BlobTest } from './components/Blob/BlobTest';
 import { GameHUD } from './components/GameHUD';
