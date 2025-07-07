@@ -1,10 +1,11 @@
 // src/components/Animations/FloatingNumber.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface FloatingNumberProps {
   value: number;
   position: { x: number; y: number };
   color?: string;
+  startTime: number; // Pass start time from parent
   onComplete?: () => void;
 }
 
@@ -12,13 +13,15 @@ export const FloatingNumber: React.FC<FloatingNumberProps> = ({
   value,
   position,
   color = '#4ade80',
+  startTime,
   onComplete
 }) => {
   const [opacity, setOpacity] = useState(1);
   const [offsetY, setOffsetY] = useState(0);
+  const animationRef = useRef<number>(0);
+  const hasCompleted = useRef(false);
 
   useEffect(() => {
-    const startTime = Date.now();
     const duration = 1000; // 1 second
 
     const animate = () => {
@@ -31,15 +34,24 @@ export const FloatingNumber: React.FC<FloatingNumberProps> = ({
       setOffsetY(-50 * easeOut); // Float up 50px
       setOpacity(1 - progress); // Fade out
 
-      if (progress < 1) {
-        requestAnimationFrame(animate);
+      if (progress >= 1) {
+        if (!hasCompleted.current) {
+          hasCompleted.current = true;
+          onComplete?.();
+        }
       } else {
-        onComplete?.();
+        animationRef.current = requestAnimationFrame(animate);
       }
     };
 
-    requestAnimationFrame(animate);
-  }, [onComplete]);
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [startTime, onComplete]); // Only re-run if startTime changes
 
   return (
     <div
