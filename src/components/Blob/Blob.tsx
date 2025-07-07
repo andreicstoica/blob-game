@@ -11,7 +11,7 @@ export interface BlobProps {
   onBlobClick?: ((blobId: string, clickPosition: { x: number; y: number }) => void) | (() => void);
   onBlobPress?: (blobId: string) => void;
   onBlobRelease?: (blobId: string) => void;
-  onFoodEaten?: (blobId: string, foodId: string) => void; // New callback for eating
+  onFoodEaten?: (blobId: string, foodId: string) => void;
   // Visual customization props
   color?: string;
   strokeColor?: string;
@@ -78,8 +78,8 @@ const Blob = React.memo(({
   useEffect(() => {
     if (nearbyFood.length === 0 || eatingState.isEating) return;
 
-    // Find closest food within eating range (5 pixels)
-    const eatingRangeFood = nearbyFood.filter(food => food.distance <= 70);
+    // Find closest food within eating range (70 pixels)
+    const eatingRangeFood = nearbyFood.filter(food => food.distance <= 150);
     if (eatingRangeFood.length === 0) return;
 
     // Start eating the closest food
@@ -99,7 +99,7 @@ const Blob = React.memo(({
     });
   }, [nearbyFood, eatingState.isEating, position]);
 
-  // Handle mouse events (same as before)
+  // Handle mouse events
   const handleMouseDown = () => {
     if (isDisabled || !isActive) return;
     setIsPressed(true);
@@ -111,8 +111,8 @@ const Blob = React.memo(({
     setIsPressed(false);
     
     const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left - size / 2;
-    const clickY = e.clientY - rect.top - size / 2;
+    const clickX = e.clientX - rect.left - (size * 1.5) / 2;
+    const clickY = e.clientY - rect.top - (size * 1.5) / 2;
     
     if (onBlobClick) {
       if (onBlobClick.length === 0) {
@@ -125,8 +125,8 @@ const Blob = React.memo(({
     
     setClickEffect({
       active: true,
-      x: clickX,
-      y: clickY,
+      x: clickX - size * 0.25, // Adjust for the transform offset
+      y: clickY - size * 0.25,
       intensity: 1
     });
     
@@ -175,29 +175,50 @@ const Blob = React.memo(({
           radiusVariation -= squishAmount;
         }
         
-        // Add eating reach effect
-        if (currentEating.isEating && currentEating.targetFood) {
-          
-          // Calculate how close this point is to the food direction
-          const foodAngle = Math.atan2(currentEating.targetFood.y, currentEating.targetFood.x);
-          const pointAngle = angle;
-          let angleDiff = Math.abs(foodAngle - pointAngle);
-          if (angleDiff > Math.PI) angleDiff = 2 * Math.PI - angleDiff;
-          
-          // Points closer to food direction stretch out more
-          const reachStrength = Math.max(0, 1 - angleDiff / (Math.PI / 2)); // Strongest in 90-degree cone
-          const reachAmount = reachStrength * currentEating.reachProgress * 0.6; // Max 60% extension
-          
-          radiusVariation += reachAmount;
+    // Add eating reach effect
+    if (currentEating.isEating && currentEating.targetFood) {
+        // Calculate how close this point is to the food direction
+        const foodAngle = Math.atan2(currentEating.targetFood.y, currentEating.targetFood.x);
+        const pointAngle = angle;
+        let angleDiff = Math.abs(foodAngle - pointAngle);
+        if (angleDiff > Math.PI) angleDiff = 2 * Math.PI - angleDiff;
+        
+        // Points closer to food direction stretch out more
+        const tentacleWidth = Math.PI / 6; 
+        const reachStrength = Math.max(0, 1 - angleDiff / tentacleWidth);
+        const focusedStrength = Math.pow(reachStrength, 3); 
+        
+        let reachAmount = 0;
+        if(focusedStrength > 0){
+            if (currentEating.reachProgress < 0.7) {
+            // Reaching phase - reduced intensity
+            const foodSize = 16;
+            const tentacleLength = 0.8 + (foodSize / baseRadius) * 0.3; // Reduced from 1.2
+            reachAmount = focusedStrength * currentEating.reachProgress * tentacleLength;
+            } else {
+            const swallowProgress = (currentEating.reachProgress - 0.7) / 0.3;
+            const foodSize = 16;
+            const wrapAmount = (foodSize / baseRadius) * 0.5; // Reduced from 0.8
+            reachAmount = focusedStrength * (0.8 + wrapAmount - swallowProgress * 0.6); // Reduced
+            }
         }
         
-        const radius = baseRadius + baseRadius * radiusVariation;
+        // Clamp the reach amount to prevent extreme deformation
+        reachAmount = Math.max(-0.5, Math.min(1.5, reachAmount)); // Prevent extreme negative/positive values
+        
+        radiusVariation += reachAmount;
+    }
+
+    // And make sure to clamp the final radiusVariation before calculating radius:
+    radiusVariation = Math.max(-0.7, Math.min(1.0, radiusVariation)); // Clamp total variation
+
+    const radius = Math.max(baseRadius * 0.2, baseRadius + baseRadius * radiusVariation); // Increased min to 20%        
         const x = centerX + Math.cos(angle) * radius;
         const y = centerY + Math.sin(angle) * radius;
         points.push({ x, y });
       }
       
-      // Create smooth path (same as before)
+      // Create smooth path
       let pathData = `M ${points[0].x} ${points[0].y}`;
       
       for (let i = 0; i < numPoints; i++) {
@@ -229,6 +250,12 @@ const Blob = React.memo(({
       // Slightly grow when eating
       if (currentEating.isEating) {
         scaleVariation += 0.05;
+        
+        // Temporary growth when swallowing
+        if (currentEating.reachProgress > 0.7) {
+          const swallowProgress = (currentEating.reachProgress - 0.7) / 0.3;
+          scaleVariation += swallowProgress * 0.15; // Grow up to 15% while swallowing
+        }
       }
       
       if (isDisabled) {
@@ -249,17 +276,14 @@ const Blob = React.memo(({
       // Animate eating progress
       if (currentEating.isEating) {
         setEatingState(prev => {
-          const newProgress = Math.min(1, prev.reachProgress + 0.03); // Slow reach
+          let newProgress = prev.reachProgress;
           
-          // When reach is complete, consume the food
-          if (newProgress >= 1 && prev.targetFood) {
-            onFoodEaten?.(id, prev.targetFood.id);
-            console.log(`Food ${prev.targetFood.id} consumed!`);
-            
-            // Reset eating state after brief pause
-            setTimeout(() => {
-              setEatingState({ isEating: false, targetFood: null, reachProgress: 0 });
-            }, 200);
+          if (newProgress < 0.7) {
+            // Reaching phase - slow stretch toward food
+            newProgress = Math.min(0.7, prev.reachProgress + 0.01);
+          } else if (newProgress < 1) {
+            // Swallowing phase - faster engulfing motion
+            newProgress = Math.min(1, prev.reachProgress + 0.04);
           }
           
           return { ...prev, reachProgress: newProgress };
@@ -278,41 +302,39 @@ const Blob = React.memo(({
 
   const filterId = `glow-${id}`;
 
-// In Blob.tsx, update the container style:
-
-    return (
-        <div
-            data-blob-id={id}
-            style={{
-            position: 'absolute',
-            // Make container 50% larger to accommodate stretching
-            transform: `translate(${position.x - (size * 1.5)/2}px, ${position.y - (size * 1.5)/2}px) scale(${scale})`,
-            willChange: 'transform',
-            cursor: isDisabled ? 'not-allowed' : 'pointer',
-            opacity: isDisabled ? 0.5 : 1
-            }}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseLeave}
-        >
-            <svg width={size * 1.5} height={size * 1.5}>
-            <defs>
-                <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
-                <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor={glowColor} floodOpacity="0.7"/>
-                </filter>
-            </defs>     
-            <path 
-                d={path} 
-                fill={color} 
-                stroke={strokeColor} 
-                strokeWidth="2"
-                filter={`url(#${filterId})`}
-                // Center the path in the larger SVG
-                transform={`translate(${size * 0.25}, ${size * 0.25})`}
-            />
-            </svg>
-        </div>
-    );
+  return (
+    <div
+      data-blob-id={id}
+      style={{
+        position: 'absolute',
+        // Make container 50% larger to accommodate stretching
+        transform: `translate(${position.x - (size * 1.5)/2}px, ${position.y - (size * 1.5)/2}px) scale(${scale})`,
+        willChange: 'transform',
+        cursor: isDisabled ? 'not-allowed' : 'pointer',
+        opacity: isDisabled ? 0.5 : 1
+      }}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
+    >
+      <svg width={size * 1.5} height={size * 1.5}>
+        <defs>
+          <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor={glowColor} floodOpacity="0.7"/>
+          </filter>
+        </defs>     
+        <path 
+          d={path} 
+          fill={color} 
+          stroke={strokeColor} 
+          strokeWidth="2"
+          filter={`url(#${filterId})`}
+          // Center the path in the larger SVG
+          transform={`translate(${size * 0.25}, ${size * 0.25})`}
+        />
+      </svg>
+    </div>
+  );
 });
 
 Blob.displayName = 'Blob';
