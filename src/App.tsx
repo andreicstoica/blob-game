@@ -1,10 +1,11 @@
 import "./App.css";
+import Map from "./components/Map/Map";
 
 function App() {
   return (
-    <div>
-      <h1>Hello World</h1>
-    </div>
+    <>
+      <Map className="w-full h-screen bg-black" />
+    </>
   );
 }
 
