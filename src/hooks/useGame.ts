@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   initialGameState, 
-  manualClick, 
   tick, 
+  manualClick, 
   buyGenerator, 
-  buyUpgrade,
+  buyUpgrade, 
+  consumeNutrient,
+  getNearbyNutrients,
   type GameState 
 } from '../engine/game';
 import { GAME_CONFIG } from '../engine/content';
@@ -12,7 +14,7 @@ import { GAME_CONFIG } from '../engine/content';
 export const useGame = () => {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
 
-  // Game loop for passive income
+  // Game loop
   useEffect(() => {
     const interval = setInterval(() => {
       setGameState(prevState => tick(prevState));
@@ -21,22 +23,32 @@ export const useGame = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleBlobClick = () => {
+  const handleBlobClick = useCallback(() => {
     setGameState(prevState => manualClick(prevState));
-  };
+  }, []);
 
-  const handleBuyGenerator = (generatorId: string) => {
+  const handleBuyGenerator = useCallback((generatorId: string) => {
     setGameState(prevState => buyGenerator(prevState, generatorId));
-  };
+  }, []);
 
-  const handleBuyUpgrade = (upgradeId: string) => {
+  const handleBuyUpgrade = useCallback((upgradeId: string) => {
     setGameState(prevState => buyUpgrade(prevState, upgradeId));
-  };
+  }, []);
+
+  const handleNutrientEaten = useCallback((blobId: string, nutrientId: string) => {
+    setGameState(prevState => consumeNutrient(prevState, nutrientId));
+  }, []);
+
+  const getNearbyNutrientsForBlob = useCallback((blobPosition: { x: number; y: number }) => {
+    return getNearbyNutrients(gameState, blobPosition);
+  }, [gameState]);
 
   return {
     gameState,
     handleBlobClick,
     handleBuyGenerator,
-    handleBuyUpgrade
+    handleBuyUpgrade,
+    handleNutrientEaten,
+    getNearbyNutrientsForBlob
   };
 }; 
