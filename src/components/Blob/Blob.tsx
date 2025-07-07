@@ -1,12 +1,14 @@
 // src/components/Blob/Blob.tsx
 import React, { useState, useEffect, useRef } from 'react';
+import { GAME_CONFIG } from '../../engine/content';
 
 export interface BlobProps {
   id: string;
   position: { x: number; y: number };
-  size: number;
+  size?: number; // Now optional since we can calculate from biomass
+  biomass?: number; // New prop for biomass-based sizing
   // Game event callbacks
-  onBlobClick?: (blobId: string, clickPosition: { x: number; y: number }) => void;
+  onBlobClick?: ((blobId: string, clickPosition: { x: number; y: number }) => void) | (() => void);
   onBlobPress?: (blobId: string) => void;
   onBlobRelease?: (blobId: string) => void;
   onFoodEaten?: (blobId: string, foodId: string) => void; // New callback for eating
@@ -25,7 +27,8 @@ export interface BlobProps {
 const Blob = React.memo(({ 
   id, 
   position, 
-  size,
+  size: propSize,
+  biomass,
   color = "#1adaac",
   strokeColor = "#cfffb1", 
   glowColor = "#cfffb1",
@@ -38,6 +41,12 @@ const Blob = React.memo(({
   isActive = true,
   nearbyFood = []
 }: BlobProps) => {
+  // Calculate size from biomass if not provided
+  const size = propSize || (biomass ? Math.max(
+    GAME_CONFIG.minBlobSize, 
+    biomass * GAME_CONFIG.blobSizeMultiplier
+  ) : 100); // Default size if neither size nor biomass provided
+
   const [path, setPath] = useState('');
   const [scale, setScale] = useState(1);
   const [clickEffect, setClickEffect] = useState({ active: false, x: 0, y: 0, intensity: 0 });
@@ -105,7 +114,13 @@ const Blob = React.memo(({
     const clickX = e.clientX - rect.left - size / 2;
     const clickY = e.clientY - rect.top - size / 2;
     
-    onBlobClick?.(id, { x: clickX, y: clickY });
+    if (onBlobClick) {
+      if (onBlobClick.length === 0) {
+        (onBlobClick as () => void)();
+      } else {
+        (onBlobClick as (blobId: string, clickPosition: { x: number; y: number }) => void)(id, { x: clickX, y: clickY });
+      }
+    }
     onBlobRelease?.(id);
     
     setClickEffect({
