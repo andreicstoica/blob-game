@@ -1,5 +1,5 @@
-// Test for blob, do not merge
 import './App.css'
+import CycleMaps from "./components/CycleMaps";
 import { BlobTest } from './components/Blob/BlobTest';
 import { GameHUD } from './components/GameHUD';
 import { useGame } from './hooks/useGame';
@@ -9,6 +9,7 @@ function App() {
 
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+      <CycleMaps />
       <GameHUD 
         biomass={gameState.biomass}
         gameState={gameState}
