@@ -1,5 +1,5 @@
 import "./globals.css";
-
+import { AnimationLayer } from './components/Animations/AnimationLayer';
 import Blob from "./components/Blob/Blob";
 import { Nutrients } from "./components/Nutrients";
 import { GameHUD } from "./components/HUD/GameHUD";
@@ -64,6 +64,8 @@ function App() {
 
       {/* Scale Indicator */}
       <ScaleIndicator zoom={zoom} blobSize={blobSize} />
+
+       <AnimationLayer /> 
     </div>
   );
 }
