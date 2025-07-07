@@ -1,26 +1,51 @@
-import { useMemo } from "react";
+// src/components/Map/layers/PetriLayer.tsx
+import { useEffect, useRef, useState } from "react";
 import Nutrient from "../../Food/Nutrient";
 
 interface PetriLayerProps {
   width: number;
   height: number;
   count?: number;
+  onNutrientPositions?: (nutrients: Array<{ id: string; x: number; y: number }>) => void;
+  consumedNutrients?: string[];
 }
 
 export default function PetriLayer({
   width,
   height,
   count = 20,
+  onNutrientPositions,
+  consumedNutrients = []
 }: PetriLayerProps) {
-  // Generate random positions once
-  const nutrients = useMemo(
-    () =>
-      Array.from({ length: count }, () => ({
-        x: Math.random() * (width - 16),
-        y: Math.random() * (height - 16),
-      })),
-    [width, height, count]
-  );
+  const initializedRef = useRef(false);
+  const [nutrients, setNutrients] = useState<Array<{ id: string; x: number; y: number }>>([]);
+
+  // Generate nutrients only once when component first mounts
+  useEffect(() => {
+    console.log("PetriLayer: Generating nutrients", { width, height, count });
+    if (!initializedRef.current && width > 0 && height > 0) {
+      const newNutrients = Array.from({ length: count }, (_, i) => ({
+        id: `nutrient-${i}`,
+        x: Math.random() * (width - 16) + 8,
+        y: Math.random() * (height - 16) + 8,
+      }));
+      
+      console.log("PetriLayer: Created nutrients:", newNutrients);
+      setNutrients(newNutrients);
+      initializedRef.current = true;
+    }
+  }, [width, height, count]);
+
+  // Notify parent of nutrient positions
+  useEffect(() => {
+    if (onNutrientPositions && nutrients.length > 0) {
+      console.log("PetriLayer: Sending nutrients to parent:", nutrients);
+      onNutrientPositions(nutrients);
+    }
+  }, [nutrients, onNutrientPositions]);
+
+  // Filter out consumed nutrients
+  const visibleNutrients = nutrients.filter(n => !consumedNutrients.includes(n.id));
 
   return (
     <div
@@ -48,8 +73,8 @@ export default function PetriLayer({
       />
 
       {/* Nutrients */}
-      {nutrients.map((pos, i) => (
-        <Nutrient key={i} x={pos.x} y={pos.y} />
+      {visibleNutrients.map((nutrient) => (
+        <Nutrient key={nutrient.id} x={nutrient.x} y={nutrient.y} />
       ))}
     </div>
   );
