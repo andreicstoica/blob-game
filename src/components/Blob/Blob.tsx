@@ -5,9 +5,34 @@ export interface BlobProps {
   id: string;
   position: { x: number; y: number };
   size: number;
+  // Game event callbacks
+  onBlobClick?: (blobId: string, clickPosition: { x: number; y: number }) => void;
+  onBlobPress?: (blobId: string) => void;
+  onBlobRelease?: (blobId: string) => void;
+  // Visual customization props
+  color?: string;
+  strokeColor?: string;
+  glowColor?: string;
+  isDisabled?: boolean;
+  animationSpeed?: number;
+  // Game state props
+  isActive?: boolean;
 }
 
-const Blob = React.memo(({ id, position, size }: BlobProps) => {
+const Blob = React.memo(({ 
+  id, 
+  position, 
+  size,
+  color = "#1adaac",
+  strokeColor = "#cfffb1", 
+  glowColor = "#cfffb1",
+  isDisabled = false,
+  animationSpeed = 0.3,
+  onBlobClick,
+  onBlobPress,
+  onBlobRelease,
+  isActive = true,
+}: BlobProps) => {
   const [path, setPath] = useState('');
   const [scale, setScale] = useState(1);
   const [clickEffect, setClickEffect] = useState({ active: false, x: 0, y: 0, intensity: 0 });
@@ -25,13 +50,18 @@ const Blob = React.memo(({ id, position, size }: BlobProps) => {
   }, [isPressed]);
 
   // Handle mouse down - shrink the blob
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = () => {
+    if (isDisabled || !isActive) return;
+    
     console.log('Mouse down - shrinking blob');
     setIsPressed(true);
+    onBlobPress?.(id);
   };
 
   // Handle mouse up - do the squish effect
   const handleMouseUp = (e: React.MouseEvent) => {
+    if (isDisabled || !isActive) return;
+    
     console.log('Mouse up - squish effect');
     setIsPressed(false);
     
@@ -40,6 +70,10 @@ const Blob = React.memo(({ id, position, size }: BlobProps) => {
     const clickY = e.clientY - rect.top - size / 2;
     
     console.log('Release position:', { clickX, clickY });
+    
+    // Notify game system with click details
+    onBlobClick?.(id, { x: clickX, y: clickY });
+    onBlobRelease?.(id);
     
     setClickEffect({
       active: true,
@@ -80,7 +114,7 @@ const Blob = React.memo(({ id, position, size }: BlobProps) => {
       
       for (let i = 0; i < numPoints; i++) {
         const angle = (i / numPoints) * Math.PI * 2;
-        let radiusVariation = Math.sin(time * 0.3 + i * 1.7) * 0.2;
+        let radiusVariation = Math.sin(time * animationSpeed + i * 1.7) * 0.2;
         
         // Add click squish effect (on release)
         if (currentClickEffect.active) {
@@ -130,6 +164,11 @@ const Blob = React.memo(({ id, position, size }: BlobProps) => {
         scaleVariation += currentClickEffect.intensity * 0.05; // Bigger bounce on release
       }
       
+      // Modify appearance based on game state
+      if (isDisabled) {
+        scaleVariation *= 0.8; // Smaller when disabled
+      }
+      
       setPath(pathData);
       setScale(scaleVariation);
       
@@ -137,7 +176,7 @@ const Blob = React.memo(({ id, position, size }: BlobProps) => {
       if (currentClickEffect.active && currentClickEffect.intensity > 0) {
         setClickEffect(prev => ({
           ...prev,
-          intensity: Math.max(0, prev.intensity - 0.025) // Slightly slower decay
+          intensity: Math.max(0, prev.intensity - 0.025)
         }));
       }
       
@@ -149,7 +188,10 @@ const Blob = React.memo(({ id, position, size }: BlobProps) => {
     return () => {
       if (animationId) cancelAnimationFrame(animationId);
     };
-  }, [size]);
+  }, [size, animationSpeed, isDisabled]);
+
+  // Generate unique filter ID to avoid conflicts with multiple blobs
+  const filterId = `glow-${id}`;
 
   return (
     <div
@@ -158,7 +200,8 @@ const Blob = React.memo(({ id, position, size }: BlobProps) => {
         position: 'absolute',
         transform: `translate(${position.x - size/2}px, ${position.y - size/2}px) scale(${scale})`,
         willChange: 'transform',
-        cursor: 'pointer'
+        cursor: isDisabled ? 'not-allowed' : 'pointer',
+        opacity: isDisabled ? 0.5 : 1
       }}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
@@ -166,16 +209,16 @@ const Blob = React.memo(({ id, position, size }: BlobProps) => {
     >
       <svg width={size} height={size}>
         <defs>
-            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#cfffb1" floodOpacity="0.7"/>
-            </filter>
+          <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor={glowColor} floodOpacity="0.7"/>
+          </filter>
         </defs>     
         <path 
           d={path} 
-          fill="#1adaac" 
-          stroke="#cfffb1" 
+          fill={color} 
+          stroke={strokeColor} 
           strokeWidth="2"
-          filter="url(#glow)"
+          filter={`url(#${filterId})`}
         />
       </svg>
     </div>
