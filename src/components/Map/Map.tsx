@@ -30,8 +30,8 @@ export default function Map({ className }: MapProps) {
   return (
     <div ref={containerRef} className={`relative w-full h-full ${className}`}>
       {phase === "primordial" && (
-        <PetriLayer 
-          width={dimensions.width} 
+        <PetriLayer
+          width={dimensions.width}
           height={dimensions.height}
         />
       )}
