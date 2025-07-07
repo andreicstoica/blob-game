@@ -1,7 +1,7 @@
 import React from "react";
 
 interface ScaleIndicatorProps {
-  zoom: number;
+  biomass: number;
   blobSize: number;
 }
 
@@ -13,8 +13,9 @@ interface ScaleLevel {
   icon: string;
 }
 
-const getScaleLevel = (zoom: number): ScaleLevel => {
-  if (zoom >= 0.9) {
+const getScaleLevel = (biomass: number): ScaleLevel => {
+  if (biomass < 30) {
+    // Extended from 10 to 30 (3x longer)
     return {
       name: "Microscopic",
       description: "Individual bacteria",
@@ -22,7 +23,8 @@ const getScaleLevel = (zoom: number): ScaleLevel => {
       color: "#10b981",
       icon: "🦠",
     };
-  } else if (zoom >= 0.7) {
+  } else if (biomass < 300) {
+    // Shifted from 100 to 300 to maintain 10x scaling
     return {
       name: "Cellular",
       description: "Cell clusters",
@@ -30,7 +32,8 @@ const getScaleLevel = (zoom: number): ScaleLevel => {
       color: "#3b82f6",
       icon: "🧬",
     };
-  } else if (zoom >= 0.5) {
+  } else if (biomass < 3000) {
+    // Shifted from 1000 to 3000
     return {
       name: "Organism",
       description: "Small organisms",
@@ -38,7 +41,8 @@ const getScaleLevel = (zoom: number): ScaleLevel => {
       color: "#8b5cf6",
       icon: "🐛",
     };
-  } else if (zoom >= 0.35) {
+  } else if (biomass < 30000) {
+    // Shifted from 10000 to 30000
     return {
       name: "Local",
       description: "Visible creatures",
@@ -46,7 +50,8 @@ const getScaleLevel = (zoom: number): ScaleLevel => {
       color: "#f59e0b",
       icon: "🐜",
     };
-  } else if (zoom >= 0.25) {
+  } else if (biomass < 300000) {
+    // Shifted from 100000 to 300000
     return {
       name: "Regional",
       description: "Small animals",
@@ -54,7 +59,8 @@ const getScaleLevel = (zoom: number): ScaleLevel => {
       color: "#ef4444",
       icon: "🐭",
     };
-  } else if (zoom >= 0.2) {
+  } else if (biomass < 3000000) {
+    // Shifted from 1000000 to 3000000
     return {
       name: "Terrestrial",
       description: "Large organisms",
@@ -74,13 +80,16 @@ const getScaleLevel = (zoom: number): ScaleLevel => {
 };
 
 export const ScaleIndicator: React.FC<ScaleIndicatorProps> = ({
-  zoom,
+  biomass,
   blobSize,
 }) => {
-  const scale = getScaleLevel(zoom);
+  const scale = getScaleLevel(biomass);
+
+  // Calculate zoom for display purposes
+  const zoom = Math.max(0.15, 1.0 - Math.log10(biomass + 1) * 0.3);
 
   // Only show when zooming out
-  if (zoom >= 0.98) return null;
+  if (biomass < 2) return null;
 
   // Calculate scale bar length (relative to zoom)
   const scaleBarLength = Math.max(20, (1 - zoom) * 100);
@@ -162,7 +171,35 @@ export const ScaleIndicator: React.FC<ScaleIndicatorProps> = ({
               boxShadow: `0 0 8px ${scale.color}50`,
             }}
           />
-          <div style={{ fontSize: "10px", opacity: 0.8 }}>{scale.unit}</div>
+          <div style={{ fontSize: "10px", opacity: 0.8 }}>
+            {(() => {
+              // Calculate actual scale value based on biomass position within range
+              let actualScale = "";
+              if (biomass < 30) {
+                const progress = biomass / 30;
+                actualScale = `${(1 + progress * 9).toFixed(1)} μm`;
+              } else if (biomass < 300) {
+                const progress = (biomass - 30) / 270;
+                actualScale = `${(10 + progress * 90).toFixed(0)} μm`;
+              } else if (biomass < 3000) {
+                const progress = (biomass - 300) / 2700;
+                actualScale = `${(0.1 + progress * 0.9).toFixed(1)} mm`;
+              } else if (biomass < 30000) {
+                const progress = (biomass - 3000) / 27000;
+                actualScale = `${(1 + progress * 9).toFixed(0)} mm`;
+              } else if (biomass < 300000) {
+                const progress = (biomass - 30000) / 270000;
+                actualScale = `${(1 + progress * 9).toFixed(0)} cm`;
+              } else if (biomass < 3000000) {
+                const progress = (biomass - 300000) / 2700000;
+                actualScale = `${(10 + progress * 90).toFixed(0)} cm`;
+              } else {
+                const progress = Math.min(1, (biomass - 3000000) / 7000000);
+                actualScale = `${(1 + progress * 9).toFixed(1)} m`;
+              }
+              return actualScale;
+            })()}
+          </div>
         </div>
       </div>
 
