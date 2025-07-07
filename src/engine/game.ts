@@ -60,13 +60,20 @@ const initializeUpgrades = () => {
 
 const initializeNutrients = (): NutrientState[] => {
     console.log('Initializing nutrients...');
-    const nutrients = Array.from({ length: 20 }, (_, i) => ({
+
+    // Generate nutrients in a large area around center (stored as offsets from center)
+    const gameAreaWidth = 2000;
+    const gameAreaHeight = 1500;
+
+    const nutrients = Array.from({ length: 50 }, (_, i) => ({
         id: `nutrient-${i}`,
-        x: Math.random() * 800, // Screen width
-        y: Math.random() * 600, // Screen height
+        // Store as offset from center, not absolute coordinates
+        x: (Math.random() - 0.5) * gameAreaWidth,
+        y: (Math.random() - 0.5) * gameAreaHeight,
         consumed: false
     }));
-    console.log('Created nutrients:', nutrients.slice(0, 3)); // Log first 3 nutrients
+
+    console.log('Created nutrients:', nutrients.slice(0, 3));
     return nutrients;
 };
 
@@ -81,10 +88,13 @@ export const initialGameState: GameState = {
 }
 
 export function tick(state: GameState): GameState {
-    return {
+    const newState = {
         ...state,
         biomass: state.biomass + state.growth,
-    }
+    };
+
+    // Spawn more nutrients if needed
+    return spawnMoreNutrients(newState);
 }
 
 export function manualClick(state: GameState): GameState {
@@ -97,28 +107,28 @@ export function manualClick(state: GameState): GameState {
 export function buyGenerator(state: GameState, generatorId: string): GameState {
     const generator = state.generators[generatorId];
     if (!generator) return state;
-    
+
     const currentCost = Math.floor(generator.baseCost * Math.pow(generator.costMultiplier, generator.level));
-    
+
     if (state.biomass < currentCost) return state;
-    
+
     const newGenerators = { ...state.generators };
     newGenerators[generatorId] = {
         ...generator,
         level: generator.level + 1
     };
-    
+
     // Calculate total growth from all generators
     let totalGrowth = 0;
     Object.values(newGenerators).forEach(gen => {
         totalGrowth += gen.baseEffect * gen.level;
     });
-    
+
     // Apply upgrade effects
     if (state.upgrades['efficient-generators'].purchased) {
         totalGrowth += newGenerators['basic-slime'].level * state.upgrades['efficient-generators'].effect;
     }
-    
+
     return {
         ...state,
         biomass: state.biomass - currentCost,
@@ -132,16 +142,16 @@ export function buyUpgrade(state: GameState, upgradeId: string): GameState {
     if (!upgrade || upgrade.purchased || state.biomass < upgrade.cost) {
         return state;
     }
-    
+
     const newUpgrades = { ...state.upgrades };
     newUpgrades[upgradeId] = {
         ...upgrade,
         purchased: true
     };
-    
+
     let newClickPower = state.clickPower;
     let newGrowth = state.growth;
-    
+
     // Apply upgrade effects
     if (upgrade.type === 'click') {
         newClickPower += upgrade.effect;
@@ -151,14 +161,14 @@ export function buyUpgrade(state: GameState, upgradeId: string): GameState {
         Object.values(state.generators).forEach(gen => {
             totalGrowth += gen.baseEffect * gen.level;
         });
-        
+
         if (upgradeId === 'efficient-generators') {
             totalGrowth += state.generators['basic-slime'].level * upgrade.effect;
         }
-        
+
         newGrowth = totalGrowth;
     }
-    
+
     return {
         ...state,
         biomass: state.biomass - upgrade.cost,
@@ -177,23 +187,23 @@ export function getTotalGrowth(state: GameState): number {
     Object.values(state.generators).forEach(gen => {
         totalGrowth += gen.baseEffect * gen.level;
     });
-    
+
     // Apply upgrade effects
     if (state.upgrades['efficient-generators'].purchased) {
         totalGrowth += state.generators['basic-slime'].level * state.upgrades['efficient-generators'].effect;
     }
-    
+
     return totalGrowth;
 }
 
 export function consumeNutrient(state: GameState, nutrientId: string): GameState {
     const nutrient = state.nutrients.find(n => n.id === nutrientId);
     if (!nutrient || nutrient.consumed) return state;
-    
+
     return {
         ...state,
         biomass: state.biomass + 1, // Each nutrient gives 1 biomass
-        nutrients: state.nutrients.map(n => 
+        nutrients: state.nutrients.map(n =>
             n.id === nutrientId ? { ...n, consumed: true } : n
         )
     };
@@ -203,10 +213,39 @@ export function getNearbyNutrients(state: GameState, blobPosition: { x: number; 
     return state.nutrients
         .filter(n => !n.consumed)
         .map(nutrient => {
+            // Calculate distance from blob center (blob is at 0,0 in its coordinate system)
             const distance = Math.sqrt(
-                Math.pow(nutrient.x - blobPosition.x, 2) + 
-                Math.pow(nutrient.y - blobPosition.y, 2)
+                Math.pow(nutrient.x - 0, 2) +
+                Math.pow(nutrient.y - 0, 2)
             );
             return { ...nutrient, distance };
         });
+}
+
+// Add function to spawn more nutrients when needed
+export function spawnMoreNutrients(state: GameState): GameState {
+    const visibleNutrients = state.nutrients.filter(n => !n.consumed);
+
+    // If we have fewer than 20 visible nutrients, spawn more
+    if (visibleNutrients.length < 20) {
+        const newNutrients = Array.from({ length: 10 }, (_, i) => {
+            const gameAreaWidth = 2000;
+            const gameAreaHeight = 1500;
+
+            return {
+                id: `nutrient-${Date.now()}-${i}`,
+                // Store as offset from center, not absolute coordinates
+                x: (Math.random() - 0.5) * gameAreaWidth,
+                y: (Math.random() - 0.5) * gameAreaHeight,
+                consumed: false
+            };
+        });
+
+        return {
+            ...state,
+            nutrients: [...state.nutrients, ...newNutrients]
+        };
+    }
+
+    return state;
 }
