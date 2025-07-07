@@ -5,6 +5,13 @@ export interface SlimeState {
     type: string
 }
 
+export interface NutrientState {
+    id: string
+    x: number
+    y: number
+    consumed: boolean
+}
+
 export interface GeneratorState {
     id: string
     name: string
@@ -21,17 +28,18 @@ export interface UpgradeState {
     cost: number
     description: string
     effect: number
-    type: 'income' | 'split' | 'click' | 'slime'
+    type: 'growth' | 'split' | 'click' | 'slime'
     purchased: boolean
 }
 
 export interface GameState {
     slimes: SlimeState[]
     biomass: number
-    income: number
+    growth: number
     clickPower: number
     generators: Record<string, GeneratorState>
     upgrades: Record<string, UpgradeState>
+    nutrients: NutrientState[]
 }
 
 const initializeGenerators = () => {
@@ -50,19 +58,32 @@ const initializeUpgrades = () => {
     return upgrades;
 };
 
+const initializeNutrients = (): NutrientState[] => {
+    console.log('Initializing nutrients...');
+    const nutrients = Array.from({ length: 20 }, (_, i) => ({
+        id: `nutrient-${i}`,
+        x: Math.random() * 800, // Screen width
+        y: Math.random() * 600, // Screen height
+        consumed: false
+    }));
+    console.log('Created nutrients:', nutrients.slice(0, 3)); // Log first 3 nutrients
+    return nutrients;
+};
+
 export const initialGameState: GameState = {
     slimes: [],
     biomass: GAME_CONFIG.startingBiomass,
-    income: 0,
+    growth: 0,
     clickPower: GAME_CONFIG.startingClickPower,
     generators: initializeGenerators(),
-    upgrades: initializeUpgrades()
+    upgrades: initializeUpgrades(),
+    nutrients: initializeNutrients()
 }
 
 export function tick(state: GameState): GameState {
     return {
         ...state,
-        biomass: state.biomass + state.income,
+        biomass: state.biomass + state.growth,
     }
 }
 
@@ -87,21 +108,21 @@ export function buyGenerator(state: GameState, generatorId: string): GameState {
         level: generator.level + 1
     };
     
-    // Calculate total income from all generators
-    let totalIncome = 0;
+    // Calculate total growth from all generators
+    let totalGrowth = 0;
     Object.values(newGenerators).forEach(gen => {
-        totalIncome += gen.baseEffect * gen.level;
+        totalGrowth += gen.baseEffect * gen.level;
     });
     
     // Apply upgrade effects
     if (state.upgrades['efficient-generators'].purchased) {
-        totalIncome += newGenerators['basic-slime'].level * state.upgrades['efficient-generators'].effect;
+        totalGrowth += newGenerators['basic-slime'].level * state.upgrades['efficient-generators'].effect;
     }
     
     return {
         ...state,
         biomass: state.biomass - currentCost,
-        income: totalIncome,
+        growth: totalGrowth,
         generators: newGenerators
     };
 }
@@ -119,30 +140,30 @@ export function buyUpgrade(state: GameState, upgradeId: string): GameState {
     };
     
     let newClickPower = state.clickPower;
-    let newIncome = state.income;
+    let newGrowth = state.growth;
     
     // Apply upgrade effects
     if (upgrade.type === 'click') {
         newClickPower += upgrade.effect;
-    } else if (upgrade.type === 'income') {
-        // Recalculate income with new upgrade effect
-        let totalIncome = 0;
+    } else if (upgrade.type === 'growth') {
+        // Recalculate growth with new upgrade effect
+        let totalGrowth = 0;
         Object.values(state.generators).forEach(gen => {
-            totalIncome += gen.baseEffect * gen.level;
+            totalGrowth += gen.baseEffect * gen.level;
         });
         
         if (upgradeId === 'efficient-generators') {
-            totalIncome += state.generators['basic-slime'].level * upgrade.effect;
+            totalGrowth += state.generators['basic-slime'].level * upgrade.effect;
         }
         
-        newIncome = totalIncome;
+        newGrowth = totalGrowth;
     }
     
     return {
         ...state,
         biomass: state.biomass - upgrade.cost,
         clickPower: newClickPower,
-        income: newIncome,
+        growth: newGrowth,
         upgrades: newUpgrades
     };
 }
@@ -151,16 +172,41 @@ export function getGeneratorCost(generator: GeneratorState): number {
     return Math.floor(generator.baseCost * Math.pow(generator.costMultiplier, generator.level));
 }
 
-export function getTotalIncome(state: GameState): number {
-    let totalIncome = 0;
+export function getTotalGrowth(state: GameState): number {
+    let totalGrowth = 0;
     Object.values(state.generators).forEach(gen => {
-        totalIncome += gen.baseEffect * gen.level;
+        totalGrowth += gen.baseEffect * gen.level;
     });
     
     // Apply upgrade effects
     if (state.upgrades['efficient-generators'].purchased) {
-        totalIncome += state.generators['basic-slime'].level * state.upgrades['efficient-generators'].effect;
+        totalGrowth += state.generators['basic-slime'].level * state.upgrades['efficient-generators'].effect;
     }
     
-    return totalIncome;
+    return totalGrowth;
+}
+
+export function consumeNutrient(state: GameState, nutrientId: string): GameState {
+    const nutrient = state.nutrients.find(n => n.id === nutrientId);
+    if (!nutrient || nutrient.consumed) return state;
+    
+    return {
+        ...state,
+        biomass: state.biomass + 1, // Each nutrient gives 1 biomass
+        nutrients: state.nutrients.map(n => 
+            n.id === nutrientId ? { ...n, consumed: true } : n
+        )
+    };
+}
+
+export function getNearbyNutrients(state: GameState, blobPosition: { x: number; y: number }): Array<{ id: string; x: number; y: number; distance: number }> {
+    return state.nutrients
+        .filter(n => !n.consumed)
+        .map(nutrient => {
+            const distance = Math.sqrt(
+                Math.pow(nutrient.x - blobPosition.x, 2) + 
+                Math.pow(nutrient.y - blobPosition.y, 2)
+            );
+            return { ...nutrient, distance };
+        });
 }
