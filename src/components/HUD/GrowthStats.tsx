@@ -25,7 +25,7 @@ export const GrowthStats: React.FC<GrowthStatsProps> = ({ biomass, gameState }) 
       {gameState && (
         <div style={{ fontSize: '14px', opacity: 0.8 }}>
           <div style={{ fontSize: '18px', marginBottom: '10px' }}>Growth:
-            <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#4ade80', marginRight: '5px', marginLeft: '5px' }}>{gameState.growth.toFixed(1)}</span>
+            <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#4ade80', marginRight: '5px', marginLeft: '5px' }}>{(gameState.growth * 10).toFixed(1)}</span>
             <span style={{ fontSize: '12px' }}>Biomass / sec</span>
           </div>
           <div style={{ fontSize: '18px' }}>Click Power: 

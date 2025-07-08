@@ -173,6 +173,50 @@ describe('Game Logic', () => {
             tick(gameState);
             expect(gameState.biomass).toBe(originalBiomass);
         });
+
+        it('should calculate and apply growth correctly on tick', () => {
+            let state = gameState;
+            // Buy a generator
+            const generatorCost = GENERATORS['basic-generator'].baseCost;
+            const clicksNeeded = Math.ceil(generatorCost / GAME_CONFIG.startingClickPower);
+            
+            for (let i = 0; i < clicksNeeded; i++) {
+                state = manualClick(state);
+            }
+            state = buyGenerator(state, 'basic-generator');
+            
+            // The growth should be calculated correctly
+            const expectedGrowth = GENERATORS['basic-generator'].baseEffect;
+            expect(state.growth).toBe(expectedGrowth);
+            
+            // Tick should apply the growth and update the growth field
+            const newState = tick(state);
+            expect(newState.biomass).toBe(state.biomass + expectedGrowth);
+            expect(newState.growth).toBe(expectedGrowth);
+        });
+
+        it('should handle growth rate correctly with tick frequency', () => {
+            // Since tick rate is 100ms, growth per second = growth per tick * 10
+            let state = gameState;
+            
+            // Buy a generator
+            const generatorCost = GENERATORS['basic-generator'].baseCost;
+            const clicksNeeded = Math.ceil(generatorCost / GAME_CONFIG.startingClickPower);
+            
+            for (let i = 0; i < clicksNeeded; i++) {
+                state = manualClick(state);
+            }
+            state = buyGenerator(state, 'basic-generator');
+            
+            // Simulate 10 ticks (1 second)
+            for (let i = 0; i < 10; i++) {
+                state = tick(state);
+            }
+            
+            // Should have gained 10 * 0.1 = 1 biomass over 1 second
+            const expectedBiomassGain = GENERATORS['basic-generator'].baseEffect * 10;
+            expect(state.biomass).toBe(gameState.biomass + expectedBiomassGain);
+        });
     });
 
     describe('Generators', () => {

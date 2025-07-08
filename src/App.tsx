@@ -16,11 +16,12 @@ function App() {
     handleBuyGenerator,
     handleBuyUpgrade,
     handleNutrientEaten,
+    handleEvolve,
     getNearbyNutrientsForBlob,
   } = useGame();
 
-  const phase = useMapSelector((s) => s.phase);
-  const setPhase = useMap((s) => s.setPhase);
+  const currentLevel = useMapSelector((s) => s.currentLevel);
+  const setLevel = useMap((s) => s.setLevel);
   const phases: (
     | "intro"
     | "microscope"
@@ -39,9 +40,10 @@ function App() {
     "sunSolarSystem",
   ];
   const nextPhase = () => {
-    const currentIndex = phases.indexOf(phase);
+    const currentIndex = phases.indexOf(currentLevel.id as any);
     const nextIndex = (currentIndex + 1) % phases.length;
-    setPhase(phases[nextIndex]);
+    // This is just for debugging - we'll remove this later
+    console.log('Debug: cycling to phase', phases[nextIndex]);
   };
 
   // Simple zoom calculation for world scaling
@@ -75,7 +77,7 @@ function App() {
       >
         <Map className="absolute inset-0 w-full h-full z-0" />
 
-        <Nutrients nutrients={gameState.nutrients} phase={phase} />
+        <Nutrients nutrients={gameState.nutrients} phase={currentLevel.id as any} />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer select-none">
           <Blob
             id="main-blob"
@@ -94,6 +96,7 @@ function App() {
         gameState={gameState}
         onBuyGenerator={handleBuyGenerator}
         onBuyUpgrade={handleBuyUpgrade}
+        onEvolve={handleEvolve}
       />
 
       {/* Scale Indicator - pass biomass instead of zoom */}
