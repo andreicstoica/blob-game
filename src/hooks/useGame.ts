@@ -7,6 +7,7 @@ import {
   buyUpgrade, 
   consumeNutrient,
   getNearbyNutrients,
+  evolveToNextLevel,
   type GameState 
 } from '../engine/game';
 import { GAME_CONFIG } from '../engine/content';
@@ -39,6 +40,10 @@ export const useGame = () => {
     setGameState(prevState => consumeNutrient(prevState, nutrientId));
   }, []);
 
+  const handleEvolve = useCallback(() => {
+    setGameState(prevState => evolveToNextLevel(prevState));
+  }, []);
+
   const getNearbyNutrientsForBlob = useCallback((blobPosition: { x: number; y: number }) => {
     return getNearbyNutrients(gameState, blobPosition);
   }, [gameState]);
@@ -49,6 +54,7 @@ export const useGame = () => {
     handleBuyGenerator,
     handleBuyUpgrade,
     handleNutrientEaten,
+    handleEvolve,
     getNearbyNutrientsForBlob
   };
 }; 

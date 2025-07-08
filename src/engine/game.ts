@@ -1,5 +1,5 @@
 import { GENERATORS, UPGRADES, GAME_CONFIG } from './content';
-import { getCurrentLevel as getLevelByBiomass, getNextLevel as getNextLevelByCurrent, canEvolve } from './Levels';
+import { getCurrentLevel as getLevelByBiomass, getNextLevel as getNextLevelByCurrent, canEvolve, LEVELS } from './Levels';
 
 export interface BlobState {
     size: number
@@ -41,6 +41,7 @@ export interface GameState {
     upgrades: Record<string, UpgradeState>
     nutrients: NutrientState[]
     currentLevelId: string
+    highestLevelReached: string
 }
 
 const initializeGenerators = () => {
@@ -86,7 +87,8 @@ export const initialGameState: GameState = {
     generators: initializeGenerators(),
     upgrades: initializeUpgrades(),
     nutrients: initializeNutrients(),
-    currentLevelId: 'intro'
+    currentLevelId: 'intro',
+    highestLevelReached: 'intro'
 }
 
 export function tick(state: GameState): GameState {
@@ -252,17 +254,26 @@ export function spawnMoreNutrients(state: GameState): GameState {
     return state;
 }
 
+// Helper function to get level by ID
+function getLevelById(levelId: string) {
+    return LEVELS.find(level => level.id === levelId) || LEVELS[0];
+}
+
 // Evolution system functions
 export function canEvolveToNextLevel(state: GameState): boolean {
-    return canEvolve(state.biomass);
+    // Check if player has enough biomass for the next level
+    const currentLevel = getLevelById(state.highestLevelReached);
+    const nextLevel = getNextLevelByCurrent(currentLevel);
+    return nextLevel !== null && state.biomass >= nextLevel.biomassThreshold;
 }
 
 export function getCurrentLevel(state: GameState) {
-    return getLevelByBiomass(state.biomass);
+    // Use the highest level reached, not current biomass
+    return getLevelById(state.highestLevelReached);
 }
 
 export function getNextLevel(state: GameState) {
-    const currentLevel = getLevelByBiomass(state.biomass);
+    const currentLevel = getLevelById(state.highestLevelReached);
     return getNextLevelByCurrent(currentLevel);
 }
 
@@ -272,7 +283,8 @@ export function evolveToNextLevel(state: GameState): GameState {
 
     return {
         ...state,
-        currentLevelId: nextLevel.id
+        currentLevelId: nextLevel.id,
+        highestLevelReached: nextLevel.id
         // Biomass carries over, generators and upgrades are preserved
     };
 }

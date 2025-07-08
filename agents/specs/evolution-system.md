@@ -61,7 +61,7 @@ The game currently has a single level system. We need to implement a progression
 - [x] Level state management in mapState
 - [x] Evolution mechanics in game engine
 - [x] Level-specific content unlocking
-- [ ] Smooth transitions between levels (handled by teammate)
+- [ ] Smooth transitions between levels (handled by teammate, Github issue created)
 
 ## 5. Biomass Thresholds & Display Format
 

@@ -22,6 +22,14 @@ Create or modify the following files:
 
 The current game has basic generators and upgrades that are available from the start. We need to replace these with a progression system where new content unlocks at each evolution level, creating a sense of advancement and thematic coherence.
 
+**Important Clarifications:**
+
+- **Generators**: All generators only increase biomass growth rate (no slime splitting or other mechanics)
+- **Upgrades**: Fall into categories like click power, generator efficiency, overall growth multipliers
+- **No enemies/rivals**: Remove references to contamination, rivals, or defensive mechanics
+- **No downtime/recharge**: All generators work continuously
+- **Keep fun descriptions**: Thematic descriptions can remain even if mechanics are simplified
+
 ## 4. Requirements (Acceptance Criteria)
 
 ### Level-Specific Content System
@@ -37,75 +45,75 @@ The current game has basic generators and upgrades that are available from the s
 
 #### 1️⃣ Intro Level
 
-- [ ] **Generators**: Basic starter generators (1-2)
-- [ ] **Upgrades**: Basic efficiency upgrades (1-2)
+- [ ] **Generators**: Example starter generators (1-2)
+- [ ] **Upgrades**: Example efficiency and click power upgrades (1-2)
 - [ ] **Theme**: Simple, tutorial-friendly content
 
 #### 2️⃣ Microscopic Level
 
 - [ ] **Generators**:
-  - Microscope Cloner — Uses lab-grade optics to split slimes
-  - Petri Dish Breeder — Controlled medium to grow colonies
+  - Microscope Cloner — Uses lab-grade optics to split slime particles
+  - Petri Dish Breeder — Controlled medium to grow colonies faster
   - Agar Farm — Rich nutrient beds for mass production
 - [ ] **Upgrades**:
-  - Enhanced Microscope Optics — Boost cloning yield
-  - Sterile Technique Mastery — Fewer slime losses to contamination
-  - Rapid Binary Fission — Doubles cell division speed
+  - Enhanced Microscope Optics — Boost generator yield
+  - Sterile Technique Mastery — Improves all growth rates
+  - Rapid Binary Fission — Doubles overall growth rate
 
 #### 3️⃣ Petri Dish Level
 
 - [ ] **Generators**:
   - Colony Expander — Increases surface area for growth
-  - Spore Launcher — Shoots spores to seed new dishes
-  - Contaminant Converter — Turns bacterial rivals into slime fuel
+  - Spore Launcher — Shoots spores to seed new growth areas
+  - Contaminant Converter — Converts waste into growth fuel
 - [ ] **Upgrades**:
   - Temperature Control Module — Optimal growth rates
-  - Nutrient-Enriched Agar — Doubles slime output
-  - Antibiotic Resistance — Reduces losses to rival microbes
+  - Nutrient-Enriched Agar — Doubles growth output
+  - Antibiotic Resistance — Improves resistance to parasitic microbes, increasing growth
 
 #### 4️⃣ Lab Level
 
 - [ ] **Generators**:
-  - Centrifuge Sorter — Isolates the strongest slime cells
-  - Bioreactor Tank — Massive controlled slime growth
-  - Autoclave Recycler — Recycles lab waste into slime food
+  - Centrifuge Sorter — Isolates the most efficient growth cells
+  - Bioreactor Tank — Massive controlled growth environment
+  - Autoclave Recycler — Recycles lab waste into growth fuel
 - [ ] **Upgrades**:
-  - Lab Assistant Automation — Reduces downtime
+  - Lab Assistant Automation — Brainwash lab workers to improve generator efficiency
   - Sterile Workflow — Improves all production by 25%
   - Precision Pipetting — Higher yield per batch
 
 #### 5️⃣ City Level
 
 - [ ] **Generators**:
-  - Humanoid Slimes — Shape-shifting infiltrators
+  - Humanoid Slimes — Shape-shifting growth infiltrators
   - Sewer Colonies — Hidden mass production underground
-  - Subway Spreaders — Transport slimes city-wide
+  - Subway Spreaders — Rapid underground transportation for city-wide growth
 - [ ] **Upgrades**:
-  - Mimicry Training — Humanoid slimes blend in better, more efficient
-  - Urban Camouflage — Avoids detection, increases output
-  - Subway Expansion Plan — Faster city-wide spread
+  - Mimicry Training — Humanoid slimes blend in better, becoming more powerful
+  - Urban Camouflage — Improves growth efficiency
+  - Subway Expansion Plan — Even faster city-wide growth
 
 #### 6️⃣ Earth Level
 
 - [ ] **Generators**:
-  - Cargo Ship Infestors — Global shipping spread
-  - Airplane Spore Units — Air travel contamination
+  - Cargo Ship Infestors — Global shipping routes expand potential for growth
+  - Airplane Spore Units — Airborne routes expand potential for growth
   - Forest Hive Colonies — Rural mass production
 - [ ] **Upgrades**:
-  - Intercontinental Mutation — Adapts to all climates
-  - Stealth Mode — Slimes avoid military detection
-  - Accelerated Evolution — Huge output boost
+  - Intercontinental Mutation — Adapts to all climates for better growth
+  - Planetary Stealth Mode — Slip behind Mother Nature's back to improve growth
+  - Accelerated Core Evolution — Planetary-level output boost
 
 #### 7️⃣ Solar System Level
 
 - [ ] **Generators**:
-  - Terraforming Ooze — Prepares planets for slime colonization
-  - Asteroid Seeder — Fires slime pods across space
-  - Starship Incubator — Grows slime on interstellar ships
+  - Terraforming Ooze — Manufactures new planets for growth colonization
+  - Asteroid Seeder — Fires growth pods across space
+  - Starship Incubator — Grows biomass on interstellar ships
 - [ ] **Upgrades**:
-  - Cosmic Radiation Tolerance — Survives anywhere
-  - Faster-Than-Light Spread — Instant interplanetary contamination
-  - Self-Replicating Probes — Automates seeding new worlds
+  - Cosmic Radiation Tolerance — Survive and multiplies anywhere in the galaxy
+  - Faster-Than-Light Spread — Instant intergalaxial slime spread
+  - Self-Replicating Probes — Automated seeding of new established worlds
 
 ### Technical Requirements
 
@@ -148,11 +156,20 @@ The current game has basic generators and upgrades that are available from the s
   name: 'Generator Name',
   baseCost: number,
   description: 'What this generator does',
-  baseEffect: number,
+  baseEffect: number, // biomass per second
   costMultiplier: 1.15,
   levelRequired: 'level-id' // Which level unlocks this
 }
 ```
+
+### Upgrade Categories
+
+Upgrades fall into these main categories:
+
+- **Click Power**: Increase manual click effectiveness
+- **Generator Efficiency**: Boost specific generator types or all generators
+- **Overall Growth**: Multiply total biomass growth rate
+- **Cost Reduction**: Reduce generator or upgrade costs
 
 ### Upgrade Template
 
@@ -163,7 +180,7 @@ The current game has basic generators and upgrades that are available from the s
   cost: number,
   description: 'What this upgrade does',
   effect: number,
-  type: 'growth' | 'click' | 'blob',
+  type: 'click' | 'growth' | 'efficiency' | 'cost',
   levelRequired: 'level-id' // Which level unlocks this
 }
 ```
