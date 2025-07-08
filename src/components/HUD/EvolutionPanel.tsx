@@ -112,7 +112,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
                             fontWeight: 'bold',
                             color: canEvolve ? '#4ade80' : '#ef4444'
                         }}>
-                            {formatBiomass(biomass, currentLevel.biomassDisplayFormat)}
+                            {formatBiomass(biomass, nextLevel.biomassDisplayFormat)}
                         </span>
                     </div>
                 </div>
