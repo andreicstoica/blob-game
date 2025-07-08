@@ -17,9 +17,9 @@ export interface BlobProps {
   isActive?: boolean;
 }
 
-// Simple, smooth easing - no bouncing to prevent shrinking flicker
-const easeOutCubic = (t: number): number => {
-  return 1 - Math.pow(1 - t, 3);
+// Helper to interpolate between two color values
+const interpolateColor = (color1: number, color2: number, factor: number) => {
+  return Math.round(color1 + (color2 - color1) * factor);
 };
 
 const Blob = React.memo(({
@@ -27,8 +27,6 @@ const Blob = React.memo(({
   position,
   size: propSize,
   biomass,
-  color = "#1adaac",
-  strokeColor = "#cfffb1",
   glowColor = "#cfffb1",
   isDisabled = false,
   onBlobClick,
@@ -39,7 +37,6 @@ const Blob = React.memo(({
 
   const filterId = `glow-${id}`;
 
-  // Calculate stable size from biomass/props
   const calculateCurrentSize = useCallback(() => {
     return propSize || (biomass ? Math.max(
       GAME_CONFIG.minBlobSize,
@@ -47,67 +44,28 @@ const Blob = React.memo(({
     ) : 100);
   }, [propSize, biomass]);
 
-  // Track the stable biomass-based size
   const [stableSize, setStableSize] = useState(() => calculateCurrentSize());
+  const visualSizeRef = useRef(stableSize);
 
-  // Animation states - USING REFS for smooth animation
   const [scale, setScale] = useState(1);
   const [isPressed, setIsPressed] = useState(false);
+
   const animationValuesRef = useRef({
-    organicX: 0,
-    organicY: 0,
     breathing: 0,
     clickBoost: 0,
-    amoebaNoise: [] as number[]
+    amoebaNoise: [] as number[],
+    pressure: 0,
+    lastClickTime: 0,
   });
+
   const [, forceRender] = useState({});
   const lastRenderTime = useRef(0);
 
-  // Click effect state - simplified with STABLE BASE SIZE
-  const [clickEffect, setClickEffect] = useState({
-    active: false,
-    startTime: 0,
-    baseRadiusAtStart: 0 // LOCK the base radius when click starts
-  });
-
-  // Growth animation state with pause capability
-  const [growthEffect, setGrowthEffect] = useState({
-    active: false,
-    startTime: 0,
-    fromSize: 0,
-    toSize: 0,
-    pausedAt: 0 // Track where we paused
-  });
-
-  // Refs for animation
-  const clickEffectRef = useRef(clickEffect);
-  const growthEffectRef = useRef(growthEffect);
-
-  // Update refs
-  useEffect(() => { clickEffectRef.current = clickEffect; }, [clickEffect]);
-  useEffect(() => { growthEffectRef.current = growthEffect; }, [growthEffect]);
-
-  // Update stable size when biomass changes - SIMPLIFIED
   useEffect(() => {
     const newSize = calculateCurrentSize();
+    setStableSize(newSize);
+  }, [biomass, propSize, calculateCurrentSize]);
 
-    if (newSize > stableSize) {
-      // Growth detected - trigger growth animation
-      setGrowthEffect({
-        active: true,
-        startTime: Date.now(),
-        fromSize: stableSize,
-        toSize: newSize,
-        pausedAt: 0 // Add missing pausedAt property
-      });
-      setStableSize(newSize);
-    } else if (stableSize === 0) {
-      // Initial setup
-      setStableSize(newSize);
-    }
-  }, [biomass, propSize]);
-
-  // Mouse handlers
   const handleMouseDown = () => {
     if (isDisabled || !isActive) return;
     setIsPressed(true);
@@ -131,182 +89,147 @@ const Blob = React.memo(({
     }
     onBlobRelease?.(id);
 
-    // Start click animation that uses STABLE base radius
-    setClickEffect({
-      active: true,
-      startTime: Date.now(),
-      baseRadiusAtStart: stableSize * 0.35 // LOCK the radius when click starts
-    });
+    const pressureBoost = 0.2;
+    const maxPressure = 1.5;
+    animationValuesRef.current.pressure = Math.min(
+        maxPressure,
+        animationValuesRef.current.pressure + pressureBoost
+    );
+    animationValuesRef.current.lastClickTime = Date.now();
   };
 
   const handleMouseLeave = () => {
     if (isPressed) setIsPressed(false);
   };
 
-  // CLEAN ANIMATION LOOP - BREATHING EFFECT ONLY
   useEffect(() => {
     let animationId: number;
-
     const animate = () => {
-      const time = Date.now() * 0.001;
-      const currentClick = clickEffectRef.current;
-      const currentGrowth = growthEffectRef.current;
+      const now = Date.now();
+      const time = now * 0.001;
+      const animValues = animationValuesRef.current;
 
-      // === GROWTH STATE MANAGEMENT (no size calculations) ===
-      if (currentGrowth.active) {
-        if (currentClick.active) {
-          // Pause growth
-          if (currentGrowth.pausedAt === 0) {
-            const elapsed = Date.now() - currentGrowth.startTime;
-            setGrowthEffect(prev => ({ ...prev, pausedAt: elapsed }));
-          }
-        } else {
-          // Resume growth
-          if (currentGrowth.pausedAt > 0) {
-            const newStartTime = Date.now() - currentGrowth.pausedAt;
-            setGrowthEffect(prev => ({ ...prev, startTime: newStartTime, pausedAt: 0 }));
-          }
+      const interpolationFactor = 0.05;
+      visualSizeRef.current += (stableSize - visualSizeRef.current) * interpolationFactor;
 
-          const elapsed = Date.now() - currentGrowth.startTime;
-          const progress = Math.min(elapsed / 800, 1);
+      const currentVisualSize = visualSizeRef.current;
+      const stableRadius = currentVisualSize * 0.35;
 
-          if (progress >= 1) {
-            setGrowthEffect(prev => ({ ...prev, active: false }));
-          }
-        }
-      }
-
-      // === ORGANIC PULSATING EFFECTS + AMOEBA SHAPE ===
-      const stableRadius = stableSize * 0.35;
-      const organicX = Math.abs(Math.sin(time * 0.7)) * (stableRadius * 0.03);
-      const organicY = Math.abs(Math.cos(time * 0.5)) * (stableRadius * 0.03);
-      const breathing = Math.abs(Math.sin(time * 0.6)) * (stableRadius * 0.1);
-
-      // Generate amoeba-like noise for 8 control points around the blob
+      animValues.breathing = Math.abs(Math.sin(time * 0.6)) * (stableRadius * 0.1);
+      
       const amoebaNoise = [];
       for (let i = 0; i < 8; i++) {
         const angle = (i / 8) * Math.PI * 2;
-        const noiseFreq = time * 0.4 + angle * 3; // Different frequency per point
-        const noise = Math.sin(noiseFreq) * 0.15 + Math.cos(noiseFreq * 1.7) * 0.1; // Multiple sine waves
+        const noiseFreq = time * 0.4 + angle * 3;
+        const noise = Math.sin(noiseFreq) * 0.15 + Math.cos(noiseFreq * 1.7) * 0.1;
         amoebaNoise.push(noise);
       }
+      animValues.amoebaNoise = amoebaNoise;
+      
+      const timeSinceLastClick = now - animValues.lastClickTime;
+      const recoveryDelay = 150;
 
-      // === CLICK ANIMATION ===
-      let clickBoost = 0;
-      if (currentClick.active) {
-        const elapsed = Date.now() - currentClick.startTime;
-        const totalDuration = 1400;
-        const progress = Math.min(elapsed / totalDuration, 1);
-
-        if (progress >= 1) {
-          setClickEffect(prev => ({ ...prev, active: false }));
-        } else {
-          let effectMultiplier;
-
-          if (progress < 0.15) {
-            const expansionProgress = progress / 0.15;
-            effectMultiplier = easeOutCubic(expansionProgress);
-          } else {
-            const contractionProgress = (progress - 0.15) / 0.85;
-            effectMultiplier = 1 - easeOutCubic(contractionProgress);
+      if (timeSinceLastClick > recoveryDelay) {
+        if (animValues.pressure > 0) {
+          animValues.pressure *= 0.94;
+          if (animValues.pressure < 0.01) {
+            animValues.pressure = 0;
           }
-
-          clickBoost = effectMultiplier * (currentClick.baseRadiusAtStart * 0.15);
         }
       }
+      
+      const maxShrinkAmount = stableRadius * 0.4;
+      animValues.clickBoost = -animValues.pressure * maxShrinkAmount;
 
-      // === UPDATE REF ===
-      animationValuesRef.current = {
-        organicX,
-        organicY,
-        breathing,
-        clickBoost,
-        amoebaNoise
-      };
-
-      // === SCALE EFFECTS ===
       let scaleVariation = 1.0;
-
-      if (currentGrowth.active && !currentClick.active && currentGrowth.pausedAt === 0) {
-        const elapsed = Date.now() - currentGrowth.startTime;
-        const progress = Math.min(elapsed / 800, 1);
-        const popEffect = easeOutCubic(progress);
-        scaleVariation += popEffect * 0.1;
-      }
-
       if (isDisabled) {
         scaleVariation *= 0.9;
       }
-
       setScale(scaleVariation);
 
-      // === RE-RENDER ===
-      const now = Date.now();
       if (now - lastRenderTime.current >= 16) {
         lastRenderTime.current = now;
         forceRender({});
       }
-
       animationId = requestAnimationFrame(animate);
     };
-
     animate();
-
     return () => cancelAnimationFrame(animationId);
-  }, [stableSize]);
+  }, [stableSize, isDisabled]);
 
-  // ✅ FIXED: This function now generates a much smoother, more organic path.
   const generateAmoebePath = () => {
-    const centerX = stableSize;
-    const centerY = stableSize;
-    const baseRadius = stableSize * 0.35;
-    const breathing = animationValuesRef.current?.breathing || 0;
-    const clickBoost = animationValuesRef.current?.clickBoost || 0;
-    const amoebaNoise = animationValuesRef.current?.amoebaNoise || [];
-
+    const currentSize = visualSizeRef.current;
+    const centerX = currentSize;
+    const centerY = currentSize;
+    const baseRadius = currentSize * 0.35;
+    const { breathing, clickBoost, amoebaNoise } = animationValuesRef.current;
+    
     const numPoints = 8;
     const points = [];
-
     for (let i = 0; i < numPoints; i++) {
       const angle = (i / numPoints) * Math.PI * 2;
-      const noise = amoebaNoise[i] || 0;
+      const noise = (amoebaNoise && amoebaNoise[i]) || 0;
       const radius = baseRadius + breathing + clickBoost + (noise * baseRadius);
-
-      const x = centerX + Math.cos(angle) * radius;
-      const y = centerY + Math.sin(angle) * radius;
-      points.push({ x, y });
+      points.push({ 
+          x: centerX + Math.cos(angle) * radius, 
+          y: centerY + Math.sin(angle) * radius
+      });
     }
 
-    if (points.length < 2) {
-      return '';
-    }
-
-    // Start the path at the midpoint between the last and first points
+    if (points.length < 2) return '';
     const firstPoint = points[0];
     const lastPoint = points[points.length - 1];
     let path = `M ${(lastPoint.x + firstPoint.x) / 2} ${(lastPoint.y + firstPoint.y) / 2}`;
 
-    // Use the vertices as control points (Q) between the midpoints of the lines
-    for (let i = 0; i < points.length; i++) {
+    for (let i = 0; i < numPoints; i++) {
       const currentPoint = points[i];
       const nextPoint = points[(i + 1) % points.length];
-
       const midX = (currentPoint.x + nextPoint.x) / 2;
       const midY = (currentPoint.y + nextPoint.y) / 2;
-
       path += ` Q ${currentPoint.x} ${currentPoint.y} ${midX} ${midY}`;
     }
-
-    path += ' Z'; // Close the path
+    path += ' Z';
     return path;
   };
+
+  const currentVisualSize = visualSizeRef.current;
+
+  // --- Dynamic Effects Calculation ---
+  const maxPressure = 1.5;
+  const currentPressure = animationValuesRef.current.pressure;
+  
+  const pressureColorThreshold = 0.21;
+  let heatFactor = 0;
+
+  if (currentPressure > pressureColorThreshold) {
+    const effectivePressure = currentPressure - pressureColorThreshold;
+    const effectiveMaxPressure = maxPressure - pressureColorThreshold;
+    heatFactor = Math.min(effectivePressure / effectiveMaxPressure, 1);
+  }
+
+  const heatedColor = `rgb(
+    ${interpolateColor(26, 255, heatFactor)},
+    ${interpolateColor(218, 165, heatFactor)},
+    ${interpolateColor(172, 0, heatFactor)}
+  )`;
+  
+  const heatedStrokeColor = `rgb(
+    ${interpolateColor(207, 255, heatFactor)},
+    ${interpolateColor(255, 220, heatFactor)},
+    ${interpolateColor(177, 100, heatFactor)}
+  )`;
+
+  const glowOpacity = 0.7 + (0.3 * heatFactor); // Starts at 0.7, goes up to 1.0
+
+  // ✅ CHANGED: Calculate glow width based on the heatFactor
+  const glowDeviation = 4 + (10 * heatFactor); // Starts at 4, goes up to 10
 
   return (
     <div
       data-blob-id={id}
       style={{
         position: 'absolute',
-        transform: `translate(${position.x - stableSize}px, ${position.y - stableSize}px) scale(${scale})`,
+        transform: `translate(${position.x - currentVisualSize}px, ${position.y - currentVisualSize}px) scale(${scale})`,
         willChange: 'transform',
         cursor: isDisabled ? 'not-allowed' : 'pointer',
         opacity: isDisabled ? 0.5 : 1
@@ -315,18 +238,17 @@ const Blob = React.memo(({
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
     >
-      <svg width={stableSize * 2} height={stableSize * 2}>
+      <svg width={currentVisualSize * 2} height={currentVisualSize * 2}>
         <defs>
+            {/* ✅ CHANGED: stdDeviation is now dynamic */}
           <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor={glowColor} floodOpacity="0.7"/>
+            <feDropShadow dx="0" dy="0" stdDeviation={glowDeviation} floodColor={glowColor} floodOpacity={glowOpacity}/>
           </filter>
         </defs>
-
-        {/* Amoeba-like blob shape */}
         <path
           d={generateAmoebePath()}
-          fill={color}
-          stroke={strokeColor}
+          fill={heatedColor}
+          stroke={heatedStrokeColor}
           strokeWidth="2"
           filter={`url(#${filterId})`}
         />
@@ -336,5 +258,4 @@ const Blob = React.memo(({
 });
 
 Blob.displayName = 'Blob';
-
 export default Blob;
