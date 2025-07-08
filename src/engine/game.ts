@@ -1,5 +1,5 @@
 import { GENERATORS, UPGRADES, GAME_CONFIG } from './content';
-import { getNextLevel as getNextLevelByCurrent, LEVELS } from './Levels';
+import { getNextLevel as getNextLevelByCurrent, LEVELS } from './levels';
 
 export interface BlobState {
     size: number
