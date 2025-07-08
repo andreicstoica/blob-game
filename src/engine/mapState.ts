@@ -1,7 +1,7 @@
 import { immer } from 'zustand/middleware/immer'
 import { create } from 'zustand'
-import type { Level } from './levels'
-import { getCurrentLevel } from './levels'
+import type { Level } from './Levels'
+import { getCurrentLevel, getNextLevel } from './Levels'
 
 export type CellStatus = 'empty' | 'nutrient' | 'blob'
 
@@ -19,7 +19,7 @@ export interface MapState {
     get: (x: number, y: number) => CellStatus
     set: (x: number, y: number, status: CellStatus) => void
     setLevel: (level: Level) => void
-    evolveToNextLevel: () => void
+    evolveToNextLevel: (biomass: number) => void
 }
 
 export const useMap = create<MapState>()(
@@ -48,10 +48,12 @@ export const useMap = create<MapState>()(
                 set(s => {
                     s.currentLevel = level
                 }),
-            evolveToNextLevel: () =>
-                set(_s => {
-                    // This will be implemented to handle level transitions
-                    // For now, just a placeholder
+            evolveToNextLevel: (biomass) =>
+                set(s => {
+                    const nextLevel = getNextLevel(s.currentLevel);
+                    if (nextLevel && biomass >= nextLevel.biomassThreshold) {
+                        s.currentLevel = nextLevel;
+                    }
                 }),
         }
     })

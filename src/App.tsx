@@ -15,6 +15,7 @@ function App() {
     handleBlobClick,
     handleBuyGenerator,
     handleBuyUpgrade,
+    handleEvolve,
   } = useGame();
 
   const currentLevel = useMapSelector((s) => s.currentLevel);
@@ -39,7 +40,7 @@ function App() {
     const currentIndex = phases.indexOf(currentLevel.id as any);
     const nextIndex = (currentIndex + 1) % phases.length;
     // This is just for debugging - we'll remove this later
-    console.log('Debug: cycling to phase', phases[nextIndex]);
+    console.log("Debug: cycling to phase", phases[nextIndex]);
   };
 
   // Simple zoom calculation for world scaling
@@ -72,7 +73,10 @@ function App() {
       >
         <Map className="absolute inset-0 w-full h-full z-0" />
 
-        <Nutrients nutrients={gameState.nutrients} phase={currentLevel.id as any} />
+        <Nutrients
+          nutrients={gameState.nutrients}
+          phase={currentLevel.id as any}
+        />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer select-none">
           <Blob
             id="main-blob"
