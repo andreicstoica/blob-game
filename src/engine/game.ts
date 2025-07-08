@@ -92,9 +92,11 @@ export const initialGameState: GameState = {
 }
 
 export function tick(state: GameState): GameState {
+    const currentGrowth = getTotalGrowth(state);
     const newState = {
         ...state,
-        biomass: state.biomass + state.growth,
+        biomass: state.biomass + currentGrowth,
+        growth: currentGrowth, // Keep the growth field updated for UI consistency
     };
 
     // Spawn more nutrients if needed
