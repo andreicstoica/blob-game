@@ -156,16 +156,16 @@ describe('Game Logic', () => {
         it('should add growth to biomass on tick', () => {
             let state = gameState;
             // Get enough biomass to buy a generator
-            const generatorCost = GENERATORS['basic-slime'].baseCost;
+            const generatorCost = GENERATORS['basic-generator'].baseCost;
             const clicksNeeded = Math.ceil(generatorCost / GAME_CONFIG.startingClickPower);
             
             for (let i = 0; i < clicksNeeded; i++) {
                 state = manualClick(state);
             }
-            state = buyGenerator(state, 'basic-slime');
+            state = buyGenerator(state, 'basic-generator');
             
             const newState = tick(state);
-            expect(newState.biomass).toBe(GENERATORS['basic-slime'].baseEffect);
+            expect(newState.biomass).toBe(GENERATORS['basic-generator'].baseEffect);
         });
 
         it('should not mutate original state on tick', () => {
@@ -176,131 +176,131 @@ describe('Game Logic', () => {
     });
 
     describe('Generators', () => {
-        it('should allow buying basic slime generator', () => {
+        it('should allow buying basic generator', () => {
             let state = gameState;
-            const generatorCost = GENERATORS['basic-slime'].baseCost;
+            const generatorCost = GENERATORS['basic-generator'].baseCost;
             const clicksNeeded = Math.ceil(generatorCost / GAME_CONFIG.startingClickPower);
             
             for (let i = 0; i < clicksNeeded; i++) {
                 state = manualClick(state);
             }
             
-            const generator = state.generators['basic-slime'];
+            const generator = state.generators['basic-generator'];
             expect(getGeneratorCost(generator)).toBe(generatorCost);
             
-            state = buyGenerator(state, 'basic-slime');
+            state = buyGenerator(state, 'basic-generator');
             
             expect(state.biomass).toBe(0); // Spent all biomass
-            expect(state.growth).toBe(GENERATORS['basic-slime'].baseEffect);
-            expect(state.generators['basic-slime'].level).toBe(1);
+            expect(state.growth).toBe(GENERATORS['basic-generator'].baseEffect);
+            expect(state.generators['basic-generator'].level).toBe(1);
         });
 
         it('should increase generator cost after purchase', () => {
             let state = gameState;
-            const generatorCost = GENERATORS['basic-slime'].baseCost;
+            const generatorCost = GENERATORS['basic-generator'].baseCost;
             const clicksNeeded = Math.ceil(generatorCost / GAME_CONFIG.startingClickPower);
             
             for (let i = 0; i < clicksNeeded; i++) {
                 state = manualClick(state);
             }
             
-            const originalCost = getGeneratorCost(state.generators['basic-slime']);
-            state = buyGenerator(state, 'basic-slime');
-            const newCost = getGeneratorCost(state.generators['basic-slime']);
+            const originalCost = getGeneratorCost(state.generators['basic-generator']);
+            state = buyGenerator(state, 'basic-generator');
+            const newCost = getGeneratorCost(state.generators['basic-generator']);
             
             expect(newCost).toBeGreaterThan(originalCost);
-            expect(newCost).toBe(Math.floor(generatorCost * GENERATORS['basic-slime'].costMultiplier));
+            expect(newCost).toBe(Math.floor(generatorCost * GENERATORS['basic-generator'].costMultiplier));
         });
 
         it('should not allow buying generator if not enough biomass', () => {
-            const state = buyGenerator(gameState, 'basic-slime');
+            const state = buyGenerator(gameState, 'basic-generator');
             
             // Should remain unchanged
             expect(state.biomass).toBe(GAME_CONFIG.startingBiomass);
             expect(state.growth).toBe(0);
-            expect(state.generators['basic-slime'].level).toBe(0);
+            expect(state.generators['basic-generator'].level).toBe(0);
         });
 
         it('should generate passive growth when ticked', () => {
             let state = gameState;
-            const generatorCost = GENERATORS['basic-slime'].baseCost;
+            const generatorCost = GENERATORS['basic-generator'].baseCost;
             const clicksNeeded = Math.ceil(generatorCost / GAME_CONFIG.startingClickPower);
             
             for (let i = 0; i < clicksNeeded; i++) {
                 state = manualClick(state);
             }
-            state = buyGenerator(state, 'basic-slime');
+            state = buyGenerator(state, 'basic-generator');
             
             state = tick(state);
-            expect(state.biomass).toBe(GENERATORS['basic-slime'].baseEffect);
+            expect(state.biomass).toBe(GENERATORS['basic-generator'].baseEffect);
         });
 
         it('should calculate total growth correctly', () => {
             let state = gameState;
             
-            // Buy basic slime generator
-            const basicSlimeCost = GENERATORS['basic-slime'].baseCost;
-            const basicSlimeClicks = Math.ceil(basicSlimeCost / GAME_CONFIG.startingClickPower);
+            // Buy basic generator
+            const basicGeneratorCost = GENERATORS['basic-generator'].baseCost;
+            const basicGeneratorClicks = Math.ceil(basicGeneratorCost / GAME_CONFIG.startingClickPower);
             
-            for (let i = 0; i < basicSlimeClicks; i++) {
+            for (let i = 0; i < basicGeneratorClicks; i++) {
                 state = manualClick(state);
             }
-            state = buyGenerator(state, 'basic-slime');
+            state = buyGenerator(state, 'basic-generator');
             
-            // Buy slime farm
-            const slimeFarmCost = GENERATORS['slime-farm'].baseCost;
-            const slimeFarmClicks = Math.ceil(slimeFarmCost / GAME_CONFIG.startingClickPower);
+            // Buy farm
+            const farmCost = GENERATORS['farm'].baseCost;
+            const farmClicks = Math.ceil(farmCost / GAME_CONFIG.startingClickPower);
             
-            for (let i = 0; i < slimeFarmClicks; i++) {
+            for (let i = 0; i < farmClicks; i++) {
                 state = manualClick(state);
             }
-            state = buyGenerator(state, 'slime-farm');
+            state = buyGenerator(state, 'farm');
             
-            const expectedGrowth = GENERATORS['basic-slime'].baseEffect + GENERATORS['slime-farm'].baseEffect;
+            const expectedGrowth = GENERATORS['basic-generator'].baseEffect + GENERATORS['farm'].baseEffect;
             expect(getTotalGrowth(state)).toBe(expectedGrowth);
         });
 
         it('should handle multiple generator levels correctly', () => {
             let state = gameState;
-            const generatorCost = GENERATORS['basic-slime'].baseCost;
+            const generatorCost = GENERATORS['basic-generator'].baseCost;
             const clicksNeeded = Math.ceil(generatorCost / GAME_CONFIG.startingClickPower);
             
             // Buy first level
             for (let i = 0; i < clicksNeeded; i++) {
                 state = manualClick(state);
             }
-            state = buyGenerator(state, 'basic-slime');
+            state = buyGenerator(state, 'basic-generator');
             
             // Buy second level
-            const secondLevelCost = Math.floor(generatorCost * GENERATORS['basic-slime'].costMultiplier);
+            const secondLevelCost = Math.floor(generatorCost * GENERATORS['basic-generator'].costMultiplier);
             const secondLevelClicks = Math.ceil(secondLevelCost / GAME_CONFIG.startingClickPower);
             
             for (let i = 0; i < secondLevelClicks; i++) {
                 state = manualClick(state);
             }
-            state = buyGenerator(state, 'basic-slime');
+            state = buyGenerator(state, 'basic-generator');
             
-            const expectedGrowth = GENERATORS['basic-slime'].baseEffect * 2;
+            const expectedGrowth = GENERATORS['basic-generator'].baseEffect * 2;
             expect(state.growth).toBe(expectedGrowth);
-            expect(state.generators['basic-slime'].level).toBe(2);
+            expect(state.generators['basic-generator'].level).toBe(2);
         });
 
         it('should have correct generator costs with multiplier', () => {
-            const generator = gameState.generators['basic-slime'];
-            expect(getGeneratorCost(generator)).toBe(GENERATORS['basic-slime'].baseCost);
+            const generator = gameState.generators['basic-generator'];
+            expect(getGeneratorCost(generator)).toBe(GENERATORS['basic-generator'].baseCost);
             
             // Simulate buying first level
             let state = gameState;
-            const generatorCost = GENERATORS['basic-slime'].baseCost;
+            const generatorCost = GENERATORS['basic-generator'].baseCost;
             const clicksNeeded = Math.ceil(generatorCost / GAME_CONFIG.startingClickPower);
             
             for (let i = 0; i < clicksNeeded; i++) {
                 state = manualClick(state);
             }
-            state = buyGenerator(state, 'basic-slime');
+            state = buyGenerator(state, 'basic-generator');
             
-            const expectedCost = Math.floor(generatorCost * GENERATORS['basic-slime'].costMultiplier);
-            const newCost = getGeneratorCost(state.generators['basic-slime']);
+            const expectedCost = Math.floor(generatorCost * GENERATORS['basic-generator'].costMultiplier);
+            const newCost = getGeneratorCost(state.generators['basic-generator']);
             expect(newCost).toBe(expectedCost);
         });
     });
@@ -342,14 +342,14 @@ describe('Game Logic', () => {
         it('should apply efficient generators upgrade correctly', () => {
             let state = gameState;
             
-            // Buy basic slime generator
-            const generatorCost = GENERATORS['basic-slime'].baseCost;
+            // Buy basic generator
+            const generatorCost = GENERATORS['basic-generator'].baseCost;
             const generatorClicks = Math.ceil(generatorCost / GAME_CONFIG.startingClickPower);
             
             for (let i = 0; i < generatorClicks; i++) {
                 state = manualClick(state);
             }
-            state = buyGenerator(state, 'basic-slime');
+            state = buyGenerator(state, 'basic-generator');
             
             // Buy efficient generators upgrade
             const upgradeCost = UPGRADES['efficient-generators'].cost;
@@ -360,7 +360,7 @@ describe('Game Logic', () => {
             }
             state = buyUpgrade(state, 'efficient-generators');
             
-            const expectedGrowth = GENERATORS['basic-slime'].baseEffect + UPGRADES['efficient-generators'].effect;
+            const expectedGrowth = GENERATORS['basic-generator'].baseEffect + UPGRADES['efficient-generators'].effect;
             expect(state.growth).toBe(expectedGrowth);
         });
 
@@ -396,7 +396,7 @@ describe('Game Logic', () => {
             let state = gameState;
             
             // Click to get biomass for first generator
-            const generatorCost = GENERATORS['basic-slime'].baseCost;
+            const generatorCost = GENERATORS['basic-generator'].baseCost;
             const generatorClicks = Math.ceil(generatorCost / GAME_CONFIG.startingClickPower);
             
             for (let i = 0; i < generatorClicks; i++) {
@@ -404,16 +404,16 @@ describe('Game Logic', () => {
             }
             
             // Buy first generator
-            state = buyGenerator(state, 'basic-slime');
-            expect(state.growth).toBe(GENERATORS['basic-slime'].baseEffect);
+            state = buyGenerator(state, 'basic-generator');
+            expect(state.growth).toBe(GENERATORS['basic-generator'].baseEffect);
             
             // Tick to get growth
             state = tick(state);
-            expect(state.biomass).toBe(GENERATORS['basic-slime'].baseEffect);
+            expect(state.biomass).toBe(GENERATORS['basic-generator'].baseEffect);
             
             // Click some more
             state = manualClick(state);
-            expect(state.biomass).toBe(GENERATORS['basic-slime'].baseEffect + GAME_CONFIG.startingClickPower);
+            expect(state.biomass).toBe(GENERATORS['basic-generator'].baseEffect + GAME_CONFIG.startingClickPower);
             
             // Buy click power upgrade
             const upgradeCost = UPGRADES['click-power'].cost;
@@ -437,7 +437,7 @@ describe('Game Logic', () => {
             
             // Perform various operations
             state = manualClick(state);
-            state = buyGenerator(state, 'basic-slime'); // Should fail, not enough biomass
+            state = buyGenerator(state, 'basic-generator'); // Should fail, not enough biomass
             state = manualClick(state);
             state = tick(state);
             
@@ -446,7 +446,7 @@ describe('Game Logic', () => {
             expect(state.biomass).toBe(expectedBiomass);
             expect(state.growth).toBe(0);
             expect(state.clickPower).toBe(GAME_CONFIG.startingClickPower);
-            expect(state.generators['basic-slime'].level).toBe(0);
+            expect(state.generators['basic-generator'].level).toBe(0);
         });
 
         it('should integrate nutrient consumption with game progression', () => {
@@ -463,15 +463,15 @@ describe('Game Logic', () => {
             expect(state.biomass).toBe(initialBiomass + 1 + GAME_CONFIG.startingClickPower);
             
             // Buy a generator with the extra biomass
-            const generatorCost = GENERATORS['basic-slime'].baseCost;
+            const generatorCost = GENERATORS['basic-generator'].baseCost;
             const clicksNeeded = Math.ceil(generatorCost / GAME_CONFIG.startingClickPower);
             
             for (let i = 0; i < clicksNeeded - 1; i++) { // -1 because we already have 1 extra from nutrient
                 state = manualClick(state);
             }
-            state = buyGenerator(state, 'basic-slime');
+            state = buyGenerator(state, 'basic-generator');
             
-            expect(state.growth).toBe(GENERATORS['basic-slime'].baseEffect);
+            expect(state.growth).toBe(GENERATORS['basic-generator'].baseEffect);
         });
     });
 

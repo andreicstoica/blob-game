@@ -10,10 +10,10 @@
 
 ## Levels:
 
-1. Intro
+1. Intro (main menu?)
 2. Microscope (atomic)
 3. Petri (bacterial)
-4. Lab (scream sound effects) on a piano???
+4. Lab (scream sound effects)
 5. City (attacks begin)
 6. Earth
 7. Sun solar system
@@ -53,11 +53,12 @@ when blob is in a petri dish -- it fills up the petri dish and breaks out in a p
 ### Stretch goals
 
 **Juice (at end)**
-blob - nutrient interactions
-animations for level changes (breakout of petri dish, etc.)
-fun text updates/quotes on level upgrades
-enemies and associated upgrades (militaries or people eating?)
-control zoom level
+- blob - nutrient interactions
+- temporary power-ups show up on screen (double growth, cheaper shop, etc.) - this essentially replaces the idea of different types of slimes
+- animations for level changes (breakout of petri dish, etc.)
+- fun text updates/quotes on level upgrades
+- enemies and associated upgrades (militaries or people eating?)
+- control zoom level
 
 ## Out of scope
 
