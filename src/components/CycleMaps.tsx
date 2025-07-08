@@ -8,15 +8,31 @@ export default function CycleMaps() {
   const phase = useMapSelector((s) => s.phase);
   const setPhase = useMap((s) => s.setPhase);
 
-  const phases: Array<"primordial" | "colonial" | "cosmic"> = [
-    "primordial",
-    "colonial",
-    "cosmic",
+  const phases: Array<
+    | "intro"
+    | "microscope"
+    | "petri"
+    | "lab"
+    | "city"
+    | "earth"
+    | "sunSolarSystem"
+  > = [
+    "intro",
+    "microscope",
+    "petri",
+    "lab",
+    "city",
+    "earth",
+    "sunSolarSystem",
   ];
-  const phaseNames = {
-    primordial: "🧫",
-    colonial: "🌍",
-    cosmic: "🌌",
+  const phaseNames: Record<string, string> = {
+    intro: "👶",
+    microscope: "🔬",
+    petri: "🧫",
+    lab: "🧪",
+    city: "🏙️",
+    earth: "🌍",
+    sunSolarSystem: "🌞🪐",
   };
 
   const nextPhase = () => {
@@ -41,6 +57,14 @@ export default function CycleMaps() {
           className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg text-white border border-white/20 hover:bg-white/20 transition-colors"
         >
           {phaseNames[phase]}
+        </button>
+
+        {/* Debugger: Next Level */}
+        <button
+          onClick={nextPhase}
+          className="px-4 py-2 bg-red-500/80 backdrop-blur-sm rounded-lg text-white border border-red-500/40 hover:bg-red-600/80 transition-colors"
+        >
+          Next Level (Debug)
         </button>
 
         {/* Light/Dark toggle */}

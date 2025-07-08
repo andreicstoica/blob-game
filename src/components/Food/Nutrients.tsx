@@ -7,7 +7,14 @@ import purpleBacteria from "../../assets/bacteria/purple-bacteria.png";
 
 interface NutrientsProps {
   nutrients: NutrientState[];
-  phase: "primordial" | "colonial" | "cosmic";
+  phase:
+    | "intro"
+    | "microscope"
+    | "petri"
+    | "lab"
+    | "city"
+    | "earth"
+    | "sunSolarSystem";
 }
 
 const bacteriaImages = [brownBacteria, greenBacteria, purpleBacteria];
@@ -36,7 +43,7 @@ export const Nutrients: React.FC<NutrientsProps> = ({ nutrients, phase }) => {
               transform: `translate(${nutrient.x}px, ${nutrient.y}px)`,
             }}
           >
-            {phase === "primordial" ? (
+            {phase === "intro" ? (
               <img
                 src={getBacteriaImage(nutrient.id)}
                 alt="Bacteria"

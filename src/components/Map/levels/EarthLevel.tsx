@@ -1,25 +1,21 @@
 import { useMemo } from "react";
 import People from "../../Food/People";
 
-interface EarthLayerProps {
-  width: number;
-  height: number;
-  count?: number;
-}
-
-export default function EarthLayer({
+export default function EarthLevel({
   width,
   height,
-  count = 50,
-}: EarthLayerProps) {
+}: {
+  width: number;
+  height: number;
+}) {
   // Generate random positions for people
   const people = useMemo(
     () =>
-      Array.from({ length: count }, () => ({
-        x: Math.random() * (width - 8),
-        y: Math.random() * (height - 8),
+      Array.from({ length: 50 }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
       })),
-    [width, height, count]
+    [width, height]
   );
 
   return (

@@ -1,12 +1,13 @@
 import { useMemo } from "react";
 import Star from "../../Food/Star";
 
-interface CosmicLayerProps {
+export default function SunSolarSystemLevel({
+  width,
+  height,
+}: {
   width: number;
   height: number;
-}
-
-export default function CosmicLayer({ width, height }: CosmicLayerProps) {
+}) {
   // Generate stars using similar noise logic but as components
   const stars = useMemo(() => {
     const starCount = Math.floor((width * height) / 1000); // Density-based
