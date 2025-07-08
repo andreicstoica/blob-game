@@ -1,7 +1,7 @@
 import { immer } from 'zustand/middleware/immer'
 import { create } from 'zustand'
-import type { Level } from './Levels'
-import { getCurrentLevel } from './Levels'
+import type { Level } from './levels'
+import { getCurrentLevel } from './levels'
 
 export type CellStatus = 'empty' | 'nutrient' | 'blob'
 
@@ -49,7 +49,7 @@ export const useMap = create<MapState>()(
                     s.currentLevel = level
                 }),
             evolveToNextLevel: () =>
-                set(s => {
+                set(_s => {
                     // This will be implemented to handle level transitions
                     // For now, just a placeholder
                 }),

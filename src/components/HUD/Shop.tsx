@@ -1,6 +1,7 @@
 import React from 'react';
 import type { GameState } from '../../engine/game';
-import { getGeneratorCost } from '../../engine/game';
+import { getGeneratorCost, getCurrentLevel } from '../../engine/game';
+import { LEVELS } from '../../engine/levels';
 
 interface ShopProps {
   biomass: number;
@@ -19,11 +20,22 @@ export const Shop: React.FC<ShopProps> = ({
     return null;
   }
 
+  const currentLevel = getCurrentLevel(gameState);
+  const currentLevelIndex = currentLevel.id;
+
+  // Helper function to check if content is available at current level
+  const isContentAvailable = (unlockedAtLevel: string) => {
+    const unlockLevel = LEVELS.find(level => level.name === unlockedAtLevel);
+    return unlockLevel ? unlockLevel.id <= currentLevelIndex : false;
+  };
+
   return (
     <div>
       {/* Generators */}
       <h3 style={{ margin: '0 0 15px 0', fontSize: '16px' }}>Generators</h3>
-      {Object.values(gameState.generators).map(generator => {
+      {Object.values(gameState.generators)
+        .filter(generator => isContentAvailable(generator.unlockedAtLevel))
+        .map(generator => {
         const cost = getGeneratorCost(generator);
         const canAfford = biomass >= cost;
         
@@ -69,7 +81,9 @@ export const Shop: React.FC<ShopProps> = ({
 
       {/* Upgrades */}
       <h3 style={{ margin: '30px 0 15px 0', fontSize: '16px' }}>Upgrades</h3>
-      {Object.values(gameState.upgrades).map(upgrade => {
+      {Object.values(gameState.upgrades)
+        .filter(upgrade => isContentAvailable(upgrade.unlockedAtLevel))
+        .map(upgrade => {
         const canAfford = biomass >= upgrade.cost && !upgrade.purchased;
         
         return (

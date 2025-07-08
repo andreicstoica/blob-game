@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { 
-  initialGameState, 
+  INITIAL_STATE, 
   tick, 
   manualClick, 
   buyGenerator, 
@@ -13,7 +13,7 @@ import {
 import { GAME_CONFIG } from '../engine/content';
 
 export const useGame = () => {
-  const [gameState, setGameState] = useState<GameState>(initialGameState);
+  const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
 
   // Game loop
   useEffect(() => {
@@ -36,7 +36,7 @@ export const useGame = () => {
     setGameState(prevState => buyUpgrade(prevState, upgradeId));
   }, []);
 
-  const handleNutrientEaten = useCallback((blobId: string, nutrientId: string) => {
+  const handleNutrientEaten = useCallback((_blobId: string, nutrientId: string) => {
     setGameState(prevState => consumeNutrient(prevState, nutrientId));
   }, []);
 

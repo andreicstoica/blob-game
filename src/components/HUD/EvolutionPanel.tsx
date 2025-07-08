@@ -1,7 +1,7 @@
 import React from 'react';
 import type { GameState } from '../../engine/game';
-import { getCurrentLevel, getNextLevel, canEvolveToNextLevel, evolveToNextLevel } from '../../engine/game';
-import { formatBiomass } from '../../engine/Levels';
+import { getCurrentLevel, getNextLevel, canEvolveToNextLevel } from '../../engine/game';
+import { formatBiomass } from '../../engine/levels';
 
 interface EvolutionPanelProps {
     biomass: number;
