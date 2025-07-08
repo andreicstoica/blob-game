@@ -5,7 +5,7 @@ import { Nutrients } from "./components/Food/Nutrients";
 import { GameHUD } from "./components/HUD/GameHUD";
 import { ScaleIndicator } from "./components/HUD/ScaleIndicator";
 import { useGame } from "./hooks/useGame";
-import { useMapSelector, useMap } from "./engine/mapState";
+import { useMapSelector } from "./engine/mapState";
 import { useMemo } from "react";
 import Map from "./components/Map/Map";
 
@@ -21,7 +21,6 @@ function App() {
   } = useGame();
 
   const currentLevel = useMapSelector((s) => s.currentLevel);
-  const setLevel = useMap((s) => s.setLevel);
   const phases: (
     | "intro"
     | "microscope"
