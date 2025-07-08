@@ -4,36 +4,18 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   // Intro Level (1 generator)
   'basic-generator': {
     id: 'basic-generator',
-    name: 'Basic Generator',
+    name: '⚪ Basic Generator',
     baseCost: 15,
     description: 'Generates 0.1 biomass per second',
     baseEffect: 0.1,
     costMultiplier: 1.15,
     unlockedAtLevel: 'intro'
   },
-  'simple-farm': {
-    id: 'simple-farm',
-    name: 'Simple Farm',
-    baseCost: 100,
-    description: 'Generates 1 biomass per second',
-    baseEffect: 1,
-    costMultiplier: 1.15,
-    unlockedAtLevel: 'microscopic'
-  },
-  'starter-lab': {
-    id: 'starter-lab',
-    name: 'Starter Lab',
-    baseCost: 1100,
-    description: 'Generates 8 biomass per second',
-    baseEffect: 8,
-    costMultiplier: 1.15,
-    unlockedAtLevel: 'microscopic'
-  },
 
-  // Microscopic Level (3 new generators)
+  // Microscopic Level (3 generators)
   'microscope-cloner': {
-    id: 'microscope-cloner',
-    name: 'Microscope Cloner',
+    id: 'microscopic-cloning',
+    name: '🦠 Microscopic Cloning',
     baseCost: 12000,
     description: 'Uses lab-grade optics to split slime particles',
     baseEffect: 47,
@@ -42,7 +24,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   },
   'cell-divider': {
     id: 'cell-divider',
-    name: 'Cell Divider',
+    name: '🦠 Cell Divider',
     baseCost: 130000,
     description: 'Forces rapid cellular division through chemical stimulation',
     baseEffect: 260,
@@ -51,7 +33,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   },
   'nucleus-replicator': {
     id: 'nucleus-replicator',
-    name: 'Nucleus Replicator',
+    name: '🦠 Nucleus Replicator',
     baseCost: 1400000,
     description: 'Duplicates genetic material for exponential growth',
     baseEffect: 1400,
@@ -59,10 +41,10 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     unlockedAtLevel: 'microscopic'
   },
 
-  // Petri Dish Level (3 new generators)
+  // Petri Dish Level (3 generators)
   'colony-expander': {
     id: 'colony-expander',
-    name: 'Colony Expander',
+    name: '🔍 Colony Expansion',
     baseCost: 20000000,
     description: 'Increases surface area for growth',
     baseEffect: 7800,
@@ -71,7 +53,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   },
   'spore-launcher': {
     id: 'spore-launcher',
-    name: 'Spore Launcher',
+    name: '🔍 Spore Launcher',
     baseCost: 330000000,
     description: 'Shoots spores to seed new growth areas',
     baseEffect: 44000,
@@ -80,7 +62,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   },
   'contaminant-converter': {
     id: 'contaminant-converter',
-    name: 'Contaminant Converter',
+    name: '🔍 Contaminant Converter',
     baseCost: 5100000000,
     description: 'Converts waste into growth fuel',
     baseEffect: 260000,
@@ -88,10 +70,10 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     unlockedAtLevel: 'petri-dish'
   },
 
-  // Lab Level (3 new generators)
+  // Lab Level (3 generators)
   'centrifuge-sorter': {
     id: 'centrifuge-sorter',
-    name: 'Centrifuge Sorter',
+    name: '🧪 Centrifuge Sorter',
     baseCost: 75000000000,
     description: 'Isolates the most efficient growth cells',
     baseEffect: 1600000,
@@ -100,7 +82,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   },
   'bioreactor-tank': {
     id: 'bioreactor-tank',
-    name: 'Bioreactor Tank',
+    name: '🧪 Bioreactor Tank',
     baseCost: 1000000000000,
     description: 'Massive controlled growth environment',
     baseEffect: 10000000,
@@ -109,7 +91,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   },
   'autoclave-recycler': {
     id: 'autoclave-recycler',
-    name: 'Autoclave Recycler',
+    name: '🧪 Autoclave Recycler',
     baseCost: 14000000000000,
     description: 'Recycles lab waste into growth fuel',
     baseEffect: 65000000,
@@ -117,10 +99,10 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     unlockedAtLevel: 'lab'
   },
 
-  // City Level (3 new generators)
+  // City Level (3 generators)
   'humanoid-slimes': {
     id: 'humanoid-slimes',
-    name: 'Humanoid Slimes',
+    name: '🏙️ Humanoid Slimes',
     baseCost: 170000000000000,
     description: 'Shape-shifting growth infiltrators',
     baseEffect: 430000000,
@@ -129,7 +111,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   },
   'sewer-colonies': {
     id: 'sewer-colonies',
-    name: 'Sewer Colonies',
+    name: '🏙️ Sewer Colonies',
     baseCost: 2100000000000000,
     description: 'Hidden mass production underground',
     baseEffect: 2900000000,
@@ -138,7 +120,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   },
   'subway-spreaders': {
     id: 'subway-spreaders',
-    name: 'Subway Spreaders',
+    name: '🏙️ Subway Spreaders',
     baseCost: 26000000000000000,
     description: 'Rapid underground transportation for city-wide growth',
     baseEffect: 21000000000,
@@ -146,10 +128,10 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     unlockedAtLevel: 'city'
   },
 
-  // Earth Level (3 new generators)
+  // Earth Level (3 generators)
   'cargo-ship-infestors': {
     id: 'cargo-ship-infestors',
-    name: 'Cargo Ship Infestors',
+    name: '🌍 Cargo Ship Infestors',
     baseCost: 710000000000000000,
     description: 'Global shipping routes expand potential for growth',
     baseEffect: 150000000000,
@@ -158,7 +140,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   },
   'airplane-spore-units': {
     id: 'airplane-spore-units',
-    name: 'Airplane Spore Units',
+    name: '🌍 Airplane Spore Units',
     baseCost: 11000000000000000000,
     description: 'Airborne routes expand potential for growth',
     baseEffect: 1100000000000,
@@ -167,7 +149,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   },
   'forest-hive-colonies': {
     id: 'forest-hive-colonies',
-    name: 'Forest Hive Colonies',
+    name: '🌍 Forest Hive Colonies',
     baseCost: 83000000000000000000,
     description: 'Rural mass production',
     baseEffect: 8300000000000,
@@ -175,10 +157,10 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     unlockedAtLevel: 'earth'
   },
 
-  // Solar System Level (3 new generators)
+  // Solar System Level (3 generators)
   'terraforming-ooze': {
     id: 'terraforming-ooze',
-    name: 'Terraforming Ooze',
+    name: '🌌 Terraforming Ooze',
     baseCost: 640000000000000000000,
     description: 'Manufactures new planets for growth colonization',
     baseEffect: 51000000000000,
@@ -187,7 +169,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   },
   'asteroid-seeder': {
     id: 'asteroid-seeder',
-    name: 'Asteroid Seeder',
+    name: '🌌 Asteroid Seeder',
     baseCost: 5100000000000000000000,
     description: 'Fires growth pods across space',
     baseEffect: 410000000000000,
@@ -196,7 +178,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   },
   'starship-incubator': {
     id: 'starship-incubator',
-    name: 'Starship Incubator',
+    name: '🌌 Starship Incubator',
     baseCost: 71000000000000000000000,
     description: 'Grows biomass on interstellar ships',
     baseEffect: 2900000000000000,
@@ -209,36 +191,18 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
   // Intro Level (1 upgrade)
   'click-power': {
     id: 'click-power',
-    name: 'Click Power',
+    name: '⚪ Click Power',
     cost: 50,
     description: 'Doubles your click power',
     effect: 1,
     type: 'click',
     unlockedAtLevel: 'intro'
   },
-  'efficient-generators': {
-    id: 'efficient-generators',
-    name: 'Efficient Generators',
-    cost: 500,
-    description: 'Each basic generator gives +0.1 biomass/s',
-    effect: 0.1,
-    type: 'growth',
-    unlockedAtLevel: 'microscopic'
-  },
-  'growth-multiplier': {
-    id: 'growth-multiplier',
-    name: 'Growth Multiplier',
-    cost: 5000,
-    description: 'Doubles overall growth rate',
-    effect: 2,
-    type: 'growth',
-    unlockedAtLevel: 'microscopic'
-  },
 
-  // Microscopic Level (3 new upgrades)
+  // Microscopic Level (3 upgrades)
   'enhanced-microscope-optics': {
     id: 'enhanced-microscope-optics',
-    name: 'Enhanced Microscope Optics',
+    name: '🦠 Enhanced Microscope Optics',
     cost: 50000,
     description: 'Boost generator yield',
     effect: 0.5,
@@ -247,7 +211,7 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
   },
   'sterile-technique-mastery': {
     id: 'sterile-technique-mastery',
-    name: 'Sterile Technique Mastery',
+    name: '🦠 Sterile Technique Mastery',
     cost: 500000,
     description: 'Improves all growth rates',
     effect: 1.5,
@@ -256,7 +220,7 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
   },
   'rapid-binary-fission': {
     id: 'rapid-binary-fission',
-    name: 'Rapid Binary Fission',
+    name: '🦠 Rapid Binary Fission',
     cost: 5000000,
     description: 'Doubles overall growth rate',
     effect: 2,
@@ -264,10 +228,10 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
     unlockedAtLevel: 'microscopic'
   },
 
-  // Petri Dish Level (3 new upgrades)
+  // Petri Dish Level (3 upgrades)
   'temperature-control-module': {
     id: 'temperature-control-module',
-    name: 'Temperature Control Module',
+    name: '🔍 Temperature Control Module',
     cost: 50000000,
     description: 'Optimal growth rates',
     effect: 1.5,
@@ -276,7 +240,7 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
   },
   'nutrient-enriched-agar': {
     id: 'nutrient-enriched-agar',
-    name: 'Nutrient-Enriched Agar',
+    name: '🔍 Nutrient-Enriched Agar',
     cost: 500000000,
     description: 'Doubles growth output',
     effect: 2,
@@ -285,7 +249,7 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
   },
   'antibiotic-resistance': {
     id: 'antibiotic-resistance',
-    name: 'Antibiotic Resistance',
+    name: '🔍 Antibiotic Resistance',
     cost: 5000000000,
     description: 'Improves resistance to parasitic microbes, increasing growth',
     effect: 1.3,
@@ -293,10 +257,10 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
     unlockedAtLevel: 'petri-dish'
   },
 
-  // Lab Level (3 new upgrades)
+  // Lab Level (3 upgrades)
   'lab-assistant-automation': {
     id: 'lab-assistant-automation',
-    name: 'Lab Assistant Automation',
+    name: '🧪 Lab Assistant Automation',
     cost: 50000000000,
     description: 'Brainwash lab workers to improve generator efficiency',
     effect: 1.4,
@@ -305,7 +269,7 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
   },
   'sterile-workflow': {
     id: 'sterile-workflow',
-    name: 'Sterile Workflow',
+    name: '🧪 Sterile Workflow',
     cost: 500000000000,
     description: 'Improves all production by 25%',
     effect: 1.25,
@@ -314,7 +278,7 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
   },
   'precision-pipetting': {
     id: 'precision-pipetting',
-    name: 'Precision Pipetting',
+    name: '🧪 Precision Pipetting',
     cost: 5000000000000,
     description: 'Higher yield per batch',
     effect: 1.6,
@@ -322,10 +286,10 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
     unlockedAtLevel: 'lab'
   },
 
-  // City Level (3 new upgrades)
+  // City Level (3 upgrades)
   'mimicry-training': {
     id: 'mimicry-training',
-    name: 'Mimicry Training',
+    name: '🏙️ Mimicry Training',
     cost: 50000000000000,
     description: 'Humanoid slimes blend in better, becoming more powerful',
     effect: 1.7,
@@ -334,7 +298,7 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
   },
   'urban-camouflage': {
     id: 'urban-camouflage',
-    name: 'Urban Camouflage',
+    name: '🏙️ Urban Camouflage',
     cost: 500000000000000,
     description: 'Improves growth efficiency',
     effect: 1.35,
@@ -343,7 +307,7 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
   },
   'subway-expansion-plan': {
     id: 'subway-expansion-plan',
-    name: 'Subway Expansion Plan',
+    name: '🏙️ Subway Expansion Plan',
     cost: 5000000000000000,
     description: 'Even faster city-wide growth',
     effect: 1.8,
@@ -351,10 +315,10 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
     unlockedAtLevel: 'city'
   },
 
-  // Earth Level (3 new upgrades)
+  // Earth Level (3 upgrades)
   'intercontinental-mutation': {
     id: 'intercontinental-mutation',
-    name: 'Intercontinental Mutation',
+    name: '🌍 Intercontinental Mutation',
     cost: 50000000000000000,
     description: 'Adapts to all climates for better growth',
     effect: 1.9,
@@ -363,7 +327,7 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
   },
   'planetary-stealth-mode': {
     id: 'planetary-stealth-mode',
-    name: 'Planetary Stealth Mode',
+    name: '🌍 Planetary Stealth Mode',
     cost: 500000000000000000,
     description: 'Slip behind Mother Nature\'s back to improve growth',
     effect: 1.45,
@@ -372,7 +336,7 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
   },
   'accelerated-core-evolution': {
     id: 'accelerated-core-evolution',
-    name: 'Accelerated Core Evolution',
+    name: '🌍 Accelerated Core Evolution',
     cost: 5000000000000000000,
     description: 'Planetary-level output boost',
     effect: 2.5,
@@ -380,10 +344,10 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
     unlockedAtLevel: 'earth'
   },
 
-  // Solar System Level (3 new upgrades)
+  // Solar System Level (3 upgrades)
   'cosmic-radiation-tolerance': {
     id: 'cosmic-radiation-tolerance',
-    name: 'Cosmic Radiation Tolerance',
+    name: '🌌 Cosmic Radiation Tolerance',
     cost: 50000000000000000000,
     description: 'Survive and multiplies anywhere in the galaxy',
     effect: 2.1,
@@ -392,7 +356,7 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
   },
   'faster-than-light-spread': {
     id: 'faster-than-light-spread',
-    name: 'Faster-Than-Light Spread',
+    name: '🌌 Faster-Than-Light Spread',
     cost: 500000000000000000000,
     description: 'Instant intergalaxial slime spread',
     effect: 3,
@@ -401,7 +365,7 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
   },
   'self-replicating-probes': {
     id: 'self-replicating-probes',
-    name: 'Self-Replicating Probes',
+    name: '🌌 Self-Replicating Probes',
     cost: 5000000000000000000000,
     description: 'Automated seeding of new established worlds',
     effect: 2.8,

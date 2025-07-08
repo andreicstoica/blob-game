@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { GameState } from '../../engine/game';
 import { getGeneratorCost, getCurrentLevel } from '../../engine/game';
 import { LEVELS } from '../../engine/levels';
@@ -16,6 +16,8 @@ export const Shop: React.FC<ShopProps> = ({
   onBuyGenerator, 
   onBuyUpgrade 
 }) => {
+  const [purchasedItems, setPurchasedItems] = useState<Set<string>>(new Set());
+
   if (!gameState || !onBuyGenerator || !onBuyUpgrade) {
     return null;
   }
@@ -29,6 +31,32 @@ export const Shop: React.FC<ShopProps> = ({
     return unlockLevel ? unlockLevel.id <= currentLevelIndex : false;
   };
 
+  const handleBuyGenerator = (generatorId: string) => {
+    onBuyGenerator(generatorId);
+    setPurchasedItems(prev => new Set([...prev, generatorId]));
+    // Remove from purchased items after animation
+    setTimeout(() => {
+      setPurchasedItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(generatorId);
+        return newSet;
+      });
+    }, 1000);
+  };
+
+  const handleBuyUpgrade = (upgradeId: string) => {
+    onBuyUpgrade(upgradeId);
+    setPurchasedItems(prev => new Set([...prev, upgradeId]));
+    // Remove from purchased items after animation
+    setTimeout(() => {
+      setPurchasedItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(upgradeId);
+        return newSet;
+      });
+    }, 1000);
+  };
+
   return (
     <div>
       {/* Generators */}
@@ -38,27 +66,68 @@ export const Shop: React.FC<ShopProps> = ({
         .map(generator => {
         const cost = getGeneratorCost(generator);
         const canAfford = biomass >= cost;
+        const isPurchased = purchasedItems.has(generator.id);
         
         return (
           <div key={generator.id} style={{
-            backgroundColor: canAfford ? 'rgba(74, 222, 128, 0.2)' : 'rgba(255, 255, 255, 0.1)',
-            border: `1px solid ${canAfford ? '#4ade80' : '#666'}`,
-            borderRadius: '4px',
-            padding: '10px',
-            marginBottom: '8px',
+            backgroundColor: isPurchased 
+              ? 'rgba(34, 197, 94, 0.4)' 
+              : canAfford 
+                ? 'rgba(74, 222, 128, 0.2)' 
+                : 'rgba(255, 255, 255, 0.1)',
+            border: `2px solid ${
+              isPurchased 
+                ? '#22c55e' 
+                : canAfford 
+                  ? '#4ade80' 
+                  : '#666'
+            }`,
+            borderRadius: '8px',
+            padding: '12px',
+            marginBottom: '10px',
             cursor: canAfford ? 'pointer' : 'not-allowed',
             fontSize: '12px',
-            position: 'relative'
+            position: 'relative',
+            transition: 'all 0.2s ease',
+            transform: isPurchased ? 'scale(1.02)' : 'scale(1)',
+            boxShadow: isPurchased 
+              ? '0 0 20px rgba(34, 197, 94, 0.5)' 
+              : canAfford 
+                ? '0 2px 8px rgba(74, 222, 128, 0.3)' 
+                : 'none'
           }}
-          onClick={() => canAfford && onBuyGenerator(generator.id)}
+          onClick={() => canAfford && handleBuyGenerator(generator.id)}
+          onMouseEnter={(e) => {
+            if (canAfford && !isPurchased) {
+              e.currentTarget.style.backgroundColor = 'rgba(74, 222, 128, 0.3)';
+              e.currentTarget.style.transform = 'scale(1.01)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(74, 222, 128, 0.4)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isPurchased) {
+              e.currentTarget.style.backgroundColor = canAfford 
+                ? 'rgba(74, 222, 128, 0.2)' 
+                : 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = canAfford 
+                ? '0 2px 8px rgba(74, 222, 128, 0.3)' 
+                : 'none';
+            }
+          }}
           >
-            <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>
+            <div style={{ fontWeight: 'bold', marginBottom: '5px', fontSize: '13px' }}>
               {generator.name} (Lv {generator.level})
             </div>
-            <div style={{ opacity: 0.8, marginBottom: '5px' }}>
+            <div style={{ opacity: 0.8, marginBottom: '5px', lineHeight: '1.3' }}>
               {generator.description}
             </div>
-            <div>Cost: {cost}</div>
+            <div style={{ 
+              color: canAfford ? '#4ade80' : '#ef4444',
+              fontWeight: 'bold'
+            }}>
+              Cost: {cost.toLocaleString()}
+            </div>
             
             <div style={{ 
               position: 'absolute', 
@@ -75,6 +144,19 @@ export const Shop: React.FC<ShopProps> = ({
                 {generator.level}
               </div>
             </div>
+
+            {isPurchased && (
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                fontSize: '24px',
+                animation: 'purchasePulse 1s ease-out'
+              }}>
+                ✨
+              </div>
+            )}
           </div>
         );
       })}
@@ -85,44 +167,111 @@ export const Shop: React.FC<ShopProps> = ({
         .filter(upgrade => isContentAvailable(upgrade.unlockedAtLevel))
         .map(upgrade => {
         const canAfford = biomass >= upgrade.cost && !upgrade.purchased;
+        const isPurchased = purchasedItems.has(upgrade.id);
         
         return (
           <div key={upgrade.id} style={{
             backgroundColor: upgrade.purchased 
               ? 'rgba(34, 197, 94, 0.3)' 
-              : canAfford 
-                ? 'rgba(74, 222, 128, 0.2)' 
-                : 'rgba(255, 255, 255, 0.1)',
-            border: `1px solid ${
+              : isPurchased
+                ? 'rgba(34, 197, 94, 0.4)'
+                : canAfford 
+                  ? 'rgba(74, 222, 128, 0.2)' 
+                  : 'rgba(255, 255, 255, 0.1)',
+            border: `2px solid ${
               upgrade.purchased 
                 ? '#22c55e' 
-                : canAfford 
-                  ? '#4ade80' 
-                  : '#666'
+                : isPurchased
+                  ? '#22c55e'
+                  : canAfford 
+                    ? '#4ade80' 
+                    : '#666'
             }`,
-            borderRadius: '4px',
-            padding: '10px',
-            marginBottom: '8px',
+            borderRadius: '8px',
+            padding: '12px',
+            marginBottom: '10px',
             cursor: canAfford ? 'pointer' : 'not-allowed',
-            fontSize: '12px'
+            fontSize: '12px',
+            transition: 'all 0.2s ease',
+            transform: isPurchased ? 'scale(1.02)' : 'scale(1)',
+            boxShadow: upgrade.purchased 
+              ? '0 2px 8px rgba(34, 197, 94, 0.3)' 
+              : isPurchased
+                ? '0 0 20px rgba(34, 197, 94, 0.5)'
+                : canAfford 
+                  ? '0 2px 8px rgba(74, 222, 128, 0.3)' 
+                  : 'none'
           }}
-          onClick={() => canAfford && onBuyUpgrade(upgrade.id)}
+          onClick={() => canAfford && handleBuyUpgrade(upgrade.id)}
+          onMouseEnter={(e) => {
+            if (canAfford && !upgrade.purchased && !isPurchased) {
+              e.currentTarget.style.backgroundColor = 'rgba(74, 222, 128, 0.3)';
+              e.currentTarget.style.transform = 'scale(1.01)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(74, 222, 128, 0.4)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!upgrade.purchased && !isPurchased) {
+              e.currentTarget.style.backgroundColor = canAfford 
+                ? 'rgba(74, 222, 128, 0.2)' 
+                : 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = canAfford 
+                ? '0 2px 8px rgba(74, 222, 128, 0.3)' 
+                : 'none';
+            }
+          }}
           >
-            <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>
+            <div style={{ fontWeight: 'bold', marginBottom: '5px', fontSize: '13px' }}>
               {upgrade.name}
               {upgrade.purchased && (
                 <span style={{ marginLeft: '5px', color: '#22c55e' }}>✓</span>
               )}
             </div>
-            <div style={{ opacity: 0.8, marginBottom: '5px' }}>
+            <div style={{ opacity: 0.8, marginBottom: '5px', lineHeight: '1.3' }}>
               {upgrade.description}
             </div>
             {!upgrade.purchased && (
-              <div>Cost: {upgrade.cost}</div>
+              <div style={{ 
+                color: canAfford ? '#4ade80' : '#ef4444',
+                fontWeight: 'bold'
+              }}>
+                Cost: {upgrade.cost.toLocaleString()}
+              </div>
+            )}
+
+            {isPurchased && (
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                fontSize: '24px',
+                animation: 'purchasePulse 1s ease-out'
+              }}>
+                ✨
+              </div>
             )}
           </div>
         );
       })}
+
+      <style>{`
+        @keyframes purchasePulse {
+          0% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.5);
+          }
+          50% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.2);
+          }
+          100% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1);
+          }
+        }
+      `}</style>
     </div>
   );
 }; 
