@@ -14,7 +14,7 @@ interface MapProps {
 }
 
 export default function Map({ className }: MapProps) {
-  const phase = useMapSelector((s) => s.phase);
+  const currentLevel = useMapSelector((s) => s.currentLevel);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
 
@@ -31,32 +31,32 @@ export default function Map({ className }: MapProps) {
     return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
+  const renderLevel = () => {
+    const props = { width: dimensions.width, height: dimensions.height };
+
+    switch (currentLevel.name) {
+      case "intro":
+        return <IntroLevel {...props} />;
+      case "microscopic":
+        return <MicroscopeLevel {...props} />;
+      case "petri-dish":
+        return <PetriLevel {...props} />;
+      case "lab":
+        return <LabLevel {...props} />;
+      case "city":
+        return <CityLevel {...props} />;
+      case "earth":
+        return <EarthLevel {...props} />;
+      case "solar-system":
+        return <SunSolarSystemLevel {...props} />;
+      default:
+        return <IntroLevel {...props} />;
+    }
+  };
+
   return (
     <div ref={containerRef} className={`relative w-full h-full ${className}`}>
-      {phase === "intro" && (
-        <IntroLevel width={dimensions.width} height={dimensions.height} />
-      )}
-      {phase === "microscope" && (
-        <MicroscopeLevel width={dimensions.width} height={dimensions.height} />
-      )}
-      {phase === "petri" && (
-        <PetriLevel width={dimensions.width} height={dimensions.height} />
-      )}
-      {phase === "lab" && (
-        <LabLevel width={dimensions.width} height={dimensions.height} />
-      )}
-      {phase === "city" && (
-        <CityLevel width={dimensions.width} height={dimensions.height} />
-      )}
-      {phase === "earth" && (
-        <EarthLevel width={dimensions.width} height={dimensions.height} />
-      )}
-      {phase === "sunSolarSystem" && (
-        <SunSolarSystemLevel
-          width={dimensions.width}
-          height={dimensions.height}
-        />
-      )}
+      {renderLevel()}
     </div>
   );
 }

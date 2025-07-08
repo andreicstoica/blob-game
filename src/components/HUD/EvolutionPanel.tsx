@@ -1,7 +1,7 @@
 import React from 'react';
 import type { GameState } from '../../engine/game';
-import { getCurrentLevel, getNextLevel, canEvolveToNextLevel, evolveToNextLevel } from '../../engine/game';
-import { formatBiomass } from '../../engine/Levels';
+import { getCurrentLevel, getNextLevel, canEvolveToNextLevel } from '../../engine/game';
+import { formatBiomass } from '../../engine/levels';
 
 interface EvolutionPanelProps {
     biomass: number;
@@ -112,7 +112,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
                             fontWeight: 'bold',
                             color: canEvolve ? '#4ade80' : '#ef4444'
                         }}>
-                            {formatBiomass(biomass, currentLevel.biomassDisplayFormat)}
+                            {formatBiomass(biomass, nextLevel.biomassDisplayFormat)}
                         </span>
                     </div>
                 </div>

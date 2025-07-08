@@ -1,5 +1,5 @@
 import { GENERATORS, UPGRADES, GAME_CONFIG } from './content';
-import { getCurrentLevel as getLevelByBiomass, getNextLevel as getNextLevelByCurrent, canEvolve, LEVELS } from './Levels';
+import { getNextLevel as getNextLevelByCurrent, LEVELS } from './Levels';
 
 export interface BlobState {
     size: number
@@ -20,6 +20,7 @@ export interface GeneratorState {
     baseEffect: number
     level: number
     costMultiplier: number
+    unlockedAtLevel: string
 }
 
 export interface UpgradeState {
@@ -30,6 +31,7 @@ export interface UpgradeState {
     effect: number
     type: 'growth' | 'split' | 'click' | 'blob'
     purchased: boolean
+    unlockedAtLevel: string
 }
 
 export interface GameState {
@@ -40,8 +42,8 @@ export interface GameState {
     generators: Record<string, GeneratorState>
     upgrades: Record<string, UpgradeState>
     nutrients: NutrientState[]
-    currentLevelId: string
-    highestLevelReached: string
+    currentLevelId: number
+    highestLevelReached: number
 }
 
 const initializeGenerators = () => {
@@ -79,7 +81,7 @@ const initializeNutrients = (): NutrientState[] => {
     return nutrients;
 };
 
-export const initialGameState: GameState = {
+export const INITIAL_STATE: GameState = {
     blobs: [],
     biomass: GAME_CONFIG.startingBiomass,
     growth: 0,
@@ -87,8 +89,8 @@ export const initialGameState: GameState = {
     generators: initializeGenerators(),
     upgrades: initializeUpgrades(),
     nutrients: initializeNutrients(),
-    currentLevelId: 'intro',
-    highestLevelReached: 'intro'
+    currentLevelId: 0,
+    highestLevelReached: 0
 }
 
 export function tick(state: GameState): GameState {
@@ -124,21 +126,16 @@ export function buyGenerator(state: GameState, generatorId: string): GameState {
         level: generator.level + 1
     };
 
-    // Calculate total growth from all generators
-    let totalGrowth = 0;
-    Object.values(newGenerators).forEach(gen => {
-        totalGrowth += gen.baseEffect * gen.level;
+    // Calculate total growth with new generator and all upgrades
+    const newGrowth = getTotalGrowth({
+        ...state,
+        generators: newGenerators
     });
-
-    // Apply upgrade effects
-    if (state.upgrades['efficient-generators'].purchased) {
-        totalGrowth += newGenerators['basic-generator'].level * state.upgrades['efficient-generators'].effect;
-    }
 
     return {
         ...state,
         biomass: state.biomass - currentCost,
-        growth: totalGrowth,
+        growth: newGrowth,
         generators: newGenerators
     };
 }
@@ -156,24 +153,17 @@ export function buyUpgrade(state: GameState, upgradeId: string): GameState {
     };
 
     let newClickPower = state.clickPower;
-    let newGrowth = state.growth;
 
     // Apply upgrade effects
     if (upgrade.type === 'click') {
         newClickPower += upgrade.effect;
-    } else if (upgrade.type === 'growth') {
-        // Recalculate growth with new upgrade effect
-        let totalGrowth = 0;
-        Object.values(state.generators).forEach(gen => {
-            totalGrowth += gen.baseEffect * gen.level;
-        });
-
-        if (upgradeId === 'efficient-generators') {
-            totalGrowth += state.generators['basic-generator'].level * upgrade.effect;
-        }
-
-        newGrowth = totalGrowth;
     }
+
+    // Recalculate total growth with all upgrades
+    const newGrowth = getTotalGrowth({
+        ...state,
+        upgrades: newUpgrades
+    });
 
     return {
         ...state,
@@ -195,9 +185,17 @@ export function getTotalGrowth(state: GameState): number {
     });
 
     // Apply upgrade effects
-    if (state.upgrades['efficient-generators'].purchased) {
-        totalGrowth += state.generators['basic-generator'].level * state.upgrades['efficient-generators'].effect;
-    }
+    Object.values(state.upgrades).forEach(upgrade => {
+        if (upgrade.purchased) {
+            if (upgrade.type === 'growth') {
+                // Growth upgrades multiply the total growth
+                totalGrowth *= upgrade.effect;
+            } else if (upgrade.id === 'efficient-generators') {
+                // Special case for efficient generators
+                totalGrowth += state.generators['basic-generator'].level * upgrade.effect;
+            }
+        }
+    });
 
     return totalGrowth;
 }
@@ -215,7 +213,7 @@ export function consumeNutrient(state: GameState, nutrientId: string): GameState
     };
 }
 
-export function getNearbyNutrients(state: GameState, blobPosition: { x: number; y: number }): Array<{ id: string; x: number; y: number; distance: number }> {
+export function getNearbyNutrients(state: GameState, _blobPosition: { x: number; y: number }): Array<{ id: string; x: number; y: number; distance: number }> {
     return state.nutrients
         .filter(n => !n.consumed)
         .map(nutrient => {
@@ -257,7 +255,7 @@ export function spawnMoreNutrients(state: GameState): GameState {
 }
 
 // Helper function to get level by ID
-function getLevelById(levelId: string) {
+function getLevelById(levelId: number) {
     return LEVELS.find(level => level.id === levelId) || LEVELS[0];
 }
 

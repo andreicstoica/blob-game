@@ -1,19 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  initialGameState, 
-  tick, 
-  manualClick, 
-  buyGenerator, 
-  buyUpgrade, 
+import {
+  INITIAL_STATE,
+  tick,
+  manualClick,
+  buyGenerator,
+  buyUpgrade,
   consumeNutrient,
   getNearbyNutrients,
   evolveToNextLevel,
-  type GameState 
+  type GameState
 } from '../engine/game';
 import { GAME_CONFIG } from '../engine/content';
+import { useMap } from '../engine/mapState';
 
 export const useGame = () => {
-  const [gameState, setGameState] = useState<GameState>(initialGameState);
+  const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
+  const mapEvolveToNextLevel = useMap(state => state.evolveToNextLevel);
 
   // Game loop
   useEffect(() => {
@@ -36,13 +38,18 @@ export const useGame = () => {
     setGameState(prevState => buyUpgrade(prevState, upgradeId));
   }, []);
 
-  const handleNutrientEaten = useCallback((blobId: string, nutrientId: string) => {
+  const handleNutrientEaten = useCallback((_blobId: string, nutrientId: string) => {
     setGameState(prevState => consumeNutrient(prevState, nutrientId));
   }, []);
 
   const handleEvolve = useCallback(() => {
-    setGameState(prevState => evolveToNextLevel(prevState));
-  }, []);
+    setGameState(prevState => {
+      const newState = evolveToNextLevel(prevState);
+      // Also evolve the map level
+      mapEvolveToNextLevel(newState.biomass);
+      return newState;
+    });
+  }, [mapEvolveToNextLevel]);
 
   const getNearbyNutrientsForBlob = useCallback((blobPosition: { x: number; y: number }) => {
     return getNearbyNutrients(gameState, blobPosition);
