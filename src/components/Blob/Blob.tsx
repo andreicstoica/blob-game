@@ -290,6 +290,7 @@ const Blob = React.memo(({
 
   // Dynamic glow effect based on heat
   const glowDeviation = 4 + (10 * currentHeat); // Glow gets wider when heated
+  const gradientIntensity = 0.9 + (2 * currentHeat);
 
   // Calculate tighter bounds for the clickable area
   const blobRadius = currentVisualSize * 0.35;
@@ -325,13 +326,17 @@ const Blob = React.memo(({
         }}
       >
         <defs>
-          <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="0" stdDeviation={glowDeviation} floodColor={glowColor} floodOpacity="0.7"/>
-          </filter>
+            <radialGradient id={`gradient-${id}`} cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor={heatedColor} stopOpacity={gradientIntensity} />
+                <stop offset="100%" stopColor={heatedStrokeColor} stopOpacity="0.8" />
+            </radialGradient>
+            <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
+                <feDropShadow dx="0" dy="0" stdDeviation={glowDeviation} floodColor={glowColor} floodOpacity="0.7"/>
+            </filter>
         </defs>
         <path
           d={generateAmoebePath()}
-          fill={heatedColor}
+          fill={`url(#gradient-${id})`}
           stroke={heatedStrokeColor}
           strokeWidth="2"
           filter={`url(#${filterId})`}
