@@ -14,8 +14,8 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
 
   // Microscopic Level (3 generators)
   'microscope-cloner': {
-    id: 'microscopic-cloning',
-    name: '🦠 Microscopic Cloning',
+    id: 'microscopic-cloner',
+    name: '🦠 Microscopic Cloner',
     baseCost: 12000,
     description: 'Uses lab-grade optics to split slime particles',
     baseEffect: 47,
