@@ -1,105 +1,113 @@
 // src/components/Blob/Blob.tsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GAME_CONFIG } from '../../engine/content';
 
 export interface BlobProps {
   id: string;
   position: { x: number; y: number };
-  size?: number; // Now optional since we can calculate from biomass
-  biomass?: number; // New prop for biomass-based sizing
-  // Game event callbacks
+  size?: number;
+  biomass?: number;
   onBlobClick?: ((blobId: string, clickPosition: { x: number; y: number }) => void) | (() => void);
   onBlobPress?: (blobId: string) => void;
   onBlobRelease?: (blobId: string) => void;
-  onFoodEaten?: (blobId: string, foodId: string) => void;
-  // Visual customization props
   color?: string;
   strokeColor?: string;
   glowColor?: string;
   isDisabled?: boolean;
-  animationSpeed?: number;
-  // Game state props
   isActive?: boolean;
-  // Food interaction props
-  nearbyFood?: Array<{ id: string; x: number; y: number; distance: number }>;
 }
 
-const Blob = React.memo(({ 
-  id, 
-  position, 
+// Simple, smooth easing - no bouncing to prevent shrinking flicker
+const easeOutCubic = (t: number): number => {
+  return 1 - Math.pow(1 - t, 3);
+};
+
+const Blob = React.memo(({
+  id,
+  position,
   size: propSize,
   biomass,
   color = "#1adaac",
-  strokeColor = "#cfffb1", 
+  strokeColor = "#cfffb1",
   glowColor = "#cfffb1",
   isDisabled = false,
-  animationSpeed = 0.3,
   onBlobClick,
   onBlobPress,
   onBlobRelease,
-  onFoodEaten,
-  isActive = true,
-  nearbyFood = []
+  isActive = true
 }: BlobProps) => {
-  // Calculate size from biomass if not provided
-  const size = propSize || (biomass ? Math.max(
-    GAME_CONFIG.minBlobSize, 
-    biomass * GAME_CONFIG.blobSizeMultiplier
-  ) : 100); // Default size if neither size nor biomass provided
 
-  const [path, setPath] = useState('');
+  const filterId = `glow-${id}`;
+
+  // Calculate stable size from biomass/props
+  const calculateCurrentSize = useCallback(() => {
+    return propSize || (biomass ? Math.max(
+      GAME_CONFIG.minBlobSize,
+      biomass * GAME_CONFIG.blobSizeMultiplier
+    ) : 100);
+  }, [propSize, biomass]);
+
+  // Track the stable biomass-based size
+  const [stableSize, setStableSize] = useState(() => calculateCurrentSize());
+
+  // Animation states - USING REFS for smooth animation
   const [scale, setScale] = useState(1);
-  const [clickEffect, setClickEffect] = useState({ active: false, x: 0, y: 0, intensity: 0 });
   const [isPressed, setIsPressed] = useState(false);
-  const [eatingState, setEatingState] = useState({ 
-    isEating: false, 
-    targetFood: null as { id: string; x: number; y: number } | null,
-    reachProgress: 0 
+  const animationValuesRef = useRef({
+    organicX: 0,
+    organicY: 0,
+    breathing: 0,
+    clickBoost: 0,
+    amoebaNoise: [] as number[]
   });
-  
+  const [, forceRender] = useState({});
+  const lastRenderTime = useRef(0);
+
+  // Click effect state - simplified with STABLE BASE SIZE
+  const [clickEffect, setClickEffect] = useState({
+    active: false,
+    startTime: 0,
+    baseRadiusAtStart: 0 // LOCK the base radius when click starts
+  });
+
+  // Growth animation state with pause capability
+  const [growthEffect, setGrowthEffect] = useState({
+    active: false,
+    startTime: 0,
+    fromSize: 0,
+    toSize: 0,
+    pausedAt: 0 // Track where we paused
+  });
+
+  // Refs for animation
   const clickEffectRef = useRef(clickEffect);
-  const isPressedRef = useRef(isPressed);
-  const eatingStateRef = useRef(eatingState);
-  
-  // Update refs when state changes
+  const growthEffectRef = useRef(growthEffect);
+
+  // Update refs
+  useEffect(() => { clickEffectRef.current = clickEffect; }, [clickEffect]);
+  useEffect(() => { growthEffectRef.current = growthEffect; }, [growthEffect]);
+
+  // Update stable size when biomass changes - SIMPLIFIED
   useEffect(() => {
-    clickEffectRef.current = clickEffect;
-  }, [clickEffect]);
+    const newSize = calculateCurrentSize();
 
-  useEffect(() => {
-    isPressedRef.current = isPressed;
-  }, [isPressed]);
+    if (newSize > stableSize) {
+      // Growth detected - trigger growth animation
+      setGrowthEffect({
+        active: true,
+        startTime: Date.now(),
+        fromSize: stableSize,
+        toSize: newSize,
+        pausedAt: 0 // Add missing pausedAt property
+      });
+      setStableSize(newSize);
+    } else if (stableSize === 0) {
+      // Initial setup
+      setStableSize(newSize);
+    }
+  }, [biomass, propSize]);
 
-  useEffect(() => {
-    eatingStateRef.current = eatingState;
-  }, [eatingState]);
-
-  // Food detection and eating logic
-  useEffect(() => {
-    if (nearbyFood.length === 0 || eatingState.isEating) return;
-
-    // Find closest food within eating range (70 pixels)
-    const eatingRangeFood = nearbyFood.filter(food => food.distance <= 150);
-    if (eatingRangeFood.length === 0) return;
-
-    // Start eating the closest food
-    const closestFood = eatingRangeFood.reduce((closest, current) => 
-      current.distance < closest.distance ? current : closest
-    );
-
-    console.log(`Starting to eat food ${closestFood.id}`);
-    setEatingState({
-      isEating: true,
-      targetFood: { 
-        id: closestFood.id, 
-        x: closestFood.x - position.x, // Relative to blob center
-        y: closestFood.y - position.y 
-      },
-      reachProgress: 0
-    });
-  }, [nearbyFood, eatingState.isEating, position]);
-
-  // Handle mouse events
+  // Mouse handlers
   const handleMouseDown = () => {
     if (isDisabled || !isActive) return;
     setIsPressed(true);
@@ -109,11 +117,11 @@ const Blob = React.memo(({
   const handleMouseUp = (e: React.MouseEvent) => {
     if (isDisabled || !isActive) return;
     setIsPressed(false);
-    
+
     const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left - (size * 1.5) / 2;
-    const clickY = e.clientY - rect.top - (size * 1.5) / 2;
-    
+    const clickX = e.clientX - rect.left - stableSize;
+    const clickY = e.clientY - rect.top - stableSize;
+
     if (onBlobClick) {
       if (onBlobClick.length === 0) {
         (onBlobClick as () => void)();
@@ -122,193 +130,183 @@ const Blob = React.memo(({
       }
     }
     onBlobRelease?.(id);
-    
+
+    // Start click animation that uses STABLE base radius
     setClickEffect({
       active: true,
-      x: clickX - size * 0.25, // Adjust for the transform offset
-      y: clickY - size * 0.25,
-      intensity: 1
+      startTime: Date.now(),
+      baseRadiusAtStart: stableSize * 0.35 // LOCK the radius when click starts
     });
-    
-    setTimeout(() => {
-      setClickEffect(prev => ({ ...prev, active: false }));
-    }, 400);
   };
 
   const handleMouseLeave = () => {
-    if (isPressed) {
-      setIsPressed(false);
-    }
+    if (isPressed) setIsPressed(false);
   };
 
-  // Main animation loop
+  // CLEAN ANIMATION LOOP - BREATHING EFFECT ONLY
   useEffect(() => {
     let animationId: number;
-    
+
     const animate = () => {
-      const time = Date.now() * 0.002;
-      const currentClickEffect = clickEffectRef.current;
-      const currentPressed = isPressedRef.current;
-      const currentEating = eatingStateRef.current;
-      
-      const centerX = size / 2;
-      const centerY = size / 2;
-      const baseRadius = size * 0.35;
-      
-      const points = [];
-      const numPoints = 6;
-      
-      for (let i = 0; i < numPoints; i++) {
-        const angle = (i / numPoints) * Math.PI * 2;
-        let radiusVariation = Math.sin(time * animationSpeed + i * 1.7) * 0.2;
-        
-        // Add click squish effect
-        if (currentClickEffect.active) {
-          const pointX = Math.cos(angle) * baseRadius;
-          const pointY = Math.sin(angle) * baseRadius;
-          const distanceToClick = Math.sqrt(
-            (pointX - currentClickEffect.x) * (pointX - currentClickEffect.x) + 
-            (pointY - currentClickEffect.y) * (pointY - currentClickEffect.y)
-          );
-          
-          const squishAmount = Math.max(0, 1 - distanceToClick / (baseRadius * 0.8)) * currentClickEffect.intensity * 1;
-          radiusVariation -= squishAmount;
-        }
-        
-    // Add eating reach effect
-    if (currentEating.isEating && currentEating.targetFood) {
-        // Calculate how close this point is to the food direction
-        const foodAngle = Math.atan2(currentEating.targetFood.y, currentEating.targetFood.x);
-        const pointAngle = angle;
-        let angleDiff = Math.abs(foodAngle - pointAngle);
-        if (angleDiff > Math.PI) angleDiff = 2 * Math.PI - angleDiff;
-        
-        // Points closer to food direction stretch out more
-        const tentacleWidth = Math.PI / 6; 
-        const reachStrength = Math.max(0, 1 - angleDiff / tentacleWidth);
-        const focusedStrength = Math.pow(reachStrength, 3); 
-        
-        let reachAmount = 0;
-        if(focusedStrength > 0){
-            if (currentEating.reachProgress < 0.7) {
-            // Reaching phase - reduced intensity
-            const foodSize = 16;
-            const tentacleLength = 0.8 + (foodSize / baseRadius) * 0.3; // Reduced from 1.2
-            reachAmount = focusedStrength * currentEating.reachProgress * tentacleLength;
-            } else {
-            const swallowProgress = (currentEating.reachProgress - 0.7) / 0.3;
-            const foodSize = 16;
-            const wrapAmount = (foodSize / baseRadius) * 0.5; // Reduced from 0.8
-            reachAmount = focusedStrength * (0.8 + wrapAmount - swallowProgress * 0.6); // Reduced
-            }
-        }
-        
-        // Clamp the reach amount to prevent extreme deformation
-        reachAmount = Math.max(-0.5, Math.min(1.5, reachAmount)); // Prevent extreme negative/positive values
-        
-        radiusVariation += reachAmount;
-    }
+      const time = Date.now() * 0.001;
+      const currentClick = clickEffectRef.current;
+      const currentGrowth = growthEffectRef.current;
 
-    // And make sure to clamp the final radiusVariation before calculating radius:
-    radiusVariation = Math.max(-0.7, Math.min(1.0, radiusVariation)); // Clamp total variation
-
-    const radius = Math.max(baseRadius * 0.2, baseRadius + baseRadius * radiusVariation); // Increased min to 20%        
-        const x = centerX + Math.cos(angle) * radius;
-        const y = centerY + Math.sin(angle) * radius;
-        points.push({ x, y });
-      }
-      
-      // Create smooth path
-      let pathData = `M ${points[0].x} ${points[0].y}`;
-      
-      for (let i = 0; i < numPoints; i++) {
-        const current = points[i];
-        const next = points[(i + 1) % numPoints];
-        const afterNext = points[(i + 2) % numPoints];
-        
-        const cp1x = current.x + (next.x - points[(i - 1 + numPoints) % numPoints].x) * 0.2;
-        const cp1y = current.y + (next.y - points[(i - 1 + numPoints) % numPoints].y) * 0.2;
-        const cp2x = next.x - (afterNext.x - current.x) * 0.2;
-        const cp2y = next.y - (afterNext.y - current.y) * 0.2;
-        
-        pathData += ` C ${cp1x} ${cp1y} ${cp2x} ${cp2y} ${next.x} ${next.y}`;
-      }
-      
-      pathData += ' Z';
-      
-      // Scale calculation
-      let scaleVariation = 1 + Math.sin(time * 0.5) * 0.15;
-      
-      if (currentPressed) {
-        scaleVariation *= 0.95;
-      }
-      
-      if (currentClickEffect.active) {
-        scaleVariation += currentClickEffect.intensity * 0.05;
-      }
-      
-      // Slightly grow when eating
-      if (currentEating.isEating) {
-        scaleVariation += 0.05;
-        
-        // Temporary growth when swallowing
-        if (currentEating.reachProgress > 0.7) {
-          const swallowProgress = (currentEating.reachProgress - 0.7) / 0.3;
-          scaleVariation += swallowProgress * 0.15; // Grow up to 15% while swallowing
-        }
-      }
-      
-      if (isDisabled) {
-        scaleVariation *= 0.8;
-      }
-      
-      setPath(pathData);
-      setScale(scaleVariation);
-      
-      // Animate click effect decay
-      if (currentClickEffect.active && currentClickEffect.intensity > 0) {
-        setClickEffect(prev => ({
-          ...prev,
-          intensity: Math.max(0, prev.intensity - 0.025)
-        }));
-      }
-      
-      // Animate eating progress
-      if (currentEating.isEating) {
-        setEatingState(prev => {
-          let newProgress = prev.reachProgress;
-          
-          if (newProgress < 0.7) {
-            // Reaching phase - slow stretch toward food
-            newProgress = Math.min(0.7, prev.reachProgress + 0.01);
-          } else if (newProgress < 1) {
-            // Swallowing phase - faster engulfing motion
-            newProgress = Math.min(1, prev.reachProgress + 0.04);
+      // === GROWTH STATE MANAGEMENT (no size calculations) ===
+      if (currentGrowth.active) {
+        if (currentClick.active) {
+          // Pause growth
+          if (currentGrowth.pausedAt === 0) {
+            const elapsed = Date.now() - currentGrowth.startTime;
+            setGrowthEffect(prev => ({ ...prev, pausedAt: elapsed }));
           }
-          
-          return { ...prev, reachProgress: newProgress };
-        });
+        } else {
+          // Resume growth
+          if (currentGrowth.pausedAt > 0) {
+            const newStartTime = Date.now() - currentGrowth.pausedAt;
+            setGrowthEffect(prev => ({ ...prev, startTime: newStartTime, pausedAt: 0 }));
+          }
+
+          const elapsed = Date.now() - currentGrowth.startTime;
+          const progress = Math.min(elapsed / 800, 1);
+
+          if (progress >= 1) {
+            setGrowthEffect(prev => ({ ...prev, active: false }));
+          }
+        }
       }
-      
+
+      // === ORGANIC PULSATING EFFECTS + AMOEBA SHAPE ===
+      const stableRadius = stableSize * 0.35;
+      const organicX = Math.abs(Math.sin(time * 0.7)) * (stableRadius * 0.03);
+      const organicY = Math.abs(Math.cos(time * 0.5)) * (stableRadius * 0.03);
+      const breathing = Math.abs(Math.sin(time * 0.6)) * (stableRadius * 0.1);
+
+      // Generate amoeba-like noise for 8 control points around the blob
+      const amoebaNoise = [];
+      for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2;
+        const noiseFreq = time * 0.4 + angle * 3; // Different frequency per point
+        const noise = Math.sin(noiseFreq) * 0.15 + Math.cos(noiseFreq * 1.7) * 0.1; // Multiple sine waves
+        amoebaNoise.push(noise);
+      }
+
+      // === CLICK ANIMATION ===
+      let clickBoost = 0;
+      if (currentClick.active) {
+        const elapsed = Date.now() - currentClick.startTime;
+        const totalDuration = 1400;
+        const progress = Math.min(elapsed / totalDuration, 1);
+
+        if (progress >= 1) {
+          setClickEffect(prev => ({ ...prev, active: false }));
+        } else {
+          let effectMultiplier;
+
+          if (progress < 0.15) {
+            const expansionProgress = progress / 0.15;
+            effectMultiplier = easeOutCubic(expansionProgress);
+          } else {
+            const contractionProgress = (progress - 0.15) / 0.85;
+            effectMultiplier = 1 - easeOutCubic(contractionProgress);
+          }
+
+          clickBoost = effectMultiplier * (currentClick.baseRadiusAtStart * 0.15);
+        }
+      }
+
+      // === UPDATE REF ===
+      animationValuesRef.current = {
+        organicX,
+        organicY,
+        breathing,
+        clickBoost,
+        amoebaNoise
+      };
+
+      // === SCALE EFFECTS ===
+      let scaleVariation = 1.0;
+
+      if (currentGrowth.active && !currentClick.active && currentGrowth.pausedAt === 0) {
+        const elapsed = Date.now() - currentGrowth.startTime;
+        const progress = Math.min(elapsed / 800, 1);
+        const popEffect = easeOutCubic(progress);
+        scaleVariation += popEffect * 0.1;
+      }
+
+      if (isDisabled) {
+        scaleVariation *= 0.9;
+      }
+
+      setScale(scaleVariation);
+
+      // === RE-RENDER ===
+      const now = Date.now();
+      if (now - lastRenderTime.current >= 16) {
+        lastRenderTime.current = now;
+        forceRender({});
+      }
+
       animationId = requestAnimationFrame(animate);
     };
-    
-    animate();
-    
-    return () => {
-      if (animationId) cancelAnimationFrame(animationId);
-    };
-  }, [size, animationSpeed, isDisabled, id, onFoodEaten]);
 
-  const filterId = `glow-${id}`;
+    animate();
+
+    return () => cancelAnimationFrame(animationId);
+  }, [stableSize]);
+
+  // ✅ FIXED: This function now generates a much smoother, more organic path.
+  const generateAmoebePath = () => {
+    const centerX = stableSize;
+    const centerY = stableSize;
+    const baseRadius = stableSize * 0.35;
+    const breathing = animationValuesRef.current?.breathing || 0;
+    const clickBoost = animationValuesRef.current?.clickBoost || 0;
+    const amoebaNoise = animationValuesRef.current?.amoebaNoise || [];
+
+    const numPoints = 8;
+    const points = [];
+
+    for (let i = 0; i < numPoints; i++) {
+      const angle = (i / numPoints) * Math.PI * 2;
+      const noise = amoebaNoise[i] || 0;
+      const radius = baseRadius + breathing + clickBoost + (noise * baseRadius);
+
+      const x = centerX + Math.cos(angle) * radius;
+      const y = centerY + Math.sin(angle) * radius;
+      points.push({ x, y });
+    }
+
+    if (points.length < 2) {
+      return '';
+    }
+
+    // Start the path at the midpoint between the last and first points
+    const firstPoint = points[0];
+    const lastPoint = points[points.length - 1];
+    let path = `M ${(lastPoint.x + firstPoint.x) / 2} ${(lastPoint.y + firstPoint.y) / 2}`;
+
+    // Use the vertices as control points (Q) between the midpoints of the lines
+    for (let i = 0; i < points.length; i++) {
+      const currentPoint = points[i];
+      const nextPoint = points[(i + 1) % points.length];
+
+      const midX = (currentPoint.x + nextPoint.x) / 2;
+      const midY = (currentPoint.y + nextPoint.y) / 2;
+
+      path += ` Q ${currentPoint.x} ${currentPoint.y} ${midX} ${midY}`;
+    }
+
+    path += ' Z'; // Close the path
+    return path;
+  };
 
   return (
     <div
       data-blob-id={id}
       style={{
         position: 'absolute',
-        // Make container 50% larger to accommodate stretching
-        transform: `translate(${position.x - (size * 1.5)/2}px, ${position.y - (size * 1.5)/2}px) scale(${scale})`,
+        transform: `translate(${position.x - stableSize}px, ${position.y - stableSize}px) scale(${scale})`,
         willChange: 'transform',
         cursor: isDisabled ? 'not-allowed' : 'pointer',
         opacity: isDisabled ? 0.5 : 1
@@ -317,20 +315,20 @@ const Blob = React.memo(({
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
     >
-      <svg width={size * 1.5} height={size * 1.5}>
+      <svg width={stableSize * 2} height={stableSize * 2}>
         <defs>
           <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
             <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor={glowColor} floodOpacity="0.7"/>
           </filter>
-        </defs>     
-        <path 
-          d={path} 
-          fill={color} 
-          stroke={strokeColor} 
+        </defs>
+
+        {/* Amoeba-like blob shape */}
+        <path
+          d={generateAmoebePath()}
+          fill={color}
+          stroke={strokeColor}
           strokeWidth="2"
           filter={`url(#${filterId})`}
-          // Center the path in the larger SVG
-          transform={`translate(${size * 0.25}, ${size * 0.25})`}
         />
       </svg>
     </div>
