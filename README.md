@@ -1,69 +1,68 @@
-# React + TypeScript + Vite
+# Blob Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Inspiration:
 
-Currently, two official plugins are available:
+- [YT Link](https://youtu.be/8Are9dDbW24)
+- [Universe by Kurzgesagt](https://apps.apple.com/us/app/universe-in-a-nutshell/id1526364758)
+- cookie clicker
+- a dark room
+- universal paperclip
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Levels:
 
-## Expanding the ESLint configuration
+1. Intro
+2. Microscope (atomic)
+3. Petri (bacterial)
+4. Lab (scream sound effects) on a piano???
+5. City (attacks begin)
+6. Earth
+7. Sun solar system
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Plans for Tuesday (Jul 8):
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+_Playable game start to finish_
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- game engine
+  - biomass/size
+  - level scaling
+  - cost scaling
+  - shop scaling?
+- blob animations
+  - tween the growth
+  - tone the ripple down as it grows
+- map
+  - transitions between levels
+  - simple first steps for today
+- HUD:
+  - add visual elements for generators (ask ai to brainstorm dif names)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Plans for Wednesday (Jul 9):
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- blob:
+  - interaction with food
+- map:
+  - better quality/zoom feature
+- game scaling:
+  - headlines/achievements
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Animation details
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+**Scene change** --> once you reach a certain size, you 'evolve' and map zooms out
+when blob is in a petri dish -- it fills up the petri dish and breaks out in a planned animation (breaks out and starts next phase)
+
+### Stretch goals
+
+**Juice (at end)**
+blob - nutrient interactions
+animations for level changes (breakout of petri dish, etc.)
+fun text updates/quotes on level upgrades
+enemies and associated upgrades (militaries or people eating?)
+control zoom level
+
+## Out of scope
+
+- accounts/session management
+- splitting blobs
+- 3D
+- pausing
+- moving anything besides the blob/map
