@@ -14,8 +14,7 @@ function App() {
     handleBlobClick,
     handleBuyGenerator,
     handleBuyUpgrade,
-    handleNutrientEaten,
-    getNearbyNutrientsForBlob,
+
   } = useGame();
 
   const phase = useMapSelector((s) => s.phase);
@@ -29,8 +28,7 @@ function App() {
   }, [gameState.biomass]);
 
   // Blob position is always at center (0,0) in its coordinate system
-  const blobPosition = { x: 0, y: 0 };
-  const nearbyNutrients = getNearbyNutrientsForBlob(blobPosition);
+  // const blobPosition = { x: 0, y: 0 };
 
   return (
     <div className="w-screen h-screen relative overflow-hidden">
@@ -48,8 +46,6 @@ function App() {
             biomass={gameState.biomass}
             position={{ x: 0, y: 0 }}
             onBlobClick={handleBlobClick}
-            onFoodEaten={handleNutrientEaten}
-            nearbyFood={nearbyNutrients}
           />
         </div>
       </div>
