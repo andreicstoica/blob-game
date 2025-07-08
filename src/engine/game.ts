@@ -1,8 +1,8 @@
 import { GENERATORS, UPGRADES, GAME_CONFIG } from './content';
+import { getCurrentLevel as getLevelByBiomass, getNextLevel as getNextLevelByCurrent, canEvolve } from './Levels';
 
-export interface SlimeState {
+export interface BlobState {
     size: number
-    type: string
 }
 
 export interface NutrientState {
@@ -28,18 +28,19 @@ export interface UpgradeState {
     cost: number
     description: string
     effect: number
-    type: 'growth' | 'split' | 'click' | 'slime'
+    type: 'growth' | 'split' | 'click' | 'blob'
     purchased: boolean
 }
 
 export interface GameState {
-    slimes: SlimeState[]
+    blobs: BlobState[]
     biomass: number
     growth: number
     clickPower: number
     generators: Record<string, GeneratorState>
     upgrades: Record<string, UpgradeState>
     nutrients: NutrientState[]
+    currentLevelId: string
 }
 
 const initializeGenerators = () => {
@@ -78,13 +79,14 @@ const initializeNutrients = (): NutrientState[] => {
 };
 
 export const initialGameState: GameState = {
-    slimes: [],
+    blobs: [],
     biomass: GAME_CONFIG.startingBiomass,
     growth: 0,
     clickPower: GAME_CONFIG.startingClickPower,
     generators: initializeGenerators(),
     upgrades: initializeUpgrades(),
-    nutrients: initializeNutrients()
+    nutrients: initializeNutrients(),
+    currentLevelId: 'intro'
 }
 
 export function tick(state: GameState): GameState {
@@ -126,7 +128,7 @@ export function buyGenerator(state: GameState, generatorId: string): GameState {
 
     // Apply upgrade effects
     if (state.upgrades['efficient-generators'].purchased) {
-        totalGrowth += newGenerators['basic-slime'].level * state.upgrades['efficient-generators'].effect;
+        totalGrowth += newGenerators['basic-generator'].level * state.upgrades['efficient-generators'].effect;
     }
 
     return {
@@ -163,7 +165,7 @@ export function buyUpgrade(state: GameState, upgradeId: string): GameState {
         });
 
         if (upgradeId === 'efficient-generators') {
-            totalGrowth += state.generators['basic-slime'].level * upgrade.effect;
+            totalGrowth += state.generators['basic-generator'].level * upgrade.effect;
         }
 
         newGrowth = totalGrowth;
@@ -190,7 +192,7 @@ export function getTotalGrowth(state: GameState): number {
 
     // Apply upgrade effects
     if (state.upgrades['efficient-generators'].purchased) {
-        totalGrowth += state.generators['basic-slime'].level * state.upgrades['efficient-generators'].effect;
+        totalGrowth += state.generators['basic-generator'].level * state.upgrades['efficient-generators'].effect;
     }
 
     return totalGrowth;
@@ -248,4 +250,29 @@ export function spawnMoreNutrients(state: GameState): GameState {
     }
 
     return state;
+}
+
+// Evolution system functions
+export function canEvolveToNextLevel(state: GameState): boolean {
+    return canEvolve(state.biomass);
+}
+
+export function getCurrentLevel(state: GameState) {
+    return getLevelByBiomass(state.biomass);
+}
+
+export function getNextLevel(state: GameState) {
+    const currentLevel = getLevelByBiomass(state.biomass);
+    return getNextLevelByCurrent(currentLevel);
+}
+
+export function evolveToNextLevel(state: GameState): GameState {
+    const nextLevel = getNextLevel(state);
+    if (!nextLevel) return state; // Already at max level
+
+    return {
+        ...state,
+        currentLevelId: nextLevel.id
+        // Biomass carries over, generators and upgrades are preserved
+    };
 }
