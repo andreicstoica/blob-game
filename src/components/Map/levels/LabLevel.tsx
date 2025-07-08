@@ -11,7 +11,13 @@ export default function LabLevel({
       height={height}
       className="absolute inset-0 w-full h-full"
     >
-      <rect width="100%" height="100%" fill="#f5f5dc" />
+      <defs>
+        <linearGradient id="labBg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#a084ca" />
+          <stop offset="100%" stopColor="#e0c3fc" />
+        </linearGradient>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#labBg)" />
       <rect
         x={width / 2 - 40}
         y={height / 2 - 60}

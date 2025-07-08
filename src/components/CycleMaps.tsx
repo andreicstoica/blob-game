@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useMap, useMapSelector } from "../engine/mapState";
-import PhaseBackground from "./PhaseBackground";
 import Map from "./Map/Map";
 
 export default function CycleMaps() {
@@ -43,9 +42,6 @@ export default function CycleMaps() {
 
   return (
     <div className="h-full w-full relative">
-      {/* Set background gradient based on game phase and mode */}
-      <PhaseBackground mode={isDark ? "dark" : "light"} />
-
       {/* Your app content here */}
       <Map className="w-full h-screen" />
 
