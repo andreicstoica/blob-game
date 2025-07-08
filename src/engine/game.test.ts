@@ -1,22 +1,57 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { 
-    initialGameState, 
-    manualClick, 
-    tick, 
-    buyGenerator, 
+    INITIAL_STATE,
+    buyGenerator,
     buyUpgrade,
+    manualClick,
+    consumeNutrient,
     getGeneratorCost,
     getTotalGrowth,
-    consumeNutrient,
-    getNearbyNutrients
+    getNearbyNutrients,
+    tick
 } from './game';
 import { GENERATORS, UPGRADES, GAME_CONFIG } from './content';
 
+describe('Game Engine', () => {
+    it('should initialize with correct default values', () => {
+        const gameState = INITIAL_STATE;
+        
+        expect(gameState.biomass).toBe(1);
+        expect(gameState.clickPower).toBe(1);
+        expect(gameState.growth).toBe(0);
+        expect(gameState.currentLevelId).toBe(0);
+        expect(gameState.highestLevelReached).toBe(0);
+    });
+
+    it('should initialize generators with correct default values', () => {
+        const gameState = INITIAL_STATE;
+        
+        Object.values(gameState.generators).forEach((generator: any) => {
+            expect(generator.level).toBe(0);
+        });
+    });
+
+    it('should initialize upgrades with correct default values', () => {
+        const gameState = INITIAL_STATE;
+        
+        Object.values(gameState.upgrades).forEach((upgrade: any) => {
+            expect(upgrade.purchased).toBe(false);
+        });
+    });
+
+    it('should initialize nutrients with correct default values', () => {
+        const gameState = INITIAL_STATE;
+        
+        expect(gameState.nutrients.length).toBeGreaterThan(0);
+        expect(gameState.nutrients.every((n: any) => !n.consumed)).toBe(true);
+    });
+});
+
 describe('Game Logic', () => {
-    let gameState: typeof initialGameState;
+    let gameState: typeof INITIAL_STATE;
 
     beforeEach(() => {
-        gameState = { ...initialGameState };
+        gameState = { ...INITIAL_STATE };
     });
 
     describe('Initial State', () => {

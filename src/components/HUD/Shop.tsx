@@ -21,12 +21,12 @@ export const Shop: React.FC<ShopProps> = ({
   }
 
   const currentLevel = getCurrentLevel(gameState);
-  const currentLevelIndex = LEVELS.findIndex(level => level.id === currentLevel.id);
+  const currentLevelIndex = currentLevel.id;
 
   // Helper function to check if content is available at current level
   const isContentAvailable = (unlockedAtLevel: string) => {
-    const unlockLevelIndex = LEVELS.findIndex(level => level.id === unlockedAtLevel);
-    return unlockLevelIndex <= currentLevelIndex;
+    const unlockLevel = LEVELS.find(level => level.name === unlockedAtLevel);
+    return unlockLevel ? unlockLevel.id <= currentLevelIndex : false;
   };
 
   return (

@@ -42,8 +42,8 @@ export interface GameState {
     generators: Record<string, GeneratorState>
     upgrades: Record<string, UpgradeState>
     nutrients: NutrientState[]
-    currentLevelId: string
-    highestLevelReached: string
+    currentLevelId: number
+    highestLevelReached: number
 }
 
 const initializeGenerators = () => {
@@ -81,7 +81,7 @@ const initializeNutrients = (): NutrientState[] => {
     return nutrients;
 };
 
-export const initialGameState: GameState = {
+export const INITIAL_STATE: GameState = {
     blobs: [],
     biomass: GAME_CONFIG.startingBiomass,
     growth: 0,
@@ -89,8 +89,8 @@ export const initialGameState: GameState = {
     generators: initializeGenerators(),
     upgrades: initializeUpgrades(),
     nutrients: initializeNutrients(),
-    currentLevelId: 'intro',
-    highestLevelReached: 'intro'
+    currentLevelId: 0,
+    highestLevelReached: 0
 }
 
 export function tick(state: GameState): GameState {
@@ -255,7 +255,7 @@ export function spawnMoreNutrients(state: GameState): GameState {
 }
 
 // Helper function to get level by ID
-function getLevelById(levelId: string) {
+function getLevelById(levelId: number) {
     return LEVELS.find(level => level.id === levelId) || LEVELS[0];
 }
 

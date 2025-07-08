@@ -1,5 +1,5 @@
 export interface Level {
-  id: string;
+  id: number;
   name: string;
   biomassThreshold: number;
   biomassDisplayFormat: 'standard' | 'scientific' | 'decimal' | 'whole';
@@ -10,8 +10,8 @@ export interface Level {
 
 export const LEVELS: Level[] = [
   {
-    id: 'intro',
-    name: 'Intro',
+    id: 0,
+    name: 'intro',
     biomassThreshold: 0,
     biomassDisplayFormat: 'standard',
     background: 'intro-bg',
@@ -19,8 +19,8 @@ export const LEVELS: Level[] = [
     description: 'Welcome to the beginning of your journey'
   },
   {
-    id: 'microscopic',
-    name: 'Microscopic',
+    id: 1,
+    name: 'microscopic',
     biomassThreshold: 1e-6, // 0.000001
     biomassDisplayFormat: 'scientific',
     background: 'microscopic-bg',
@@ -28,8 +28,8 @@ export const LEVELS: Level[] = [
     description: 'You are being observed under a microscope'
   },
   {
-    id: 'petri-dish',
-    name: 'Petri Dish',
+    id: 2,
+    name: 'petri-dish',
     biomassThreshold: 10,
     biomassDisplayFormat: 'decimal',
     background: 'petri-bg',
@@ -37,8 +37,8 @@ export const LEVELS: Level[] = [
     description: 'Growing in a petri dish environment'
   },
   {
-    id: 'lab',
-    name: 'Laboratory',
+    id: 3,
+    name: 'lab',
     biomassThreshold: 10000000, // 10 million
     biomassDisplayFormat: 'whole',
     background: 'lab-bg',
@@ -46,8 +46,8 @@ export const LEVELS: Level[] = [
     description: 'The laboratory where experiments are conducted'
   },
   {
-    id: 'city',
-    name: 'City',
+    id: 4,
+    name: 'city',
     biomassThreshold: 500000000000, // 500 billion
     biomassDisplayFormat: 'whole',
     background: 'city-bg',
@@ -55,8 +55,8 @@ export const LEVELS: Level[] = [
     description: 'A bustling cityscape'
   },
   {
-    id: 'earth',
-    name: 'Earth',
+    id: 5,
+    name: 'earth',
     biomassThreshold: 1.758e15, // 1.758 quadrillion
     biomassDisplayFormat: 'scientific',
     background: 'earth-bg',
@@ -64,8 +64,8 @@ export const LEVELS: Level[] = [
     description: 'The entire planet Earth'
   },
   {
-    id: 'solar-system',
-    name: 'Solar System',
+    id: 6,
+    name: 'solar-system',
     biomassThreshold: 1e18, // 1 quintillion
     biomassDisplayFormat: 'scientific',
     background: 'solar-system-bg',
