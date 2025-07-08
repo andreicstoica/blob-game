@@ -10,13 +10,13 @@ export interface Cell {
 }
 
 export interface MapState {
-    phase: 'primordial' | 'colonial' | 'cosmic'
+    phase: 'intro' | 'microscope' | 'petri' | 'lab' | 'city' | 'earth' | 'sunSolarSystem'
     size: 128                 // square grid, power of two
     cells: Cell[]             // flat array for speed
     /** helper to read cell idx = y*size + x */
     get: (x: number, y: number) => CellStatus
     set: (x: number, y: number, status: CellStatus) => void
-    setPhase: (phase: 'primordial' | 'colonial' | 'cosmic') => void
+    setPhase: (phase: 'intro' | 'microscope' | 'petri' | 'lab' | 'city' | 'earth' | 'sunSolarSystem') => void
 }
 
 export const useMap = create<MapState>()(
@@ -33,7 +33,7 @@ export const useMap = create<MapState>()(
             cells[Math.floor(Math.random() * cells.length)].status = 'nutrient'
 
         return {
-            phase: 'primordial',
+            phase: 'intro',
             size,
             cells,
             get: (x, y) => cells[y * size + x].status,

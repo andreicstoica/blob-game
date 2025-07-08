@@ -1,9 +1,13 @@
 // src/components/Map/Map.tsx
 import { useRef, useEffect, useState } from "react";
 import { useMapSelector } from "../../engine/mapState";
-import PetriLayer from "./layers/PetriLayer";
-import EarthLayer from "./layers/EarthLayer";
-import CosmicLayer from "./layers/CosmicLayer";
+import IntroLevel from "./levels/IntroLevel";
+import MicroscopeLevel from "./levels/MicroscopeLevel";
+import PetriLevel from "./levels/PetriLevel";
+import LabLevel from "./levels/LabLevel";
+import CityLevel from "./levels/CityLevel";
+import EarthLevel from "./levels/EarthLevel";
+import SunSolarSystemLevel from "./levels/SunSolarSystemLevel";
 
 interface MapProps {
   className?: string;
@@ -29,14 +33,30 @@ export default function Map({ className }: MapProps) {
 
   return (
     <div ref={containerRef} className={`relative w-full h-full ${className}`}>
-      {phase === "primordial" && (
-        <PetriLayer
+      {phase === "intro" && (
+        <IntroLevel width={dimensions.width} height={dimensions.height} />
+      )}
+      {phase === "microscope" && (
+        <MicroscopeLevel width={dimensions.width} height={dimensions.height} />
+      )}
+      {phase === "petri" && (
+        <PetriLevel width={dimensions.width} height={dimensions.height} />
+      )}
+      {phase === "lab" && (
+        <LabLevel width={dimensions.width} height={dimensions.height} />
+      )}
+      {phase === "city" && (
+        <CityLevel width={dimensions.width} height={dimensions.height} />
+      )}
+      {phase === "earth" && (
+        <EarthLevel width={dimensions.width} height={dimensions.height} />
+      )}
+      {phase === "sunSolarSystem" && (
+        <SunSolarSystemLevel
           width={dimensions.width}
           height={dimensions.height}
         />
       )}
-      {phase === "colonial" && <EarthLayer width={dimensions.width} height={dimensions.height} />}
-      {phase === "cosmic" && <CosmicLayer width={dimensions.width} height={dimensions.height} />}
     </div>
   );
 }

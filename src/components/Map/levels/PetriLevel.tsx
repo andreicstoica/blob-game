@@ -1,21 +1,18 @@
-// src/components/Map/layers/PetriLayer.tsx
+// src/components/Map/levels/PetriLevel.tsx
 import { useEffect, useRef } from "react";
 
-interface PetriLayerProps {
+export default function PetriLevel({
+  width,
+  height,
+}: {
   width: number;
   height: number;
-}
-
-export default function PetriLayer({
-  width,
-  height
-}: PetriLayerProps) {
+}) {
   const initializedRef = useRef(false);
 
   // Initialize only once when component first mounts
   useEffect(() => {
     if (!initializedRef.current && width > 0 && height > 0) {
-      console.log("PetriLayer: Initialized with dimensions", { width, height });
       initializedRef.current = true;
     }
   }, [width, height]);
