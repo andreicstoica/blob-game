@@ -1,8 +1,8 @@
 import { GENERATORS, UPGRADES, GAME_CONFIG } from './content';
+import { getCurrentLevel as getLevelByBiomass, getNextLevel as getNextLevelByCurrent, canEvolve, LEVELS } from './Levels';
 
-export interface SlimeState {
+export interface BlobState {
     size: number
-    type: string
 }
 
 export interface NutrientState {
@@ -28,18 +28,20 @@ export interface UpgradeState {
     cost: number
     description: string
     effect: number
-    type: 'growth' | 'split' | 'click' | 'slime'
+    type: 'growth' | 'split' | 'click' | 'blob'
     purchased: boolean
 }
 
 export interface GameState {
-    slimes: SlimeState[]
+    blobs: BlobState[]
     biomass: number
     growth: number
     clickPower: number
     generators: Record<string, GeneratorState>
     upgrades: Record<string, UpgradeState>
     nutrients: NutrientState[]
+    currentLevelId: string
+    highestLevelReached: string
 }
 
 const initializeGenerators = () => {
@@ -78,19 +80,23 @@ const initializeNutrients = (): NutrientState[] => {
 };
 
 export const initialGameState: GameState = {
-    slimes: [],
+    blobs: [],
     biomass: GAME_CONFIG.startingBiomass,
     growth: 0,
     clickPower: GAME_CONFIG.startingClickPower,
     generators: initializeGenerators(),
     upgrades: initializeUpgrades(),
-    nutrients: initializeNutrients()
+    nutrients: initializeNutrients(),
+    currentLevelId: 'intro',
+    highestLevelReached: 'intro'
 }
 
 export function tick(state: GameState): GameState {
+    const currentGrowth = getTotalGrowth(state);
     const newState = {
         ...state,
-        biomass: state.biomass + state.growth,
+        biomass: state.biomass + currentGrowth,
+        growth: currentGrowth, // Keep the growth field updated for UI consistency
     };
 
     // Spawn more nutrients if needed
@@ -126,7 +132,7 @@ export function buyGenerator(state: GameState, generatorId: string): GameState {
 
     // Apply upgrade effects
     if (state.upgrades['efficient-generators'].purchased) {
-        totalGrowth += newGenerators['basic-slime'].level * state.upgrades['efficient-generators'].effect;
+        totalGrowth += newGenerators['basic-generator'].level * state.upgrades['efficient-generators'].effect;
     }
 
     return {
@@ -163,7 +169,7 @@ export function buyUpgrade(state: GameState, upgradeId: string): GameState {
         });
 
         if (upgradeId === 'efficient-generators') {
-            totalGrowth += state.generators['basic-slime'].level * upgrade.effect;
+            totalGrowth += state.generators['basic-generator'].level * upgrade.effect;
         }
 
         newGrowth = totalGrowth;
@@ -190,7 +196,7 @@ export function getTotalGrowth(state: GameState): number {
 
     // Apply upgrade effects
     if (state.upgrades['efficient-generators'].purchased) {
-        totalGrowth += state.generators['basic-slime'].level * state.upgrades['efficient-generators'].effect;
+        totalGrowth += state.generators['basic-generator'].level * state.upgrades['efficient-generators'].effect;
     }
 
     return totalGrowth;
@@ -248,4 +254,39 @@ export function spawnMoreNutrients(state: GameState): GameState {
     }
 
     return state;
+}
+
+// Helper function to get level by ID
+function getLevelById(levelId: string) {
+    return LEVELS.find(level => level.id === levelId) || LEVELS[0];
+}
+
+// Evolution system functions
+export function canEvolveToNextLevel(state: GameState): boolean {
+    // Check if player has enough biomass for the next level
+    const currentLevel = getLevelById(state.highestLevelReached);
+    const nextLevel = getNextLevelByCurrent(currentLevel);
+    return nextLevel !== null && state.biomass >= nextLevel.biomassThreshold;
+}
+
+export function getCurrentLevel(state: GameState) {
+    // Use the highest level reached, not current biomass
+    return getLevelById(state.highestLevelReached);
+}
+
+export function getNextLevel(state: GameState) {
+    const currentLevel = getLevelById(state.highestLevelReached);
+    return getNextLevelByCurrent(currentLevel);
+}
+
+export function evolveToNextLevel(state: GameState): GameState {
+    const nextLevel = getNextLevel(state);
+    if (!nextLevel) return state; // Already at max level
+
+    return {
+        ...state,
+        currentLevelId: nextLevel.id,
+        highestLevelReached: nextLevel.id
+        // Biomass carries over, generators and upgrades are preserved
+    };
 }
