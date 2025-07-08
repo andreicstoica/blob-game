@@ -15,7 +15,7 @@ function App() {
     handleBlobClick,
     handleBuyGenerator,
     handleBuyUpgrade,
-    handleEvolve,
+    handleEvolve
   } = useGame();
 
   const currentLevel = useMapSelector((s) => s.currentLevel);
