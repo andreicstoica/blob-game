@@ -1,10 +1,6 @@
 import { useMemo } from "react";
-import Star from "../../Food/Star";
 
-interface CosmicLayerProps {
-  width: number;
-  height: number;
-}
+const planetEmojis = ["🪐", "🌍", "🌑", "🌕", "🛰️", "☄️", "🌟"];
 
 export default function SunSolarSystemLevel({
   width,
@@ -13,31 +9,43 @@ export default function SunSolarSystemLevel({
   width: number;
   height: number;
 }) {
-  // Generate stars using similar noise logic but as components
-  const stars = useMemo(() => {
-    const starCount = Math.floor((width * height) / 1000); // Density-based
-    return Array.from({ length: starCount }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      opacity: 0.3 + Math.random() * 0.7, // 0.3 to 1.0
+  // Generate planet positions
+  const planets = useMemo(() => {
+    const count = 7;
+    return Array.from({ length: count }, (_, i) => ({
+      x: width * (0.15 + 0.1 * i),
+      y: height * (0.5 + 0.2 * Math.sin(i)),
+      emoji: planetEmojis[i % planetEmojis.length],
     }));
   }, [width, height]);
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width,
-        height,
-        pointerEvents: "none",
-      }}
+    <svg
+      width={width}
+      height={height}
+      className="absolute inset-0 w-full h-full"
     >
-      {/* Stars */}
-      {stars.map((star, i) => (
-        <Star key={i} x={star.x} y={star.y} opacity={star.opacity} />
+      <image
+        href="/assets/solar-system.webp"
+        x="0"
+        y="0"
+        width={width}
+        height={height}
+        preserveAspectRatio="xMidYMid slice"
+      />
+      <rect width="100%" height="100%" fill="#fceabb" opacity="0.2" />
+      {planets.map((planet, i) => (
+        <text
+          key={i}
+          x={planet.x}
+          y={planet.y}
+          fontSize={Math.max(width, height) * 0.06}
+          textAnchor="middle"
+          alignmentBaseline="middle"
+        >
+          {planet.emoji}
+        </text>
       ))}
-    </div>
+    </svg>
   );
 }

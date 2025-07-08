@@ -54,7 +54,7 @@ export const Nutrients: React.FC<NutrientsProps> = ({ nutrients, phase }) => {
                   filter: "drop-shadow(0 0 3px rgba(255, 255, 255, 0.6))",
                 }}
               />
-            ) : (
+            ) : phase === "microscope" || phase === "petri" ? (
               <div
                 className="bg-green-500 rounded-full animate-pulse border border-green-300"
                 style={{
@@ -62,7 +62,51 @@ export const Nutrients: React.FC<NutrientsProps> = ({ nutrients, phase }) => {
                   height: "8px",
                 }}
               />
-            )}
+            ) : phase === "lab" ? (
+              <span
+                style={{
+                  fontSize: "14px",
+                  filter: "drop-shadow(0 0 2px #fff)",
+                }}
+                role="img"
+                aria-label="flask"
+              >
+                🧪
+              </span>
+            ) : phase === "city" ? (
+              <span
+                style={{
+                  fontSize: "14px",
+                  filter: "drop-shadow(0 0 2px #fff)",
+                }}
+                role="img"
+                aria-label="flower"
+              >
+                🌸
+              </span>
+            ) : phase === "earth" ? (
+              <span
+                style={{
+                  fontSize: "14px",
+                  filter: "drop-shadow(0 0 2px #fff)",
+                }}
+                role="img"
+                aria-label="leaf"
+              >
+                🍃
+              </span>
+            ) : phase === "sunSolarSystem" ? (
+              <span
+                style={{
+                  fontSize: "14px",
+                  filter: "drop-shadow(0 0 2px #fff)",
+                }}
+                role="img"
+                aria-label="star"
+              >
+                ⭐
+              </span>
+            ) : null}
           </div>
         );
       })}
