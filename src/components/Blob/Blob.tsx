@@ -15,24 +15,23 @@ export interface BlobProps {
   glowColor?: string;
   isDisabled?: boolean;
   isActive?: boolean;
+  clickPower?: number; // The current click power value to display
 }
-
-// Helper to interpolate between two color values
-const interpolateColor = (color1: number, color2: number, factor: number) => {
-  return Math.round(color1 + (color2 - color1) * factor);
-};
 
 const Blob = React.memo(({
   id,
   position,
   size: propSize,
   biomass,
+  color = "#1adaac",
+  strokeColor = "#cfffb1",
   glowColor = "#cfffb1",
   isDisabled = false,
   onBlobClick,
   onBlobPress,
   onBlobRelease,
-  isActive = true
+  isActive = true,
+  clickPower = 1 // Default click power
 }: BlobProps) => {
 
   const filterId = `glow-${id}`;
@@ -46,7 +45,6 @@ const Blob = React.memo(({
 
   const [stableSize, setStableSize] = useState(() => calculateCurrentSize());
   const visualSizeRef = useRef(stableSize);
-
   const [scale, setScale] = useState(1);
   const [isPressed, setIsPressed] = useState(false);
 
@@ -56,6 +54,8 @@ const Blob = React.memo(({
     amoebaNoise: [] as number[],
     pressure: 0,
     lastClickTime: 0,
+    clickHeat: 0,
+    clickTimes: [] as number[],
   });
 
   const [, forceRender] = useState({});
@@ -80,6 +80,39 @@ const Blob = React.memo(({
     const clickX = e.clientX - rect.left - stableSize;
     const clickY = e.clientY - rect.top - stableSize;
 
+    // Calculate world position for floating number (relative to viewport)
+    const worldX = e.clientX;
+    const worldY = e.clientY; // Move up from the click point to avoid mouse cursor
+
+    // Trigger floating number animation
+    if (window.addFloatingNumber && clickPower > 0) {
+      // Generate random color in blue-purple-white gradient
+      const colors = [
+        '#6366f1', // Indigo
+        '#8b5cf6', // Violet  
+        '#a855f7', // Purple
+        '#c084fc', // Light purple
+        '#ddd6fe', // Very light purple
+        '#e0e7ff', // Light indigo
+        '#f3f4f6', // Light gray
+        '#ffffff', // White
+        '#7c3aed', // Dark purple
+        '#3b82f6', // Blue
+        '#fbbf24', // Yellow
+        '#facc15', // Bright yellow
+        '#22c55e', // Green
+        '#4ade80', // Light green
+        '#10b981'  // Emerald
+      ];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      
+      window.addFloatingNumber(
+        { x: worldX, y: worldY }, 
+        clickPower, 
+        randomColor
+      );
+    }
+
     if (onBlobClick) {
       if (onBlobClick.length === 0) {
         (onBlobClick as () => void)();
@@ -89,13 +122,29 @@ const Blob = React.memo(({
     }
     onBlobRelease?.(id);
 
+    const now = Date.now();
+    const animValues = animationValuesRef.current;
+
+    // Add pressure for click animation
     const pressureBoost = 0.2;
     const maxPressure = 1.5;
-    animationValuesRef.current.pressure = Math.min(
-        maxPressure,
-        animationValuesRef.current.pressure + pressureBoost
-    );
-    animationValuesRef.current.lastClickTime = Date.now();
+    animValues.pressure = Math.min(maxPressure, animValues.pressure + pressureBoost);
+    animValues.lastClickTime = now;
+
+    // Track click for heat/color effect
+    animValues.clickTimes.push(now);
+    
+    // Remove old clicks (older than 2 seconds)
+    const heatWindow = 2000;
+    animValues.clickTimes = animValues.clickTimes.filter(time => now - time < heatWindow);
+    
+    // Calculate click heat based on recent click frequency
+    // Need at least 3 clicks in the window to start heating up
+    if (animValues.clickTimes.length >= 3) {
+      const clickFrequency = animValues.clickTimes.length / (heatWindow / 1000); // clicks per second
+      const maxFrequency = 5; // Max expected clicks per second for full heat
+      animValues.clickHeat = Math.min(1, clickFrequency / maxFrequency);
+    }
   };
 
   const handleMouseLeave = () => {
@@ -108,13 +157,15 @@ const Blob = React.memo(({
       const now = Date.now();
       const time = now * 0.001;
       const animValues = animationValuesRef.current;
-
+      
+      // Core animation logic for smooth growth
       const interpolationFactor = 0.05;
       visualSizeRef.current += (stableSize - visualSizeRef.current) * interpolationFactor;
 
       const currentVisualSize = visualSizeRef.current;
       const stableRadius = currentVisualSize * 0.35;
 
+      // Update breathing and noise based on the current visual size
       animValues.breathing = Math.abs(Math.sin(time * 0.6)) * (stableRadius * 0.1);
       
       const amoebaNoise = [];
@@ -126,27 +177,38 @@ const Blob = React.memo(({
       }
       animValues.amoebaNoise = amoebaNoise;
       
+      // CLICK ANIMATION (Shrink & Bounce)
       const timeSinceLastClick = now - animValues.lastClickTime;
       const recoveryDelay = 150;
 
       if (timeSinceLastClick > recoveryDelay) {
         if (animValues.pressure > 0) {
-          animValues.pressure *= 0.94;
+          animValues.pressure *= 0.88; // Keep size decay at 0.88
           if (animValues.pressure < 0.01) {
             animValues.pressure = 0;
           }
         }
       }
       
+      // HEAT/COLOR DECAY - Cool down when not clicking rapidly
+      if (timeSinceLastClick > 500) {
+        animValues.clickHeat *= 0.97; // Faster color decay: was 0.985, now 0.95
+        if (animValues.clickHeat < 0.01) {
+          animValues.clickHeat = 0;
+        }
+      }
+      
       const maxShrinkAmount = stableRadius * 0.4;
       animValues.clickBoost = -animValues.pressure * maxShrinkAmount;
 
+      // Update overall scale
       let scaleVariation = 1.0;
       if (isDisabled) {
         scaleVariation *= 0.9;
       }
       setScale(scaleVariation);
 
+      // Re-render if enough time has passed
       if (now - lastRenderTime.current >= 16) {
         lastRenderTime.current = now;
         forceRender({});
@@ -181,7 +243,7 @@ const Blob = React.memo(({
     const lastPoint = points[points.length - 1];
     let path = `M ${(lastPoint.x + firstPoint.x) / 2} ${(lastPoint.y + firstPoint.y) / 2}`;
 
-    for (let i = 0; i < numPoints; i++) {
+    for (let i = 0; i < points.length; i++) {
       const currentPoint = points[i];
       const nextPoint = points[(i + 1) % points.length];
       const midX = (currentPoint.x + nextPoint.x) / 2;
@@ -194,42 +256,55 @@ const Blob = React.memo(({
 
   const currentVisualSize = visualSizeRef.current;
 
-  // --- Dynamic Effects Calculation ---
-  const maxPressure = 1.5;
-  const currentPressure = animationValuesRef.current.pressure;
-  
-  const pressureColorThreshold = 0.21;
-  let heatFactor = 0;
+  // Function to interpolate between green and orange based on heat
+  const getHeatColor = (baseColor: string, heat: number) => {
+    if (heat === 0) return baseColor;
+    
+    const hexToRgb = (hex: string) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : { r: 0, g: 0, b: 0 };
+    };
+    
+    const rgbToHex = (r: number, g: number, b: number) => {
+      return "#" + ((1 << 24) + (Math.round(r) << 16) + (Math.round(g) << 8) + Math.round(b)).toString(16).slice(1);
+    };
+    
+    const greenRgb = hexToRgb(baseColor);
+    const orangeRgb = { r: 255, g: 140, b: 0 };
+    
+    const r = greenRgb.r + (orangeRgb.r - greenRgb.r) * heat;
+    const g = greenRgb.g + (orangeRgb.g - greenRgb.g) * heat;
+    const b = greenRgb.b + (orangeRgb.b - greenRgb.b) * heat;
+    
+    return rgbToHex(r, g, b);
+  };
 
-  if (currentPressure > pressureColorThreshold) {
-    const effectivePressure = currentPressure - pressureColorThreshold;
-    const effectiveMaxPressure = maxPressure - pressureColorThreshold;
-    heatFactor = Math.min(effectivePressure / effectiveMaxPressure, 1);
-  }
+  // Get current heated colors
+  const currentHeat = animationValuesRef.current.clickHeat;
+  const heatedColor = getHeatColor(color, currentHeat);
+  const heatedStrokeColor = getHeatColor(strokeColor, currentHeat * 0.7);
 
-  const heatedColor = `rgb(
-    ${interpolateColor(26, 255, heatFactor)},
-    ${interpolateColor(218, 165, heatFactor)},
-    ${interpolateColor(172, 0, heatFactor)}
-  )`;
-  
-  const heatedStrokeColor = `rgb(
-    ${interpolateColor(207, 255, heatFactor)},
-    ${interpolateColor(255, 220, heatFactor)},
-    ${interpolateColor(177, 100, heatFactor)}
-  )`;
+  // Dynamic glow effect based on heat
+  const glowDeviation = 4 + (10 * currentHeat); // Glow gets wider when heated
 
-  const glowOpacity = 0.7 + (0.3 * heatFactor); // Starts at 0.7, goes up to 1.0
-
-  // ✅ CHANGED: Calculate glow width based on the heatFactor
-  const glowDeviation = 4 + (10 * heatFactor); // Starts at 4, goes up to 10
+  // Calculate tighter bounds for the clickable area
+  const blobRadius = currentVisualSize * 0.35;
+  const containerSize = blobRadius * 2.4; // Clickable area size
 
   return (
     <div
       data-blob-id={id}
       style={{
         position: 'absolute',
-        transform: `translate(${position.x - currentVisualSize}px, ${position.y - currentVisualSize}px) scale(${scale})`,
+        left: position.x - containerSize/2,
+        top: position.y - containerSize/2,
+        width: containerSize,
+        height: containerSize,
+        transform: `scale(${scale})`,
         willChange: 'transform',
         cursor: isDisabled ? 'not-allowed' : 'pointer',
         opacity: isDisabled ? 0.5 : 1
@@ -238,11 +313,20 @@ const Blob = React.memo(({
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
     >
-      <svg width={currentVisualSize * 2} height={currentVisualSize * 2}>
+      <svg 
+        width={currentVisualSize * 2} 
+        height={currentVisualSize * 2} 
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+          pointerEvents: 'none' // Let the parent div handle clicks
+        }}
+      >
         <defs>
-            {/* ✅ CHANGED: stdDeviation is now dynamic */}
           <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="0" stdDeviation={glowDeviation} floodColor={glowColor} floodOpacity={glowOpacity}/>
+            <feDropShadow dx="0" dy="0" stdDeviation={glowDeviation} floodColor={glowColor} floodOpacity="0.7"/>
           </filter>
         </defs>
         <path

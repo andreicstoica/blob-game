@@ -49,6 +49,7 @@ function App() {
             biomass={gameState.biomass}
             position={{ x: 0, y: 0 }}
             onBlobClick={handleBlobClick}
+            clickPower={gameState.clickPower}
           />
         </div>
       </div>
