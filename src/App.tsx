@@ -5,8 +5,8 @@ import { Nutrients } from "./components/Food/Nutrients";
 import { GameHUD } from "./components/HUD/GameHUD";
 import { ScaleIndicator } from "./components/HUD/ScaleIndicator";
 import { useGame } from "./hooks/useGame";
+import { useCameraZoom } from "./hooks/useCameraZoom";
 import { useMapSelector } from "./engine/mapState";
-import { useMemo } from "react";
 import Map from "./components/Map/Map";
 
 function App() {
@@ -15,25 +15,21 @@ function App() {
     handleBlobClick,
     handleBuyGenerator,
     handleBuyUpgrade,
-    handleEvolve
+    handleEvolve,
   } = useGame();
 
   const currentLevel = useMapSelector((s) => s.currentLevel);
+  const currentZoom = useCameraZoom({ gameState, currentLevel });
 
   // Simple zoom calculation for world scaling
   const blobSize = Math.max(50, gameState.biomass * 10);
-  const zoom = useMemo(() => {
-    // Simple logarithmic zoom for world scaling
-    const biomass = gameState.biomass;
-    return Math.max(0.15, 1.0 - Math.log10(biomass + 1) * 0.3);
-  }, [gameState.biomass]);
 
   return (
     <div className="w-screen h-screen relative overflow-hidden">
       <div
         className="w-full h-full relative"
         style={{
-          transform: `scale(${zoom})`,
+          transform: `scale(${currentZoom})`,
           transformOrigin: "center center",
         }}
       >
