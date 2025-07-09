@@ -52,7 +52,7 @@ The current game has basic generators and upgrades that are available from the s
 #### 2️⃣ Microscopic Level
 
 - [ ] **Generators**:
-  - Microscope Cloner — Uses lab-grade optics to split slime particles
+  - Microscopic Cloner — Uses lab-grade optics to split slime particles
   - Petri Dish Breeder — Controlled medium to grow colonies faster
   - Agar Farm — Rich nutrient beds for mass production
 - [ ] **Upgrades**:

@@ -326,16 +326,16 @@ describe('Game Logic', () => {
             }
             state = buyGenerator(state, 'basic-generator');
             
-            // Buy microscope cloner
-            const clonerCost = GENERATORS['microscope-cloner'].baseCost;
+            // Buy microscopic cloner
+            const clonerCost = GENERATORS['microscopic-cloner'].baseCost;
             const clonerClicks = Math.ceil(clonerCost / GAME_CONFIG.startingClickPower);
             
             for (let i = 0; i < clonerClicks; i++) {
                 state = manualClick(state);
             }
-            state = buyGenerator(state, 'microscope-cloner');
+            state = buyGenerator(state, 'microscopic-cloner');
             
-            const expectedGrowth = GENERATORS['basic-generator'].baseEffect + GENERATORS['microscope-cloner'].baseEffect;
+            const expectedGrowth = GENERATORS['basic-generator'].baseEffect + GENERATORS['microscopic-cloner'].baseEffect;
             expect(getTotalGrowth(state)).toBe(expectedGrowth);
         });
 

@@ -32,12 +32,13 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
             fontFamily: 'Arial, sans-serif',
             padding: '20px',
             overflowY: 'auto',
-            zIndex: 1000
+            zIndex: 1000,
+            userSelect: 'none'
         }}>
             <h2 style={{
                 margin: '0 0 20px 0',
                 fontSize: '24px',
-                color: '#4ade80',
+                color: '#93c5fd',
                 textAlign: 'center'
             }}>
                 Evolution
@@ -52,7 +53,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
                 <h3 style={{
                     margin: '0 0 10px 0',
                     fontSize: '18px',
-                    color: '#4ade80'
+                    color: 'white'
                 }}>
                     Current Level: {currentLevel.displayName || currentLevel.name}
                 </h3>
@@ -75,7 +76,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
                     <h3 style={{
                         margin: '0 0 10px 0',
                         fontSize: '18px',
-                        color: '#4ade80'
+                        color: 'white'
                     }}>
                         Next Evolution: {nextLevel.displayName || nextLevel.name}
                     </h3>

@@ -3,9 +3,9 @@ import { AnimationLayer } from "./components/Animations/AnimationLayer";
 import Blob from "./components/Blob/Blob";
 import { Nutrients } from "./components/Food/Nutrients";
 import { GameHUD } from "./components/HUD/GameHUD";
-import { ScaleIndicator } from "./components/HUD/ScaleIndicator";
 import { useGame } from "./hooks/useGame";
 import { useCameraZoom } from "./hooks/useCameraZoom";
+import { useBlobSize } from "./hooks/useBlobSize";
 import { useMapSelector } from "./engine/mapState";
 import Map from "./components/Map/Map";
 
@@ -20,9 +20,7 @@ function App() {
 
   const currentLevel = useMapSelector((s) => s.currentLevel);
   const currentZoom = useCameraZoom({ gameState, currentLevel });
-
-  // Simple zoom calculation for world scaling
-  const blobSize = Math.max(50, gameState.biomass * 10);
+  const blobSize = useBlobSize(gameState);
 
   return (
     <div className="w-screen h-screen relative overflow-hidden">
@@ -50,17 +48,14 @@ function App() {
         </div>
       </div>
 
-      {/* HUD stays outside zoom */}
       <GameHUD
         biomass={gameState.biomass}
         gameState={gameState}
         onBuyGenerator={handleBuyGenerator}
         onBuyUpgrade={handleBuyUpgrade}
         onEvolve={handleEvolve}
+        blobSize={blobSize}
       />
-
-      {/* Scale Indicator - pass biomass instead of zoom */}
-      <ScaleIndicator biomass={gameState.biomass} blobSize={blobSize} />
 
       <AnimationLayer />
     </div>

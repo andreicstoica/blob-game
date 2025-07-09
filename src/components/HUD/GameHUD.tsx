@@ -3,6 +3,7 @@ import type { GameState } from '../../engine/game';
 import { GrowthStats } from './GrowthStats';
 import { Shop } from './Shop';
 import { EvolutionPanel } from './EvolutionPanel';
+import { ScaleIndicator } from './ScaleIndicator';
 
 interface GameHUDProps {
   biomass: number;
@@ -10,6 +11,7 @@ interface GameHUDProps {
   onBuyGenerator?: (generatorId: string) => void;
   onBuyUpgrade?: (upgradeId: string) => void;
   onEvolve?: () => void;
+  blobSize?: number;
 }
 
 export const GameHUD: React.FC<GameHUDProps> = ({ 
@@ -17,33 +19,38 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   gameState,
   onBuyGenerator, 
   onBuyUpgrade,
-  onEvolve
+  onEvolve,
+  blobSize = 50
 }) => {
   return (
     <>
+      {/* Growth Stats Header */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: '600px',
+        right: '600px',
+        height: '140px',
+        zIndex: 1000,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        <GrowthStats
+          biomass={biomass}
+          gameState={gameState}
+        />
+      </div>
+
+      {/* Shop Section */}
       <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
         width: '350px',
         height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        color: 'white',
-        fontFamily: 'Arial, sans-serif',
-        padding: '20px',
-        overflowY: 'auto',
         zIndex: 1000
       }}>
-        <GrowthStats biomass={biomass} gameState={gameState} />
-        
-        <div style={{
-          height: '1px',
-          backgroundColor: '#4ade80',
-          opacity: 0.3,
-          margin: '20px 0',
-          borderRadius: '1px'
-        }} />
-        
         <Shop 
           biomass={biomass}
           gameState={gameState}
@@ -51,11 +58,13 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           onBuyUpgrade={onBuyUpgrade}
         />
       </div>
+
       <EvolutionPanel 
         biomass={biomass}
         gameState={gameState}
         onEvolve={onEvolve}
       />
+      <ScaleIndicator biomass={biomass} blobSize={blobSize} />
     </>
   );
 }; 
