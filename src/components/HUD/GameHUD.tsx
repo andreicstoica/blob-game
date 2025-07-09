@@ -1,9 +1,9 @@
-import React from 'react';
-import type { GameState } from '../../engine/game';
-import { GrowthStats } from './GrowthStats';
-import { Shop } from './Shop';
-import { EvolutionPanel } from './EvolutionPanel';
-import { ScaleIndicator } from './ScaleIndicator';
+import React from "react";
+import type { GameState } from "../../engine/game";
+import { GameStats } from "./GameStats";
+import { Shop } from "./Shop";
+import { EvolutionPanel } from "./Evolution";
+
 
 interface GameHUDProps {
   biomass: number;
@@ -14,44 +14,48 @@ interface GameHUDProps {
   blobSize?: number;
 }
 
-export const GameHUD: React.FC<GameHUDProps> = ({ 
+export const GameHUD: React.FC<GameHUDProps> = ({
   biomass,
   gameState,
-  onBuyGenerator, 
+  onBuyGenerator,
   onBuyUpgrade,
   onEvolve,
-  blobSize = 50
+  blobSize = 50,
 }) => {
   return (
     <>
-      {/* Growth Stats Header */}
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: '600px',
-        right: '600px',
-        height: '140px',
-        zIndex: 1000,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
-        <GrowthStats
+      {/* Game Stats Header */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: "600px",
+          right: "600px",
+          height: "140px",
+          zIndex: 1000,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <GameStats
           biomass={biomass}
           gameState={gameState}
         />
       </div>
 
       {/* Shop Section */}
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '350px',
-        height: '100vh',
-        zIndex: 1000
-      }}>
-        <Shop 
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "350px",
+          height: "100vh",
+          zIndex: 1000,
+        }}
+      >
+        <Shop
           biomass={biomass}
           gameState={gameState}
           onBuyGenerator={onBuyGenerator}
@@ -59,12 +63,12 @@ export const GameHUD: React.FC<GameHUDProps> = ({
         />
       </div>
 
-      <EvolutionPanel 
+      <EvolutionPanel
         biomass={biomass}
+        blobSize={blobSize}
         gameState={gameState}
         onEvolve={onEvolve}
       />
-      <ScaleIndicator biomass={biomass} blobSize={blobSize} />
     </>
   );
-}; 
+};

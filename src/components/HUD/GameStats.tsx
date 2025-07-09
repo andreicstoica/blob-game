@@ -2,12 +2,12 @@ import React from 'react';
 import type { GameState } from '../../engine/game';
 import { NumberFormatter } from '../../utils/numberFormat';
 
-interface GrowthStatsProps {
+interface GameStatsProps {
   biomass: number;
   gameState?: GameState;
 }
 
-export const GrowthStats: React.FC<GrowthStatsProps> = ({ biomass, gameState }) => {
+export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
   const formattedBiomass = NumberFormatter.biomass(biomass, gameState);
   const biomassLength = formattedBiomass.length;
   // Scale padding based on biomass number length: Base 20px, add 5px for each character beyond 3
