@@ -106,6 +106,8 @@ const spawnOffScreenParticle = (
 ): Particle => {
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
+  const centerX = screenWidth / 2;
+  const centerY = screenHeight / 2;
 
   // Calculate progress within current level for dynamic sizing
   const nextLevel = getNextLevel(currentLevel);
@@ -120,60 +122,56 @@ const spawnOffScreenParticle = (
       nextLevel.biomassThreshold - currentLevel.biomassThreshold;
     const progressRatio = Math.min(1, progressInLevel / levelRange);
 
-    // Calculate biomass ratio: current biomass / required biomass for next level
-    const biomassRatio = gameState.biomass / nextLevel.biomassThreshold;
-
-    // Particles start big when biomass is small relative to target
-    // and get smaller as biomass approaches the target
-    // Use inverse relationship: bigger particles when biomass ratio is smaller
-    sizeMultiplier = Math.max(0.3, 3.0 - biomassRatio * 2.5);
+    // Bacteria start big when level just starts (progressRatio = 0)
+    // and get smaller as player approaches next level (progressRatio = 1)
+    // Use inverse relationship: bigger particles when progress is smaller
+    sizeMultiplier = Math.max(0.3, 3.0 - progressRatio * 2.5);
   }
 
   // Spawn from one of the four screen edges
   const edge = Math.floor(Math.random() * 4);
   let x: number = 0,
     y: number = 0;
-  let directionX: number = 0,
-    directionY: number = 0;
 
   switch (edge) {
     case 0: // Top
       x = Math.random() * screenWidth;
       y = -config.size * sizeMultiplier;
-      directionX = (Math.random() - 0.5) * 2; // Random horizontal direction
-      directionY = Math.random() * 0.5 + 0.5; // Always move down
       break;
     case 1: // Right
       x = screenWidth + config.size * sizeMultiplier;
       y = Math.random() * screenHeight;
-      directionX = -(Math.random() * 0.5 + 0.5); // Always move left
-      directionY = (Math.random() - 0.5) * 2; // Random vertical direction
       break;
     case 2: // Bottom
       x = Math.random() * screenWidth;
       y = screenHeight + config.size * sizeMultiplier;
-      directionX = (Math.random() - 0.5) * 2; // Random horizontal direction
-      directionY = -(Math.random() * 0.5 + 0.5); // Always move up
       break;
-    case 3: // Left (account for HUD)
+    case 3: // Left
       x = -config.size * sizeMultiplier;
       y = Math.random() * screenHeight;
-      directionX = Math.random() * 0.5 + 0.5; // Always move right
-      directionY = (Math.random() - 0.5) * 2; // Random vertical direction
       break;
     default:
       x = 0;
       y = 0;
-      directionX = 1;
-      directionY = 1;
   }
 
+  // Calculate direction toward center with some randomness
+  const dx = centerX - x;
+  const dy = centerY - y;
+
+  // Add some randomness to the direction (not perfectly straight)
+  const randomAngle = (Math.random() - 0.5) * 0.5; // ±0.25 radians (~±14 degrees)
+  const cos = Math.cos(randomAngle);
+  const sin = Math.sin(randomAngle);
+
+  // Apply rotation to the direction vector
+  const rotatedDx = dx * cos - dy * sin;
+  const rotatedDy = dx * sin + dy * cos;
+
   // Normalize direction vector
-  const magnitude = Math.sqrt(
-    directionX * directionX + directionY * directionY
-  );
-  directionX /= magnitude;
-  directionY /= magnitude;
+  const magnitude = Math.sqrt(rotatedDx * rotatedDx + rotatedDy * rotatedDy);
+  const directionX = rotatedDx / magnitude;
+  const directionY = rotatedDy / magnitude;
 
   return {
     id: Math.random().toString(36),
@@ -207,10 +205,32 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({
     currentLevel?.name as keyof typeof PARTICLE_CONFIGS
   ] || PARTICLE_CONFIGS.intro) as ParticleConfig;
 
-  // Spawn particles based on growth rate
+  // Get blob position and size
+  const blobPosition = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+  const blobSize = 100; // Base blob size from useBlobSize hook
+
+  // Spawn particles based on growth rate and level progress
   useEffect(() => {
     const spawnInterval = setInterval(() => {
-      const spawnRate = config.spawnRate * (1 + (gameState.growth || 0) / 1000);
+      const nextLevel = getNextLevel(currentLevel);
+      let progressRatio = 0;
+
+      if (nextLevel) {
+        const progressInLevel = Math.max(
+          0,
+          gameState.biomass - currentLevel.biomassThreshold
+        );
+        const levelRange =
+          nextLevel.biomassThreshold - currentLevel.biomassThreshold;
+        progressRatio = Math.min(1, progressInLevel / levelRange);
+      }
+
+      // Spawn rate increases as you progress through the level
+      const progressMultiplier = 0.3 + progressRatio * 0.7; // 0.3x at start, 1.0x at end
+      const spawnRate =
+        config.spawnRate *
+        progressMultiplier *
+        (1 + (gameState.growth || 0) / 1000);
       const shouldSpawn = Math.random() < spawnRate / 60; // 60fps
 
       if (shouldSpawn) {
@@ -238,6 +258,20 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({
               const speed = particle.speed / 60; // 60fps
               const newX = particle.x + particle.direction.x * speed;
               const newY = particle.y + particle.direction.y * speed;
+
+              // Optimized collision detection - use squared distances to avoid sqrt
+              const dx = newX - blobPosition.x;
+              const dy = newY - blobPosition.y;
+              const distanceSquared = dx * dx + dy * dy;
+              const collisionDistanceSquared = Math.pow(
+                blobSize / 2 + particle.size / 2,
+                2
+              );
+
+              if (distanceSquared <= collisionDistanceSquared) {
+                // Particle hit blob - remove it
+                return null;
+              }
 
               // Check if particle is in the middle third of the screen
               const screenWidth = window.innerWidth;
@@ -276,7 +310,7 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({
     return () => {
       if (animationId) cancelAnimationFrame(animationId);
     };
-  }, [particles.length]);
+  }, [particles.length, blobPosition.x, blobPosition.y, blobSize]);
 
   return (
     <div className="particle-system">
