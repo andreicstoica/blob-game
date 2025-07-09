@@ -1,17 +1,21 @@
-import React from 'react';
-import type { GameState } from '../../../engine/game';
-import { getCurrentLevel, getNextLevel, canEvolveToNextLevel } from '../../../engine/game';
-import { EvolutionScale } from './EvolutionScale';
-import { CurrentLevel } from './CurrentLevel';
-import { NextEvolution } from './NextEvolution';
-import { EvolutionButton } from './EvolutionButton';
-import { getScaleLevel } from './scaleLevels';
+import React from "react";
+import type { GameState } from "../../../engine/game";
+import {
+  getCurrentLevel,
+  getNextLevel,
+  canEvolveToNextLevel,
+} from "../../../engine/game";
+import { CurrentLevel } from "./CurrentLevel";
+import { NextEvolution } from "./NextEvolution";
+import { EvolutionButton } from "./EvolutionButton";
+import { getScaleLevel } from "./scaleLevels";
 
 interface EvolutionPanelProps {
   biomass: number;
   blobSize: number;
   gameState?: GameState;
   onEvolve?: () => void;
+  zoom?: number;
 }
 
 export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
@@ -19,6 +23,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
   blobSize,
   gameState,
   onEvolve,
+  zoom,
 }) => {
   if (!gameState) return null;
 
@@ -26,7 +31,8 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
   const nextLevel = getNextLevel(gameState);
   const canEvolve = canEvolveToNextLevel(gameState);
   const scale = getScaleLevel(biomass);
-  const zoom = Math.max(0.15, 1.0 - Math.log10(biomass + 1) * 0.3);
+  const currentZoom =
+    zoom ?? Math.max(0.15, 1.0 - Math.log10(biomass + 1) * 0.3);
 
   return (
     <div
@@ -56,16 +62,47 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
         Evolution
       </h2>
 
-      <EvolutionScale biomass={biomass} blobSize={blobSize} scale={scale} zoom={zoom} />
-      <CurrentLevel displayName={currentLevel.displayName} name={currentLevel.name} description={currentLevel.description} />
-      {nextLevel && (
-        <NextEvolution nextLevel={nextLevel} canEvolve={canEvolve} biomass={biomass} gameState={gameState} />
-      )}
-      <EvolutionButton 
-        canEvolve={canEvolve} 
-        hasNextLevel={!!nextLevel} 
-        onEvolve={onEvolve} 
+      <CurrentLevel
+        displayName={currentLevel.displayName}
+        name={currentLevel.name}
+        description={currentLevel.description}
+        scale={scale}
       />
+      {nextLevel && (
+        <NextEvolution
+          nextLevel={nextLevel}
+          canEvolve={canEvolve}
+          biomass={biomass}
+          gameState={gameState}
+        />
+      )}
+      <EvolutionButton
+        canEvolve={canEvolve}
+        hasNextLevel={!!nextLevel}
+        onEvolve={onEvolve}
+      />
+
+      {/* Debug Information */}
+      <div
+        style={{
+          marginTop: "20px",
+          padding: "10px",
+          backgroundColor: "rgba(255, 255, 255, 0.1)",
+          borderRadius: "5px",
+        }}
+      >
+        <h4
+          style={{ margin: "0 0 10px 0", fontSize: "14px", color: "#93c5fd" }}
+        >
+          Debug Info
+        </h4>
+        <div style={{ fontSize: "12px", lineHeight: "1.4" }}>
+          <div>Zoom: {currentZoom.toFixed(3)}</div>
+          <div>Blob Size: {blobSize.toFixed(0)}px</div>
+          <div>Growth Rate: {gameState.growth.toFixed(1)}/s</div>
+          <div>Level: {currentLevel.name}</div>
+        </div>
+      </div>
     </div>
   );
 };

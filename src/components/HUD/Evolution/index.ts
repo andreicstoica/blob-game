@@ -1,5 +1,4 @@
 export { EvolutionPanel } from './EvolutionPanel';
-export { EvolutionScale } from './EvolutionScale';
 export { CurrentLevel } from './CurrentLevel';
 export { NextEvolution } from './NextEvolution';
 export { EvolutionButton } from './EvolutionButton';

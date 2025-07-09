@@ -4,7 +4,6 @@ import { GameStats } from "./GameStats";
 import { Shop } from "./Shop";
 import { EvolutionPanel } from "./Evolution";
 
-
 interface GameHUDProps {
   biomass: number;
   gameState?: GameState;
@@ -12,6 +11,7 @@ interface GameHUDProps {
   onBuyUpgrade?: (upgradeId: string) => void;
   onEvolve?: () => void;
   blobSize?: number;
+  zoom?: number;
 }
 
 export const GameHUD: React.FC<GameHUDProps> = ({
@@ -21,6 +21,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   onBuyUpgrade,
   onEvolve,
   blobSize = 50,
+  zoom,
 }) => {
   return (
     <>
@@ -38,10 +39,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           alignItems: "center",
         }}
       >
-        <GameStats
-          biomass={biomass}
-          gameState={gameState}
-        />
+        <GameStats biomass={biomass} gameState={gameState} />
       </div>
 
       {/* Shop Section */}
@@ -68,6 +66,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
         blobSize={blobSize}
         gameState={gameState}
         onEvolve={onEvolve}
+        zoom={zoom}
       />
     </>
   );

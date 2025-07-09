@@ -97,7 +97,7 @@ classDiagram
         -generatorFilter: 'current' | 'all'
     }
 
-    class GrowthStats {
+    class GameStats {
         +biomass: number
         +gameState: GameState
     }
@@ -106,6 +106,48 @@ classDiagram
         +biomass: number
         +gameState: GameState
         +onEvolve(): void
+    }
+
+    class EvolutionScale {
+        +biomass: number
+        +blobSize: number
+        +scale: ScaleLevel
+        +zoom: number
+    }
+
+    class CurrentLevel {
+        +displayName: string
+        +name: string
+        +description: string
+    }
+
+    class NextEvolution {
+        +nextLevel: Level
+        +canEvolve: boolean
+        +biomass: number
+        +gameState: GameState
+    }
+
+    class EvolutionButton {
+        +canEvolve: boolean
+        +hasNextLevel: boolean
+        +onEvolve(): void
+    }
+
+    class Generators {
+        +biomass: number
+        +gameState: GameState
+        +onBuyGenerator(generatorId): void
+        +generatorFilter: 'current' | 'all'
+        +currentLevel: Level
+    }
+
+    class Upgrades {
+        +biomass: number
+        +gameState: GameState
+        +onBuyUpgrade(upgradeId): void
+        +generatorFilter: 'current' | 'all'
+        +currentLevel: Level
     }
 
     class Blob {
@@ -135,6 +177,14 @@ classDiagram
         +addParticleBurst(position, count, colors): void
     }
 
+    class ScaleLevel {
+        +name: string
+        +description: string
+        +unit: string
+        +color: string
+        +icon: string
+    }
+
     %% Hooks
     class useGame {
         +gameState: GameState
@@ -150,6 +200,12 @@ classDiagram
 
     class useCameraZoom {
         +calculateZoom(biomass): number
+        +smoothZoomAnimation(): void
+        +handleLevelReset(): void
+    }
+
+    class useMapSelector {
+        +selectMapState(): MapState
     }
 
     %% Relationships
@@ -162,17 +218,27 @@ classDiagram
     MapState ||--|| Level : current
 
     GameHUD ||--|| Shop : contains
-    GameHUD ||--|| GrowthStats : contains
+    GameHUD ||--|| GameStats : contains
     GameHUD ||--|| EvolutionPanel : contains
-    GameHUD ||--|| ScaleIndicator : contains
+
+    Shop ||--|| Generators : contains
+    Shop ||--|| Upgrades : contains
+
+    EvolutionPanel ||--|| EvolutionScale : contains
+    EvolutionPanel ||--|| CurrentLevel : contains
+    EvolutionPanel ||--|| NextEvolution : contains
+    EvolutionPanel ||--|| EvolutionButton : contains
 
     useGame ||--|| GameState : manages
     useBlobSize ||--|| GameState : reads
     useCameraZoom ||--|| GameState : reads
+    useMapSelector ||--|| MapState : reads
 
     Map ||--o{ Blob : renders
     AnimationLayer ||--o{ FloatingNumber : manages
     AnimationLayer ||--o{ Particle : manages
+
+    ScaleLevel ||--|| EvolutionScale : used by
 ```
 
 ## Sequence Diagrams
@@ -183,20 +249,20 @@ classDiagram
 sequenceDiagram
     participant User
     participant Blob
-    participant GameHUD
+    participant App
     participant useGame
     participant GameState
     participant AnimationLayer
-    participant GrowthStats
+    participant GameStats
 
     User->>Blob: Click on blob
-    Blob->>GameHUD: onBlobClick()
-    GameHUD->>useGame: manualClick()
+    Blob->>App: onBlobClick()
+    App->>useGame: manualClick()
     useGame->>GameState: Update biomass += clickPower
     useGame->>AnimationLayer: addFloatingNumber()
     AnimationLayer->>FloatingNumber: Create floating number animation
-    useGame->>GrowthStats: Update biomass display
-    GrowthStats->>User: Show updated biomass
+    useGame->>GameStats: Update biomass display
+    GameStats->>User: Show updated biomass
 ```
 
 ### User Flow: Purchase Generator
@@ -204,14 +270,16 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant User
+    participant Generators
     participant Shop
     participant GameHUD
     participant useGame
     participant GameState
     participant GeneratorState
-    participant GrowthStats
+    participant GameStats
 
-    User->>Shop: Click generator
+    User->>Generators: Click generator
+    Generators->>Shop: onBuyGenerator(generatorId)
     Shop->>GameHUD: onBuyGenerator(generatorId)
     GameHUD->>useGame: buyGenerator(generatorId)
     useGame->>GameState: Check if can afford
@@ -219,10 +287,10 @@ sequenceDiagram
         useGame->>GameState: Deduct biomass
         useGame->>GeneratorState: Increment level
         useGame->>GameState: Recalculate growth
-        useGame->>GrowthStats: Update growth display
-        GrowthStats->>User: Show updated growth rate
+        useGame->>GameStats: Update growth display
+        GameStats->>User: Show updated growth rate
     else Cannot afford
-        useGame->>Shop: No change (return same state)
+        useGame->>Generators: No change (return same state)
     end
 ```
 
@@ -230,25 +298,53 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant GameState
-    participant Level
-    participant MapState
-    participant Map
-    participant EvolutionPanel
     participant User
+    participant EvolutionButton
+    participant EvolutionPanel
+    participant GameHUD
+    participant useGame
+    participant GameState
+    participant MapState
+    participant useCameraZoom
+    participant Map
 
-    GameState->>Level: Check biomass threshold
-    alt Biomass >= next level threshold
-        GameState->>Level: Get next level
-        GameState->>MapState: evolveToNextLevel()
+    User->>EvolutionButton: Click evolve
+    EvolutionButton->>EvolutionPanel: onEvolve()
+    EvolutionPanel->>GameHUD: onEvolve()
+    GameHUD->>useGame: evolve()
+    useGame->>GameState: Check evolution conditions
+    alt Can evolve
+        useGame->>GameState: Update currentLevelId
+        useGame->>MapState: evolveToNextLevel()
+        useGame->>useCameraZoom: Reset zoom to 1.0
+        useCameraZoom->>Map: Apply zoom reset
         MapState->>Map: Update current level
         Map->>User: Show new level background
-        EvolutionPanel->>User: Show evolution available
-        User->>EvolutionPanel: Click evolve
-        EvolutionPanel->>GameState: Trigger evolution
-        GameState->>MapState: Set new level
-        MapState->>Map: Update level display
+        EvolutionPanel->>User: Show evolution complete
+    else Cannot evolve
+        useGame->>EvolutionPanel: No change
     end
+```
+
+### User Flow: Camera Zoom with Blob Growth
+
+```mermaid
+sequenceDiagram
+    participant GameState
+    participant useCameraZoom
+    participant useBlobSize
+    participant App
+    participant Map
+    participant Blob
+
+    GameState->>useCameraZoom: biomass changes
+    useCameraZoom->>useBlobSize: getEngineBlobSize()
+    useBlobSize->>useCameraZoom: return blob size (50-400px)
+    useCameraZoom->>useCameraZoom: calculate target zoom
+    useCameraZoom->>useCameraZoom: smooth animation
+    useCameraZoom->>App: return currentSmoothZoom
+    App->>Map: apply transform scale
+    Map->>Blob: render with new zoom level
 ```
 
 ### User Flow: Nutrient Consumption
@@ -257,15 +353,15 @@ sequenceDiagram
 sequenceDiagram
     participant User
     participant Blob
-    participant GameHUD
+    participant App
     participant useGame
     participant GameState
     participant NutrientState
     participant MapState
 
     User->>Blob: Click near nutrient
-    Blob->>GameHUD: onBlobClick(position)
-    GameHUD->>useGame: consumeNutrient(nutrientId)
+    Blob->>App: onBlobClick(position)
+    App->>useGame: consumeNutrient(nutrientId)
     useGame->>GameState: Find nearby nutrients
     useGame->>NutrientState: Mark as consumed
     useGame->>GameState: Add biomass
@@ -328,6 +424,19 @@ stateDiagram-v2
         TerraformingOoze --> AsteroidSeeder
         AsteroidSeeder --> StarshipIncubator
     }
+```
+
+### Camera Zoom State
+
+```mermaid
+stateDiagram-v2
+    [*] --> LevelStart
+    LevelStart --> Growing : biomass increases
+    Growing --> NearlyFull : progress >= 0.8
+    NearlyFull --> ReadyToEvolve : progress >= 1.0
+    ReadyToEvolve --> LevelStart : evolution triggered
+    Growing --> Growing : biomass continues
+    NearlyFull --> Growing : biomass decreases
 ```
 
 ### Generator Purchase State
@@ -401,6 +510,7 @@ graph TB
         App --> GameHUD
         App --> Map
         App --> AnimationLayer
+        App --> Nutrients
     end
 
     subgraph "Game Engine"
@@ -409,18 +519,25 @@ graph TB
         useGame[useGame Hook]
         useBlobSize[useBlobSize Hook]
         useCameraZoom[useCameraZoom Hook]
+        useMapSelector[useMapSelector Hook]
     end
 
-    subgraph "UI Components"
+    subgraph "HUD Components"
         GameHUD --> Shop
-        GameHUD --> GrowthStats
+        GameHUD --> GameStats
         GameHUD --> EvolutionPanel
-        GameHUD --> ScaleIndicator
+
+        Shop --> Generators
+        Shop --> Upgrades
+
+        EvolutionPanel --> EvolutionScale
+        EvolutionPanel --> CurrentLevel
+        EvolutionPanel --> NextEvolution
+        EvolutionPanel --> EvolutionButton
     end
 
     subgraph "Game Objects"
         Map --> Blob
-        Map --> Nutrients
         Map --> LevelBackgrounds
     end
 
@@ -435,16 +552,60 @@ graph TB
         GameState --> Upgrades
         GameState --> Levels
         MapState --> Cells
+        ScaleLevel[ScaleLevel]
     end
 
     %% Connections
     useGame --> GameState
     useBlobSize --> GameState
     useCameraZoom --> GameState
+    useMapSelector --> MapState
     GameHUD --> useGame
     Map --> MapState
     Blob --> useBlobSize
     Map --> useCameraZoom
+    EvolutionScale --> ScaleLevel
+```
+
+## HUD Layout Architecture
+
+```mermaid
+graph TB
+    subgraph "Screen Layout"
+        Screen[1920x1080 Screen]
+
+        subgraph "Left HUD - Shop"
+            Shop[350px width]
+            Shop --> Generators
+            Shop --> Upgrades
+        end
+
+        subgraph "Right HUD - Evolution"
+            Evolution[300px width]
+            Evolution --> EvolutionScale
+            Evolution --> CurrentLevel
+            Evolution --> NextEvolution
+            Evolution --> EvolutionButton
+        end
+
+        subgraph "Top HUD - Game Stats"
+            GameStats[Centered, 600px from sides]
+            GameStats --> BiomassDisplay
+            GameStats --> GrowthRate
+            GameStats --> ClickPower
+        end
+
+        subgraph "Playable Area"
+            PlayArea[Available space for blob]
+            PlayArea --> Blob
+            PlayArea --> Map
+        end
+    end
+
+    Screen --> Shop
+    Screen --> Evolution
+    Screen --> GameStats
+    Screen --> PlayArea
 ```
 
 ## Data Flow Architecture
@@ -461,18 +622,21 @@ flowchart LR
         GameEngine[Game Engine]
         StateManager[State Management]
         Calculations[Growth Calculations]
+        CameraSystem[Camera Zoom System]
     end
 
     subgraph "UI Updates"
         HUD[HUD Components]
         Animations[Visual Effects]
         Map[Map Rendering]
+        Blob[Blob Rendering]
     end
 
     subgraph "Data Storage"
         GameState[Game State]
         Config[Game Configuration]
         Levels[Level Definitions]
+        MapState[Map State]
     end
 
     Click --> GameEngine
@@ -481,18 +645,65 @@ flowchart LR
 
     GameEngine --> StateManager
     StateManager --> Calculations
+    Calculations --> CameraSystem
 
     Calculations --> HUD
     Calculations --> Animations
     Calculations --> Map
+    CameraSystem --> Blob
 
     StateManager --> GameState
+    StateManager --> MapState
     GameEngine --> Config
     GameEngine --> Levels
 
     GameState --> HUD
+    MapState --> Map
     Config --> HUD
     Levels --> Map
 ```
 
-This comprehensive architecture documentation shows the relationships between all major components, user flows, state transitions, and data flow patterns in the blob game.
+## Camera Zoom System Architecture
+
+```mermaid
+graph TB
+    subgraph "Camera Zoom System"
+        useCameraZoom[useCameraZoom Hook]
+
+        subgraph "Zoom Calculation"
+            BlobSize[Engine Blob Size]
+            ScreenBounds[Screen Boundaries]
+            HUDBounds[HUD Boundaries]
+            LevelProgress[Level Progress]
+        end
+
+        subgraph "Zoom Animation"
+            TargetZoom[Target Zoom]
+            SmoothZoom[Smooth Animation]
+            LevelReset[Level Reset]
+        end
+
+        subgraph "Constraints"
+            MinZoom[Minimum Zoom 0.02]
+            MaxZoom[Maximum Zoom]
+            PlayableArea[Playable Area Bounds]
+        end
+    end
+
+    useCameraZoom --> BlobSize
+    useCameraZoom --> ScreenBounds
+    useCameraZoom --> HUDBounds
+    useCameraZoom --> LevelProgress
+
+    BlobSize --> TargetZoom
+    ScreenBounds --> MaxZoom
+    HUDBounds --> PlayableArea
+    LevelProgress --> TargetZoom
+
+    TargetZoom --> SmoothZoom
+    SmoothZoom --> MinZoom
+    SmoothZoom --> MaxZoom
+    LevelReset --> SmoothZoom
+```
+
+This comprehensive architecture documentation shows the relationships between all major components, user flows, state transitions, and data flow patterns in the blob game, including the updated HUD structure and camera zoom system.
