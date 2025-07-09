@@ -1,5 +1,5 @@
-import { getCurrentLevel } from '../engine/game';
-import type { GameState } from '../engine/game';
+import { getCurrentLevel } from '../engine/core/game';
+import type { GameState } from '../engine/core/game';
 
 export type NumberType = 'biomass' | 'cost' | 'rate' | 'power' | 'threshold' | 'owned';
 
