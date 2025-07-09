@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { getCurrentLevel, getNextLevel } from '../engine/game';
-import type { GameState } from '../engine/game';
+import { getCurrentLevel, getNextLevel } from '../engine/core/game';
+import type { GameState } from '../engine/core/game';
 
 export const useBlobSize = (gameState: GameState) => {
   return useMemo(() => {

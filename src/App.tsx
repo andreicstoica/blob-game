@@ -1,14 +1,14 @@
 import "./globals.css";
-import { AnimationLayer } from "./components/Animations/AnimationLayer";
-import Blob from "./components/Blob/Blob";
-import { Nutrients } from "./components/Food/Nutrients";
-import { GameHUD } from "./components/HUD/GameHUD";
-import { GeneratorVisualization } from "./components/GeneratorVisualization";
+import { AnimationLayer } from "./animations/AnimationLayer";
+import Blob from "./game/blob/Blob";
+import { Nutrients } from "./game/food/Nutrients";
+import { GameHUD } from "./game/hud/GameHUD";
+import { GeneratorVisualization } from "./game/map/GeneratorVisualization";
 import { useGame } from "./hooks/useGame";
 import { useCameraZoom } from "./hooks/useCameraZoom";
 import { useBlobSize } from "./hooks/useBlobSize";
-import { useMapSelector } from "./engine/mapState";
-import Map from "./components/Map/Map";
+import { useMapSelector } from "./engine/systems/mapState";
+import Map from "./game/map/Map";
 
 function App() {
   const {
