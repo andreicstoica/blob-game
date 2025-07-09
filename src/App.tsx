@@ -1,5 +1,6 @@
 import "./globals.css";
 import { AnimationLayer } from "./components/Animations/AnimationLayer";
+import { ParticleSystem } from "./components/Animations/ParticleSystem";
 import Blob from "./components/Blob/Blob";
 import { Nutrients } from "./components/Food/Nutrients";
 import { GameHUD } from "./components/HUD/GameHUD";
@@ -20,11 +21,16 @@ function App() {
   } = useGame();
 
   const currentLevel = useMapSelector((s) => s.currentLevel);
-  const { zoom: currentZoom } = useCameraZoom({
+  const currentZoom = useCameraZoom({
     gameState,
     currentLevel,
   });
   const blobSize = useBlobSize(gameState);
+
+  const handleParticleAbsorbed = (particle: any) => {
+    // Optional: Add sound effects, visual feedback, or biomass increase here
+    console.log("Particle absorbed:", particle);
+  };
 
   return (
     <div className="w-screen h-screen relative overflow-hidden">
@@ -41,6 +47,7 @@ function App() {
           nutrients={gameState.nutrients}
           phase={currentLevel.id as any}
         />
+
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer select-none">
           <Blob
             id="main-blob"
@@ -50,12 +57,17 @@ function App() {
             clickPower={gameState.clickPower}
           />
         </div>
-        
+
         <GeneratorVisualization
           gameState={gameState}
           blobPosition={{ x: window.innerWidth / 2, y: window.innerHeight / 2 }}
           blobSize={blobSize}
         />
+
+        {/* Particle System for off-screen growth effect */}
+        {currentLevel && (
+          <ParticleSystem gameState={gameState} currentLevel={currentLevel} />
+        )}
       </div>
 
       <GameHUD
@@ -66,7 +78,6 @@ function App() {
         onEvolve={handleEvolve}
         blobSize={blobSize}
         zoom={currentZoom}
-        // maxZoomForVisibility={maxZoomForVisibility} // pass for debug if you want
       />
 
       <AnimationLayer />
