@@ -12,19 +12,26 @@ This document serves to enhance your understanding. We want to ensure conflict-f
 
 This table assists Cursor in determining where to write code, and where to read context.
 
-| Path                          | Contents                              |
-| ----------------------------- | ------------------------------------- |
-| `/src/engine/`                | Pure simulation logic                 |
-| `/src/engine/systems/`        | Growth, auto-feed, etc.               |
-| `/src/engine/store.ts`        | Zustand store                         |
-| `/src/engine/loop.ts`         | Game loop                             |
-| `/src/components/`            | React UI components                   |
-| `/src/components/SlimeCanvas` | Three.js scene → RenderAgent          |
-| `/public/`                    | Static assets (icons, sounds) → Asset |
-| `/styles/`                    | Tailwind/global CSS                   |
-| `/agents/`                    | Agent specification files to follow   |
-| `/agents/agents.md/`          | This file                             |
-| `README.md`                   | Project overview                      |
+| Path                          | Contents                            |
+| ----------------------------- | ----------------------------------- |
+| `/src/engine/`                | Pure simulation logic               |
+| `/src/engine/game.ts`         | Main game engine                    |
+| `/src/engine/Levels.ts`       | Level definitions                   |
+| `/src/engine/mapState.ts`     | Map state management                |
+| `/src/engine/content.ts`      | Game content/data                   |
+| `/src/components/`            | React UI components                 |
+| `/src/components/Blob/`       | Blob-related components             |
+| `/src/components/Map/`        | Map and level components            |
+| `/src/components/HUD/`        | Heads-up display components         |
+| `/src/components/Animations/` | Animation components                |
+| `/src/components/Food/`       | Food/nutrition components           |
+| `/src/hooks/`                 | Custom React hooks                  |
+| `/src/styles/`                | Tailwind/global CSS                 |
+| `/public/`                    | Static assets (icons, sounds)       |
+| `/public/assets/`             | Game assets (images, textures)      |
+| `/agents/`                    | Agent specification files to follow |
+| `/agents/specs/`              | Feature specifications              |
+| `README.md`                   | Project overview                    |
 
 ---
 
@@ -32,15 +39,15 @@ This table assists Cursor in determining where to write code, and where to read 
 
 This table helps Cursor understand our general coding conventions.
 
-| Topic          | Rule                                                                     |
-| -------------- | ------------------------------------------------------------------------ |
-| Language       | TypeScript everywhere                                                    |
-| Formatting     | Prettier default; 2-space indent                                         |
-| Commit message | `<Imperative summary> (#issue)` e.g., `add logistic growth system (#12)` |
-| Testing        | Co-locate `*.test.ts` with source or under `/tests/`                     |
-| Imports        | Use absolute paths via `@/` alias (configured in `tsconfig.paths`)       |
-| Constants      | Group in `src/engine/constants.ts`                                       |
-| Side-effects   | Only in systems or React effects                                         |
+| Topic          | Rule                                                               |
+| -------------- | ------------------------------------------------------------------ |
+| Language       | TypeScript everywhere                                              |
+| Formatting     | Prettier default; 2-space indent                                   |
+| Commit message | `<Imperative summary>` e.g., `add logistic growth system`          |
+| Testing        | Co-locate `*.test.ts` with source or under `/tests/`               |
+| Imports        | Use absolute paths via `@/` alias (configured in `tsconfig.paths`) |
+| Constants      | Group in `src/engine/constants.ts`                                 |
+| Side-effects   | Only in systems or React effects                                   |
 
 ---
 
