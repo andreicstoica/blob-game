@@ -64,11 +64,11 @@ function App() {
           blobSize={blobSize}
         />
 
+
         {/* Particle System for off-screen growth effect */}
         {currentLevel && (
           <ParticleSystem gameState={gameState} currentLevel={currentLevel} />
         )}
-      </div>
 
       <GameHUD
         biomass={gameState.biomass}
