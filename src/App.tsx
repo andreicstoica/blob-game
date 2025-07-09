@@ -1,15 +1,15 @@
 import "./globals.css";
-import { AnimationLayer } from "./components/Animations/AnimationLayer";
-import { ParticleSystem } from "./components/Animations/ParticleSystem";
-import Blob from "./components/Blob/Blob";
-import { Nutrients } from "./components/Food/Nutrients";
-import { GameHUD } from "./components/HUD/GameHUD";
-import { GeneratorVisualization } from "./components/GeneratorVisualization";
+import { AnimationLayer } from "./animations/AnimationLayer";
+import { ParticleSystem } from "./animations/ParticleSystem";
+import Blob from "./game/blob/Blob";
+import { Nutrients } from "./game/food/Nutrients";
+import { GameHUD } from "./game/hud/GameHUD";
+import { MapGenerators } from "./game/map/MapGenerators";
 import { useGame } from "./hooks/useGame";
 import { useCameraZoom } from "./hooks/useCameraZoom";
 import { useBlobSize } from "./hooks/useBlobSize";
-import { useMapSelector } from "./engine/mapState";
-import Map from "./components/Map/Map";
+import { useMapSelector } from "./engine/systems/mapState";
+import Map from "./game/map/Map";
 
 function App() {
   const {
@@ -53,11 +53,7 @@ function App() {
           />
         </div>
 
-        <GeneratorVisualization
-          gameState={gameState}
-          blobPosition={{ x: window.innerWidth / 2, y: window.innerHeight / 2 }}
-          blobSize={blobSize}
-        />
+        <MapGenerators gameState={gameState} blobPosition={{ x: window.innerWidth / 2, y: window.innerHeight / 2 }} />
 
         {/* Particle System for off-screen growth effect */}
         {currentLevel && (

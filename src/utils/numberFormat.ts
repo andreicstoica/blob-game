@@ -1,5 +1,5 @@
-import { getCurrentLevel } from '../engine/game';
-import type { GameState } from '../engine/game';
+import { getCurrentLevel } from '../engine/core/game';
+import type { GameState } from '../engine/core/game';
 
 export type NumberType = 'biomass' | 'cost' | 'rate' | 'power' | 'threshold' | 'owned';
 
@@ -21,7 +21,6 @@ export function formatNumber(value: number, options: FormatOptions): string {
     forceFormat,
     maxDecimals = 3,
     showPlus = false,
-    compact = false
   } = options;
 
   const currentLevel = gameState ? getCurrentLevel(gameState) : null;
@@ -48,8 +47,8 @@ export function formatNumber(value: number, options: FormatOptions): string {
     format = currentLevel?.biomassDisplayFormat || 'standard';
   }
   
-  const adjustedValue = adjustValueForType(value, type, gameState);
-  let formatted = formatNumberByType(adjustedValue, format, maxDecimals, compact, type);
+  const adjustedValue = adjustValueForType(value, type);
+  let formatted = formatNumberByType(adjustedValue, format, maxDecimals, type);
   
   if (showPlus && adjustedValue > 0) {
     formatted = `+${formatted}`;
@@ -59,7 +58,7 @@ export function formatNumber(value: number, options: FormatOptions): string {
 }
 
 // Adjusts value based on number type and game context
-function adjustValueForType(value: number, type: NumberType, gameState?: GameState): number {
+function adjustValueForType(value: number, type: NumberType): number {
   switch (type) {
     case 'biomass':
       return value;
@@ -83,7 +82,6 @@ function formatNumberByType(
   value: number, 
   format: 'standard' | 'scientific' | 'decimal' | 'whole',
   maxDecimals: number,
-  compact: boolean,
   numberType: NumberType
 ): string {
   switch (format) {
@@ -226,22 +224,6 @@ function formatLargeNumber(value: number, maxDecimals: number): string {
   const suffix = LARGE_NUMBER_NAMES[exp] || `10^${exp * 3}`;
   
   return scaled.toFixed(Math.min(maxDecimals, 2)) + ' ' + suffix;
-}
-
-// Formats large numbers in a compact way (e.g., 1.5K, 2.3M, 1.1B) - for smaller ranges
-function formatCompact(value: number, maxDecimals: number): string {
-  const suffixes = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No'];
-  const base = 1000;
-  
-  if (value < base) {
-    return value.toFixed(Math.min(maxDecimals, 2));
-  }
-  
-  const exp = Math.min(Math.floor(Math.log(value) / Math.log(base)), suffixes.length - 1);
-  const scaled = value / Math.pow(base, exp);
-  const suffix = suffixes[exp];
-  
-  return scaled.toFixed(Math.min(maxDecimals, 2)) + suffix;
 }
 
 // Convenience functions for common formatting needs

@@ -9,9 +9,9 @@ import {
   getNearbyNutrients,
   evolveToNextLevel,
   type GameState
-} from '../engine/game';
-import { GAME_CONFIG } from '../engine/content';
-import { useMap } from '../engine/mapState';
+} from '../engine/core/game';
+import { GAME_CONFIG } from '../engine/content/content';
+import { useMap } from '../engine/systems/mapState';
 
 export const useGame = () => {
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
