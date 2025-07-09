@@ -53,7 +53,10 @@ function App() {
           />
         </div>
 
-        <MapGenerators gameState={gameState} blobPosition={{ x: window.innerWidth / 2, y: window.innerHeight / 2 }} />
+        <MapGenerators
+          gameState={gameState}
+          blobPosition={{ x: window.innerWidth / 2, y: window.innerHeight / 2 }}
+        />
 
         {/* Particle System for off-screen growth effect */}
         {currentLevel && (
