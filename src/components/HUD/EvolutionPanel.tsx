@@ -1,7 +1,7 @@
 import React from 'react';
 import type { GameState } from '../../engine/game';
 import { getCurrentLevel, getNextLevel, canEvolveToNextLevel } from '../../engine/game';
-import { formatBiomass } from '../../engine/levels';
+import { NumberFormatter } from '../../utils/numberFormat';
 
 interface EvolutionPanelProps {
     biomass: number;
@@ -99,7 +99,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
                             fontWeight: 'bold',
                             color: canEvolve ? '#4ade80' : '#ef4444'
                         }}>
-                            {formatBiomass(nextLevel.biomassThreshold, nextLevel.biomassDisplayFormat)}
+                            {NumberFormatter.threshold(nextLevel.biomassThreshold, gameState)}
                         </span>
                     </div>
                     <div style={{
@@ -113,7 +113,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
                             fontWeight: 'bold',
                             color: canEvolve ? '#4ade80' : '#9ca3af'
                         }}>
-                            {formatBiomass(biomass, nextLevel.biomassDisplayFormat)}
+                            {NumberFormatter.biomass(biomass, gameState)}
                         </span>
                     </div>
                 </div>
