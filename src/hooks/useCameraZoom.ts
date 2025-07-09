@@ -18,6 +18,7 @@ export const useCameraZoom = ({ gameState, currentLevel }: UseCameraZoomProps) =
         const biomass = gameState.biomass;
         const nextLevel = getNextLevel(currentLevel);
 
+        /*TODO get blobsize from gameState or HUD, don't double calculate it */
         // Calculate blob size (same as used by Blob component)
         const blobSize = Math.max(50, biomass * 10);
 
