@@ -50,7 +50,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           position: "fixed",
           top: 0,
           left: 0,
-          width: "350px",
+          width: "370px",
           height: "100vh",
           zIndex: 1000,
         }}

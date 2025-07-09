@@ -2,6 +2,7 @@ import React from 'react';
 import type { GameState } from '../../../engine/game';
 import { NumberFormatter } from '../../../utils/numberFormat';
 import { LEVELS } from '../../../engine/levels';
+import { getGeneratorValueInfo } from './generatorValue';
 
 interface GeneratorsProps {
   biomass: number;
@@ -44,6 +45,7 @@ export const Generators: React.FC<GeneratorsProps> = ({
         .map(generator => {
         const cost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
         const canAfford = biomass >= cost;
+        const valueInfo = getGeneratorValueInfo(generator.id, gameState);
         
         return (
           <div key={generator.id} 
@@ -119,6 +121,8 @@ export const Generators: React.FC<GeneratorsProps> = ({
                 {NumberFormatter.owned(generator.level, gameState)}
               </div>
             </div>
+            
+
             <div 
               className="generator-stats"
               style={{ 
@@ -156,8 +160,25 @@ export const Generators: React.FC<GeneratorsProps> = ({
               {generator.description}
             </div>
               <div style={{ 
-                marginTop: '5px'
+                marginTop: '5px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
               }}>
+                {/* Value Indicator */}
+                {valueInfo && (
+                  <div style={{
+                    width: '12px',
+                    height: '12px',
+                    borderRadius: '50%',
+                    backgroundColor: valueInfo.color,
+                    border: '2px solid rgba(255, 255, 255, 0.3)',
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                    flexShrink: 0
+                  }}
+                    title={`Value Rank: ${valueInfo.rank}/${Object.keys(gameState.generators).length} (${(valueInfo.value * 1000).toFixed(1)} growth/1000 biomass)`}
+                  />
+                )}
                 <div style={{ 
                   color: canAfford ? '#f59e0b' : '#ef4444',
                   fontWeight: 'bold',
