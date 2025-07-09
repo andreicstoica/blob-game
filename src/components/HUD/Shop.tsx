@@ -28,6 +28,12 @@ export const Shop: React.FC<ShopProps> = ({
   // Helper function to check if content is available at current level
   const isContentAvailable = (unlockedAtLevel: string) => {
     const unlockLevel = LEVELS.find(level => level.name === unlockedAtLevel);
+    
+    // Tutorial-only items: only show in intro level
+    if (unlockedAtLevel === 'intro') {
+      return currentLevelIndex === 0; // Only show in intro level (id: 0)
+    }
+    
     return unlockLevel ? unlockLevel.id <= currentLevelIndex : false;
   };
 
@@ -123,10 +129,24 @@ export const Shop: React.FC<ShopProps> = ({
               {generator.description}
             </div>
             <div style={{ 
-              color: canAfford ? '#4ade80' : '#ef4444',
-              fontWeight: 'bold'
+              display: 'flex'
             }}>
-              Cost: {cost.toLocaleString()}
+              <div style={{ 
+                color: canAfford ? '#60a5fa' : '#ef4444',
+                fontWeight: 'bold',
+                fontSize: '12px',
+                marginRight: '10px'
+              }}>
+                Cost: <span style={{ fontSize: '14px' }}>{cost.toLocaleString()}</span>
+              </div>
+              <div style={{ 
+                color: '#4ade80',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                flex: 1
+              }}>
+                Growth: +<span style={{ fontSize: '14px' }}>{generator.baseEffect}</span>
+              </div>
             </div>
             
             <div style={{ 
@@ -135,9 +155,9 @@ export const Shop: React.FC<ShopProps> = ({
               right: '8px',
               textAlign: 'right'
             }}>
-              <div style={{ fontSize: '10px', opacity: 0.7, marginBottom: '2px' }}>Owned</div>
+              <div style={{ fontSize: '12px', opacity: 0.7, marginBottom: '2px' }}>Owned</div>
               <div style={{ 
-                fontSize: '18px', 
+                fontSize: '24px', 
                 fontWeight: 'bold', 
                 color: generator.level === 0 ? '#9ca3af' : '#f59e0b' 
               }}>
@@ -175,17 +195,17 @@ export const Shop: React.FC<ShopProps> = ({
               ? 'rgba(34, 197, 94, 0.3)' 
               : isPurchased
                 ? 'rgba(34, 197, 94, 0.4)'
-                : canAfford 
-                  ? 'rgba(74, 222, 128, 0.2)' 
-                  : 'rgba(255, 255, 255, 0.1)',
+              : canAfford 
+                ? 'rgba(74, 222, 128, 0.2)' 
+                : 'rgba(255, 255, 255, 0.1)',
             border: `2px solid ${
               upgrade.purchased 
                 ? '#22c55e' 
                 : isPurchased
-                  ? '#22c55e'
-                  : canAfford 
-                    ? '#4ade80' 
-                    : '#666'
+                ? '#22c55e' 
+                : canAfford 
+                  ? '#4ade80' 
+                  : '#666'
             }`,
             borderRadius: '8px',
             padding: '12px',

@@ -1,7 +1,7 @@
 import { immer } from 'zustand/middleware/immer'
 import { create } from 'zustand'
-import type { Level } from './Levels'
-import { getCurrentLevel, getNextLevel } from './Levels'
+import type { Level } from './levels'
+import { getCurrentLevel, getNextLevel } from './levels'
 
 export type CellStatus = 'empty' | 'nutrient' | 'blob'
 

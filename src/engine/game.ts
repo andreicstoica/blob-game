@@ -89,9 +89,9 @@ export const INITIAL_STATE: GameState = {
     generators: initializeGenerators(),
     upgrades: initializeUpgrades(),
     nutrients: initializeNutrients(),
-    currentLevelId: 0,
+    currentLevelId: 0, // Start at intro level
     highestLevelReached: 0
-}
+};
 
 export function tick(state: GameState): GameState {
     const currentGrowth = getTotalGrowth(state);
@@ -156,7 +156,7 @@ export function buyUpgrade(state: GameState, upgradeId: string): GameState {
 
     // Apply upgrade effects
     if (upgrade.type === 'click') {
-        newClickPower += upgrade.effect;
+        newClickPower *= upgrade.effect;
     }
 
     // Recalculate total growth with all upgrades
@@ -190,10 +190,7 @@ export function getTotalGrowth(state: GameState): number {
             if (upgrade.type === 'growth') {
                 // Growth upgrades multiply the total growth
                 totalGrowth *= upgrade.effect;
-            } else if (upgrade.id === 'efficient-generators') {
-                // Special case for efficient generators
-                totalGrowth += state.generators['basic-generator'].level * upgrade.effect;
-            }
+    }
         }
     });
 

@@ -326,16 +326,16 @@ describe('Game Logic', () => {
             }
             state = buyGenerator(state, 'basic-generator');
             
-            // Buy farm
-            const farmCost = GENERATORS['farm'].baseCost;
-            const farmClicks = Math.ceil(farmCost / GAME_CONFIG.startingClickPower);
+            // Buy microscope cloner
+            const clonerCost = GENERATORS['microscope-cloner'].baseCost;
+            const clonerClicks = Math.ceil(clonerCost / GAME_CONFIG.startingClickPower);
             
-            for (let i = 0; i < farmClicks; i++) {
+            for (let i = 0; i < clonerClicks; i++) {
                 state = manualClick(state);
             }
-            state = buyGenerator(state, 'farm');
+            state = buyGenerator(state, 'microscope-cloner');
             
-            const expectedGrowth = GENERATORS['basic-generator'].baseEffect + GENERATORS['farm'].baseEffect;
+            const expectedGrowth = GENERATORS['basic-generator'].baseEffect + GENERATORS['microscope-cloner'].baseEffect;
             expect(getTotalGrowth(state)).toBe(expectedGrowth);
         });
 
