@@ -20,7 +20,10 @@ function App() {
   } = useGame();
 
   const currentLevel = useMapSelector((s) => s.currentLevel);
-  const currentZoom = useCameraZoom({ gameState, currentLevel });
+  const { zoom: currentZoom, maxZoomForVisibility } = useCameraZoom({
+    gameState,
+    currentLevel,
+  });
   const blobSize = useBlobSize(gameState);
 
   return (
@@ -62,6 +65,8 @@ function App() {
         onBuyUpgrade={handleBuyUpgrade}
         onEvolve={handleEvolve}
         blobSize={blobSize}
+        zoom={currentZoom}
+        // maxZoomForVisibility={maxZoomForVisibility} // pass for debug if you want
       />
 
       <AnimationLayer />

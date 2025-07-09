@@ -191,7 +191,7 @@ export function getTotalGrowth(state: GameState): number {
             if (upgrade.type === 'growth') {
                 // Growth upgrades multiply the total growth
                 totalGrowth *= upgrade.effect;
-    }
+            }
         }
     });
 
@@ -284,5 +284,6 @@ export function evolveToNextLevel(state: GameState): GameState {
         currentLevelId: nextLevel.id,
         highestLevelReached: nextLevel.id
         // Biomass carries over, generators and upgrades are preserved
+        // Zoom reset is handled by useCameraZoom hook when currentLevelId changes
     };
 }
