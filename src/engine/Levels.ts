@@ -35,7 +35,7 @@ export const LEVELS: Level[] = [
     name: 'petri-dish',
     displayName: '🔍 Petri Dish',
     biomassThreshold: 2500,
-    biomassDisplayFormat: 'decimal',
+    biomassDisplayFormat: 'whole',
     background: 'petri-bg',
     foodTypes: [],
     description: 'Grow into visible colonies in a petri dish.'
@@ -106,33 +106,4 @@ export function canEvolve(biomass: number): boolean {
   return nextLevel !== null && biomass >= nextLevel.biomassThreshold;
 }
 
-export function formatBiomass(biomass: number, format: 'standard' | 'scientific' | 'decimal' | 'whole'): string {
-  switch (format) {
-    case 'scientific':
-      return biomass.toExponential(3);
-    case 'decimal':
-    case 'whole':
-    case 'standard':
-    default:
-      return Math.floor(biomass).toLocaleString();
-  }
-}
 
-export function getDecimalPrecisionForLevel(level: Level): number {
-  switch (level.id) {
-    case 0: // intro
-      return 3;
-    case 1: // microscopic
-      return 2;
-    case 2: // petri-dish
-      return 1;
-    case 3: // lab
-    case 4: // city
-    case 5: // earth
-      return 0;
-    case 6: // solar-system
-      return 3; // scientific notation
-    default:
-      return 1;
-  }
-} 

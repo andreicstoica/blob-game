@@ -1,11 +1,7 @@
-import React from "react";
-import type { GameState } from "../../engine/game";
-import {
-  getCurrentLevel,
-  getNextLevel,
-  canEvolveToNextLevel,
-} from "../../engine/game";
-import { formatBiomass } from "../../engine/levels";
+import React from 'react';
+import type { GameState } from '../../engine/game';
+import { getCurrentLevel, getNextLevel, canEvolveToNextLevel } from '../../engine/game';
+import { NumberFormatter } from '../../utils/numberFormat';
 
 interface EvolutionPanelProps {
   biomass: number;
@@ -234,77 +230,58 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
             {scale.unit}
           </span>
         </div>
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "8px",
-          }}
-        >
-          <span style={{ fontSize: "14px" }}>Current:</span>
-          <span
-            style={{
-              fontSize: "14px",
-              fontWeight: "bold",
-              color: "#4ade80",
-            }}
-          >
-            {(() => {
-              // Calculate actual scale value based on biomass position within range
-              let actualScale = "";
-              if (biomass < 30) {
-                const progress = biomass / 30;
-                actualScale = `${(1 + progress * 9).toFixed(1)} nm`;
-              } else if (biomass < 300) {
-                const progress = (biomass - 30) / 270;
-                actualScale = `${(10 + progress * 90).toFixed(0)} nm`;
-              } else if (biomass < 3000) {
-                const progress = (biomass - 300) / 2700;
-                actualScale = `${(0.1 + progress * 0.9).toFixed(1)} μm`;
-              } else if (biomass < 30000) {
-                const progress = (biomass - 3000) / 27000;
-                actualScale = `${(1 + progress * 9).toFixed(0)} μm`;
-              } else if (biomass < 300000) {
-                const progress = (biomass - 30000) / 270000;
-                actualScale = `${(1 + progress * 9).toFixed(0)} mm`;
-              } else if (biomass < 3000000) {
-                const progress = (biomass - 300000) / 2700000;
-                actualScale = `${(10 + progress * 90).toFixed(0)} cm`;
-              } else if (biomass < 30000000) {
-                const progress = (biomass - 3000000) / 27000000;
-                actualScale = `${(1 + progress * 99).toFixed(0)} m`;
-              } else if (biomass < 300000000) {
-                const progress = (biomass - 30000000) / 270000000;
-                actualScale = `${(100 + progress * 9900).toFixed(0)} m`;
-              } else if (biomass < 3000000000) {
-                const progress = (biomass - 300000000) / 2700000000;
-                actualScale = `${(10 + progress * 990).toFixed(0)} km`;
-              } else if (biomass < 30000000000) {
-                const progress = (biomass - 3000000000) / 27000000000;
-                actualScale = `${(1000 + progress * 99000).toFixed(0)} km`;
-              } else if (biomass < 300000000000) {
-                const progress = (biomass - 30000000000) / 270000000000;
-                actualScale = `${(10000 + progress * 990000).toFixed(0)} km`;
-              } else if (biomass < 3000000000000) {
-                const progress = (biomass - 300000000000) / 2700000000000;
-                actualScale = `${(100000 + progress * 9900000).toFixed(0)} km`;
-              } else if (biomass < 30000000000000) {
-                const progress = (biomass - 3000000000000) / 27000000000000;
-                actualScale = `${(1 + progress * 99).toFixed(1)} ly`;
-              } else {
-                const progress = Math.min(
-                  1,
-                  (biomass - 30000000000000) / 70000000000000
-                );
-                actualScale = `${(100 + progress * 9900).toFixed(0)} ly`;
-              }
-              return actualScale;
-            })()}
-          </span>
-        </div>
-
+            {nextLevel && (
+                <div style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    padding: '15px',
+                    borderRadius: '8px',
+                    marginBottom: '20px'
+                }}>
+                    <h3 style={{
+                        margin: '0 0 10px 0',
+                        fontSize: '18px',
+                        color: 'white'
+                    }}>
+                        Next Evolution: {nextLevel.displayName || nextLevel.name}
+                    </h3>
+                    <p style={{
+                        margin: '0 0 15px 0',
+                        fontSize: '14px',
+                        opacity: 0.8
+                    }}>
+                        {nextLevel.description}
+                    </p>
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '10px'
+                    }}>
+                        <span style={{ fontSize: '14px' }}>Required Biomass:</span>
+                        <span style={{ 
+                            fontSize: '16px', 
+                            fontWeight: 'bold',
+                            color: canEvolve ? '#4ade80' : '#ef4444'
+                        }}>
+                            {NumberFormatter.threshold(nextLevel.biomassThreshold, gameState)}
+                        </span>
+                    </div>
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                    }}>
+                        <span style={{ fontSize: '14px' }}>Your Biomass:</span>
+                        <span style={{ 
+                            fontSize: '16px', 
+                            fontWeight: 'bold',
+                            color: canEvolve ? '#4ade80' : '#9ca3af'
+                        }}>
+                            {NumberFormatter.biomass(biomass, gameState)}
+                        </span>
+                    </div>
+                </div>
+            )}
         <div
           style={{
             display: "flex",

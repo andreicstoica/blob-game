@@ -1,6 +1,6 @@
 import React from 'react';
 import type { GameState } from '../../engine/game';
-import { getCurrentLevel } from '../../engine/game';
+import { NumberFormatter } from '../../utils/numberFormat';
 
 interface GrowthStatsProps {
   biomass: number;
@@ -8,23 +8,9 @@ interface GrowthStatsProps {
 }
 
 export const GrowthStats: React.FC<GrowthStatsProps> = ({ biomass, gameState }) => {
-  const currentLevel = gameState ? getCurrentLevel(gameState) : null;
-  
-  const formatBiomassForDisplay = (value: number) => {
-    if (!currentLevel) {
-      // Fallback formatting if no level info
-      return Math.floor(value).toLocaleString();
-    }
-    
-    // Always show whole numbers
-    return Math.floor(value).toLocaleString();
-  };
-
-  const formattedBiomass = formatBiomassForDisplay(biomass);
+  const formattedBiomass = NumberFormatter.biomass(biomass, gameState);
   const biomassLength = formattedBiomass.length;
-  
-  // Scale padding based on biomass number length
-  // Base padding: 20px, add 5px for each character beyond 3
+  // Scale padding based on biomass number length: Base 20px, add 5px for each character beyond 3
   const horizontalPadding = Math.max(20, 20 + (biomassLength - 3) * 5);
 
   return (
@@ -62,7 +48,7 @@ export const GrowthStats: React.FC<GrowthStatsProps> = ({ biomass, gameState }) 
           lineHeight: '1',
           padding: '0 10px'
         }}>
-          {formatBiomassForDisplay(biomass)}
+          {formattedBiomass}
         </div>
       </div>
 
@@ -89,7 +75,7 @@ export const GrowthStats: React.FC<GrowthStatsProps> = ({ biomass, gameState }) 
               color: '#4ade80',
               marginBottom: '5px'
             }}>
-              {formatBiomassForDisplay(gameState.growth * 10)}
+              {NumberFormatter.rate(gameState.growth, gameState)}
             </div>
           </div>
           
@@ -114,7 +100,7 @@ export const GrowthStats: React.FC<GrowthStatsProps> = ({ biomass, gameState }) 
               color: '#4ade80',
               marginBottom: '5px'
             }}>
-              {formatBiomassForDisplay(gameState.clickPower)}
+              {NumberFormatter.power(gameState.clickPower, gameState)}
             </div>
           </div>
         </div>

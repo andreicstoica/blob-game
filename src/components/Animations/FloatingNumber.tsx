@@ -1,5 +1,6 @@
 // src/components/Animations/FloatingNumber.tsx
 import React, { useState, useEffect, useRef } from 'react';
+import { NumberFormatter } from '../../utils/numberFormat';
 
 interface FloatingNumberProps {
   value: number;
@@ -71,7 +72,7 @@ export const FloatingNumber: React.FC<FloatingNumberProps> = ({
         zIndex: 1000
       }}
     >
-      +{value}
+      {NumberFormatter.power(value)}
     </div>
   );
 };

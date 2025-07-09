@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import type { GameState } from '../../engine/game';
-import { getCurrentLevel } from '../../engine/game';
-import { Generators, Upgrades } from './Shop/index';
+import type { GameState } from '../../../engine/game';
+import { getCurrentLevel } from '../../../engine/game';
+import { Generators, Upgrades } from './index';
 
 interface ShopProps {
   biomass: number;

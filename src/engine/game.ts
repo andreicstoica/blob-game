@@ -95,9 +95,10 @@ export const INITIAL_STATE: GameState = {
 
 export function tick(state: GameState): GameState {
     const currentGrowth = getTotalGrowth(state);
+    const growthPerTick = currentGrowth * (GAME_CONFIG.tickRate / 1000);
     const newState = {
         ...state,
-        biomass: state.biomass + currentGrowth,
+        biomass: state.biomass + growthPerTick,
         growth: currentGrowth, // Keep the growth field updated for UI consistency
     };
 
