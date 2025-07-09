@@ -3,6 +3,7 @@ import { AnimationLayer } from "./components/Animations/AnimationLayer";
 import Blob from "./components/Blob/Blob";
 import { Nutrients } from "./components/Food/Nutrients";
 import { GameHUD } from "./components/HUD/GameHUD";
+import { GeneratorVisualization } from "./components/GeneratorVisualization";
 import { useGame } from "./hooks/useGame";
 import { useCameraZoom } from "./hooks/useCameraZoom";
 import { useBlobSize } from "./hooks/useBlobSize";
@@ -46,6 +47,12 @@ function App() {
             clickPower={gameState.clickPower}
           />
         </div>
+        
+        <GeneratorVisualization
+          gameState={gameState}
+          blobPosition={{ x: window.innerWidth / 2, y: window.innerHeight / 2 }}
+          blobSize={blobSize}
+        />
       </div>
 
       <GameHUD
