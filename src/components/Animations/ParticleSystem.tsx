@@ -122,10 +122,14 @@ const spawnOffScreenParticle = (
       nextLevel.biomassThreshold - currentLevel.biomassThreshold;
     const progressRatio = Math.min(1, progressInLevel / levelRange);
 
-    // Bacteria start big when level just starts (progressRatio = 0)
-    // and get smaller as player approaches next level (progressRatio = 1)
-    // Use inverse relationship: bigger particles when progress is smaller
-    sizeMultiplier = Math.max(0.3, 3.0 - progressRatio * 2.5);
+    // For microscopic level, ensure bacteria start big and don't get too small
+    if (currentLevel.name === "microscopic") {
+      // Start at 2.5x size, minimum 0.8x size
+      sizeMultiplier = Math.max(0.8, 2.5 - progressRatio * 1.7);
+    } else {
+      // Other levels: start big when level just starts, get smaller as player approaches next level
+      sizeMultiplier = Math.max(0.3, 3.0 - progressRatio * 2.5);
+    }
   }
 
   // Spawn from one of the four screen edges

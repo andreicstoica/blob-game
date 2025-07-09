@@ -36,8 +36,10 @@ function App() {
           transformOrigin: "center center",
         }}
       >
+        {/* Map and game content are siblings inside the zoomed container */}
         <Map className="absolute inset-0 w-full h-full z-0" />
 
+        {/* Game elements - inside camera zoom */}
         <Nutrients
           nutrients={gameState.nutrients}
           phase={currentLevel.id as any}

@@ -25,6 +25,17 @@ const ZOOM_RANGES = {
     "solar-system": { start: 1.0, end: 0.05 },
 };
 
+// Background zoom ranges (starts very zoomed in)
+const BACKGROUND_ZOOM_RANGES = {
+    intro: { start: 20.0, end: 1.0 },
+    microscopic: { start: 20.0, end: 1.0 },
+    "petri-dish": { start: 20.0, end: 1.0 },
+    lab: { start: 20.0, end: 1.0 },
+    city: { start: 20.0, end: 1.0 },
+    earth: { start: 20.0, end: 1.0 },
+    "solar-system": { start: 20.0, end: 1.0 },
+};
+
 // Helper functions
 const lerp = (start: number, end: number, factor: number): number => {
     return start + (end - start) * factor;
@@ -44,6 +55,21 @@ const calculateEvolutionZoom = (
     const zoomCurve = Math.sqrt(progressRatio); // Gradual zoom out
 
     return start - zoomCurve * (start - end);
+};
+
+// Calculate background zoom
+const calculateBackgroundZoom = (
+    biomass: number,
+    currentLevel: Level,
+    nextLevel: Level
+) => {
+    const progressInLevel = Math.max(0, biomass - currentLevel.biomassThreshold);
+    const levelRange = nextLevel.biomassThreshold - currentLevel.biomassThreshold;
+    const progressRatio = Math.min(1, progressInLevel / levelRange);
+
+    const { start, end } = BACKGROUND_ZOOM_RANGES[currentLevel.name as keyof typeof BACKGROUND_ZOOM_RANGES] || BACKGROUND_ZOOM_RANGES.intro;
+
+    return start - (progressRatio * (start - end));
 };
 
 // Screen bounds calculation with HUD consideration
@@ -101,16 +127,17 @@ export const useCameraZoom = ({ gameState, currentLevel }: UseCameraZoomProps) =
             return Math.min(desiredZoom, 1.0);
         }
 
-        const calculatedZoom = calculateEvolutionZoom(
-            gameState.biomass,
-            currentLevel,
-            nextLevel
-        );
+        // Combine game zoom and background zoom
+        const gameZoom = calculateEvolutionZoom(gameState.biomass, currentLevel, nextLevel);
+        const backgroundZoom = calculateBackgroundZoom(gameState.biomass, currentLevel, nextLevel);
+
+        // Use the more zoomed-in value (smaller number) to ensure we don't zoom out too much
+        const combinedZoom = Math.min(gameZoom, backgroundZoom);
 
         // Apply screen bounds constraint
         const blobSize = Math.max(50, gameState.biomass * 10);
         const maxZoom = calculateMaxZoom(blobSize);
-        return Math.min(calculatedZoom, maxZoom);
+        return Math.min(combinedZoom, maxZoom);
     }, [gameState.biomass, currentLevel, cameraState.isEvolving]);
 
     // Smooth zoom animation
