@@ -72,7 +72,7 @@ export const FloatingNumber: React.FC<FloatingNumberProps> = ({
         zIndex: 1000
       }}
     >
-      {NumberFormatter.power(value)}
+      {NumberFormatter.rate(value)}
     </div>
   );
 };
