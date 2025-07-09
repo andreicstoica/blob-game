@@ -1,17 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-  INITIAL_STATE,
-  tick,
-  manualClick,
-  buyGenerator,
-  buyUpgrade,
-  consumeNutrient,
-  getNearbyNutrients,
-  evolveToNextLevel,
-  type GameState
-} from '../engine/core/game';
-import { GAME_CONFIG } from '../engine/content/content';
-import { useMap } from '../engine/systems/mapState';
+import { INITIAL_STATE } from '../core/gameState';
+import { tick } from '../core/gameLoop';
+import { manualClick, buyGenerator, buyUpgrade, consumeNutrient } from '../core/gameActions';
+import { getNearbyNutrients } from '../core/systems/nutrientSystem';
+import { evolveToNextLevel } from '../core/systems/levelSystem';
+import type { GameState } from '../types';
+import { GAME_CONFIG } from '../core/config/game';
+import { useMap } from '../core/systems/mapState';
 
 export const useGame = () => {
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);

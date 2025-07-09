@@ -1,6 +1,6 @@
 import React from 'react';
-import Blob from '../game/blob/Blob';
-import { GAME_CONFIG } from '../engine/content/content';
+import Blob from '../components/blob/Blob';
+import { GAME_CONFIG } from '../core/config/game';
 
 interface BlobTestProps {
   onBlobClick?: () => void;

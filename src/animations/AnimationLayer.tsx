@@ -1,5 +1,13 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { FloatingNumber } from './FloatingNumber';
+import type { ParticleData } from '../types';
+
+declare global {
+  interface Window {
+    addFloatingNumber?: (position: { x: number; y: number }, value: number, color?: string) => void;
+    addParticleBurst?: (position: { x: number; y: number }, count?: number, colors?: string[]) => void;
+  }
+}
 
 interface FloatingNumberAnimation {
   id: string;
@@ -8,23 +16,6 @@ interface FloatingNumberAnimation {
   value: number;
   color?: string;
   startTime: number;
-}
-
-interface ParticleData {
-  id: string;
-  position: { x: number; y: number };
-  velocity: { x: number; y: number };
-  color: string;
-  size: number;
-  startTime: number;
-  lifespan: number;
-}
-
-declare global {
-  interface Window {
-    addFloatingNumber?: (position: { x: number; y: number }, value: number, color?: string) => void;
-    addParticleBurst?: (position: { x: number; y: number }, count?: number, colors?: string[]) => void;
-  }
 }
 
 export const AnimationLayer: React.FC = React.memo(() => {

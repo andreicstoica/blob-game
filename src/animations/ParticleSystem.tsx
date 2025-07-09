@@ -1,105 +1,14 @@
 import React, { useState, useEffect } from "react";
-import type { GameState } from "../engine/core/game";
-import type { Level } from "../engine/content/levels";
-import { getNextLevel } from "../engine/content/levels";
-import brownBacteria from "/assets/images/bacteria/brown-bacteria.png";
-import greenBacteria from "/assets/images/bacteria/green-bacteria.png";
-import purpleBacteria from "/assets/images/bacteria/purple-bacteria.png";
-
-interface Particle {
-  id: string;
-  x: number;
-  y: number;
-  speed: number;
-  size: number;
-  color: string;
-  type: "nutrient" | "energy" | "matter" | "cosmic";
-  useImage?: boolean;
-  image?: string;
-  direction: { x: number; y: number };
-}
-
-interface ParticleConfig {
-  type: "nutrient" | "energy" | "matter" | "cosmic";
-  spawnRate: number; // particles per second
-  speed: number; // pixels per second
-  size: number;
-  color: string;
-  level: number;
-  useImage: boolean;
-  images?: string[];
-}
-
-const PARTICLE_CONFIGS = {
-  intro: {
-    type: "nutrient",
-    spawnRate: 2,
-    speed: 100,
-    size: 4,
-    color: "#4ade80",
-    level: 1,
-    useImage: false,
-  },
-  microscopic: {
-    type: "nutrient",
-    spawnRate: 5,
-    speed: 120,
-    size: 40,
-    color: "#22c55e",
-    level: 2,
-    useImage: true,
-    images: [brownBacteria, greenBacteria, purpleBacteria],
-  },
-  "petri-dish": {
-    type: "energy",
-    spawnRate: 8,
-    speed: 150,
-    size: 6,
-    color: "#eab308",
-    level: 3,
-    useImage: false,
-  },
-  lab: {
-    type: "matter",
-    spawnRate: 12,
-    speed: 180,
-    size: 7,
-    color: "#3b82f6",
-    level: 4,
-    useImage: false,
-  },
-  city: {
-    type: "matter",
-    spawnRate: 18,
-    speed: 200,
-    size: 8,
-    color: "#8b5cf6",
-    level: 5,
-    useImage: false,
-  },
-  earth: {
-    type: "cosmic",
-    spawnRate: 25,
-    speed: 250,
-    size: 10,
-    color: "#ec4899",
-    level: 6,
-    useImage: false,
-  },
-  "solar-system": {
-    type: "cosmic",
-    spawnRate: 35,
-    speed: 300,
-    size: 12,
-    color: "#f59e0b",
-    level: 7,
-    useImage: false,
-  },
-};
+import type { GameState } from "../types";
+import type { Level } from "../core/content/levels";
+import type { Particle } from "../types";
+import { getNextLevel } from "../core/content/levels";
+import { useBlobSize } from "../hooks/useBlobSize";
+import { getParticleConfig } from "../core/config/particles";
 
 // Off-screen spawning logic
 const spawnOffScreenParticle = (
-  config: ParticleConfig,
+  config: ReturnType<typeof getParticleConfig>,
   gameState: GameState,
   currentLevel: Level
 ): Particle => {
@@ -200,13 +109,11 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({
   if (!currentLevel) return null;
 
   const [particles, setParticles] = useState<Particle[]>([]);
-  const config = (PARTICLE_CONFIGS[
-    currentLevel?.name as keyof typeof PARTICLE_CONFIGS
-  ] || PARTICLE_CONFIGS.intro) as ParticleConfig;
+  const config = getParticleConfig(currentLevel.name);
 
   // Get blob position and size
   const blobPosition = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-  const blobSize = 100; // Base blob size from useBlobSize hook
+  const blobSize = useBlobSize(gameState);
 
   // Spawn particles based on growth rate and level progress
   useEffect(() => {

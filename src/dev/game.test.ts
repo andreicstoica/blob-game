@@ -1,16 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { 
-    INITIAL_STATE,
-    buyGenerator,
-    buyUpgrade,
-    manualClick,
-    consumeNutrient,
-    getGeneratorCost,
-    getTotalGrowth,
-    getNearbyNutrients,
-    tick
-} from '../engine/core/game';
-import { GENERATORS, UPGRADES, GAME_CONFIG } from '../engine/content/content';
+import { INITIAL_STATE } from '../core/gameState';
+import { buyGenerator, buyUpgrade, manualClick, consumeNutrient } from '../core/gameActions';
+import { getNearbyNutrients } from '../core/systems/nutrientSystem';
+import { tick } from '../core/gameLoop';
+import { getGeneratorCost, getTotalGrowth } from '../utils/calculations';
+import { GENERATORS } from '../core/content/generators';
+import { UPGRADES } from '../core/content/upgrades';
+import { GAME_CONFIG } from '../core/config/game';
 
 describe('Game Engine', () => {
     it('should initialize with correct default values', () => {

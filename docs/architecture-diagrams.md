@@ -1,611 +1,346 @@
-# Blob Game Architecture Diagrams
+# Architecture Diagrams
 
-LAST UPDATED: JULY 8th
-
-## Class Diagram
+## State Management Flow
 
 ```mermaid
-classDiagram
-    %% Core Game Engine
-    class GameState {
-        +blobs: BlobState[]
-        +biomass: number
-        +growth: number
-        +clickPower: number
-        +generators: Record~string, GeneratorState~
-        +upgrades: Record~string, UpgradeState~
-        +nutrients: NutrientState[]
-        +currentLevelId: number
-        +highestLevelReached: number
-    }
+flowchart TD
+    subgraph "React State (useGame Hook)"
+        GS[GameState]
+        GS --> B[biomass: number]
+        GS --> G[growth: number]
+        GS --> CP[clickPower: number]
+        GS --> GEN[generators: Record<string, GeneratorState>]
+        GS --> UP[upgrades: Record<string, UpgradeState>]
+        GS --> N[nutrients: NutrientState[]]
+        GS --> CL[currentLevelId: number]
+        GS --> HL[highestLevelReached: number]
+    end
 
-    class BlobState {
-        +size: number
-    }
+    subgraph "Zustand State (useMap Hook)"
+        MS[MapState]
+        MS --> ML[currentLevel: Level]
+        MS --> MC[cells: Cell[]]
+        MS --> MSIZE[size: number]
+        MS --> MGET[get: function]
+        MS --> MSET[set: function]
+        MS --> MSL[setLevel: function]
+        MS --> MEL[evolveToNextLevel: function]
+    end
 
-    class NutrientState {
-        +id: string
-        +x: number
-        +y: number
-        +consumed: boolean
-    }
+    subgraph "State Management Problems"
+        subgraph "Dual State Management"
+            US[useGame Hook]
+            UM[useMap Hook]
 
-    class GeneratorState {
-        +id: string
-        +name: string
-        +baseCost: number
-        +description: string
-        +baseEffect: number
-        +level: number
-        +costMultiplier: number
-        +unlockedAtLevel: string
-    }
+            US --> GS
+            UM --> MS
 
-    class UpgradeState {
-        +id: string
-        +name: string
-        +cost: number
-        +description: string
-        +effect: number
-        +type: 'growth' | 'split' | 'click' | 'blob'
-        +purchased: boolean
-        +unlockedAtLevel: string
-    }
+            %% Problem: Tight coupling
+            US -.->|"mapEvolveToNextLevel()"| UM
+            US -.->|"evolveToNextLevel()"| UM
+        end
 
-    class Level {
-        +id: number
-        +name: string
-        +displayName: string
-        +biomassThreshold: number
-        +biomassDisplayFormat: 'standard' | 'scientific' | 'decimal' | 'whole'
-        +background: string
-        +foodTypes: string[]
-        +description: string
-    }
+        subgraph "State Synchronization Issues"
+            SYNC1["Level info in GameState.currentLevelId"]
+            SYNC2["Level info in MapState.currentLevel"]
+            SYNC1 -.->|"Can get out of sync"| SYNC2
 
-    class Cell {
-        +x: number
-        +y: number
-        +status: CellStatus
-    }
+            SYNC3["Biomass in GameState"]
+            SYNC4["Map evolution based on biomass"]
+            SYNC3 -.->|"Manual sync required"| SYNC4
+        end
 
-    class MapState {
-        +currentLevel: Level
-        +size: number
-        +cells: Cell[]
-        +get(x, y): CellStatus
-        +set(x, y, status): void
-        +setLevel(level): void
-        +evolveToNextLevel(biomass): void
-    }
+        subgraph "Performance Issues"
+            PERF1["Every tick updates entire GameState"]
+            PERF2["Large cell array in MapState"]
+            PERF3["No memoization of calculations"]
+            PERF4["Unnecessary re-renders"]
+        end
+    end
 
-    %% React Components
-    class GameHUD {
-        +biomass: number
-        +gameState: GameState
-        +onBuyGenerator(generatorId): void
-        +onBuyUpgrade(upgradeId): void
-        +onEvolve(): void
-        +blobSize: number
-    }
+    subgraph "Game Actions"
+        ACT --> MC[manualClick]
+        ACT --> CN[consumeNutrient]
+        ACT --> BG[buyGenerator]
+        ACT --> BU[buyUpgrade]
+        ACT --> EL[evolveToNextLevel]
+    end
 
-    class Shop {
-        +biomass: number
-        +gameState: GameState
-        +onBuyGenerator(generatorId): void
-        +onBuyUpgrade(upgradeId): void
-        -generatorFilter: 'current' | 'all'
-    }
+    subgraph "Game Loop"
+        GL --> TICK[tick function]
+        TICK --> TG[getTotalGrowth]
+        TICK --> SMN[spawnMoreNutrients]
+    end
 
-    class GameStats {
-        +biomass: number
-        +gameState: GameState
-    }
+    %% Connections showing the problems
+    GS --> ACT
+    GS --> GL
+    MS -.->|"Tight coupling"| ACT
+    MS -.->|"Manual sync"| GL
 
-    class EvolutionPanel {
-        +biomass: number
-        +gameState: GameState
-        +onEvolve(): void
-    }
-
-    class EvolutionScale {
-        +biomass: number
-        +blobSize: number
-        +scale: ScaleLevel
-        +zoom: number
-    }
-
-    class CurrentLevel {
-        +displayName: string
-        +name: string
-        +description: string
-    }
-
-    class NextEvolution {
-        +nextLevel: Level
-        +canEvolve: boolean
-        +biomass: number
-        +gameState: GameState
-    }
-
-    class EvolutionButton {
-        +canEvolve: boolean
-        +hasNextLevel: boolean
-        +onEvolve(): void
-    }
-
-    class Generators {
-        +biomass: number
-        +gameState: GameState
-        +onBuyGenerator(generatorId): void
-        +generatorFilter: 'current' | 'all'
-        +currentLevel: Level
-    }
-
-    class Upgrades {
-        +biomass: number
-        +gameState: GameState
-        +onBuyUpgrade(upgradeId): void
-        +generatorFilter: 'current' | 'all'
-        +currentLevel: Level
-    }
-
-    class Blob {
-        +id: string
-        +position: {x, y}
-        +size: number
-        +biomass: number
-        +onBlobClick(): void
-        +onBlobPress(): void
-        +onBlobRelease(): void
-        +color: string
-        +strokeColor: string
-        +glowColor: string
-        +isDisabled: boolean
-        +isActive: boolean
-        +clickPower: number
-    }
-
-    class Map {
-        +className: string
-    }
-
-    class AnimationLayer {
-        -floatingNumbers: FloatingNumberAnimation[]
-        -particles: ParticleData[]
-        +addFloatingNumber(position, value, color): void
-        +addParticleBurst(position, count, colors): void
-    }
-
-    class ScaleLevel {
-        +name: string
-        +description: string
-        +unit: string
-        +color: string
-        +icon: string
-    }
-
-    %% Hooks
-    class useGame {
-        +gameState: GameState
-        +buyGenerator(generatorId): void
-        +buyUpgrade(upgradeId): void
-        +manualClick(): void
-        +evolve(): void
-    }
-
-    class useBlobSize {
-        +calculateBlobSize(biomass): number
-    }
-
-    class useCameraZoom {
-        +calculateZoom(biomass): number
-        +smoothZoomAnimation(): void
-        +handleLevelReset(): void
-    }
-
-    class useMapSelector {
-        +selectMapState(): MapState
-    }
-
-    %% Relationships
-    GameState ||--o{ BlobState : contains
-    GameState ||--o{ NutrientState : contains
-    GameState ||--o{ GeneratorState : contains
-    GameState ||--o{ UpgradeState : contains
-    GameState ||--|| Level : current
-    MapState ||--o{ Cell : contains
-    MapState ||--|| Level : current
-
-    GameHUD ||--|| Shop : contains
-    GameHUD ||--|| GameStats : contains
-    GameHUD ||--|| EvolutionPanel : contains
-
-    Shop ||--|| Generators : contains
-    Shop ||--|| Upgrades : contains
-
-    EvolutionPanel ||--|| EvolutionScale : contains
-    EvolutionPanel ||--|| CurrentLevel : contains
-    EvolutionPanel ||--|| NextEvolution : contains
-    EvolutionPanel ||--|| EvolutionButton : contains
-
-    useGame ||--|| GameState : manages
-    useBlobSize ||--|| GameState : reads
-    useCameraZoom ||--|| GameState : reads
-    useMapSelector ||--|| MapState : reads
-
-    Map ||--o{ Blob : renders
-    AnimationLayer ||--o{ FloatingNumber : manages
-    AnimationLayer ||--o{ Particle : manages
-
-    ScaleLevel ||--|| EvolutionScale : used by
+    style GS fill:#e3f2fd
+    style MS fill:#ffebee
+    style US fill:#f3e5f5
+    style UM fill:#fff3e0
+    style SYNC1 fill:#ffcdd2
+    style SYNC2 fill:#ffcdd2
+    style PERF1 fill:#ffcdd2
+    style PERF2 fill:#ffcdd2
 ```
 
-## Sequence Diagrams
-
-### User Flow: Manual Click and Growth
+## User Interaction Sequence
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant Blob
-    participant App
-    participant useGame
-    participant GameState
-    participant AnimationLayer
-    participant GameStats
+    participant U as User
+    participant A as App.tsx
+    participant UG as useGame Hook
+    participant GS as GameState
+    participant UM as useMap Hook
+    participant MS as MapState
+    participant ACT as Game Actions
+    participant GL as Game Loop
 
-    User->>Blob: Click on blob
-    Blob->>App: onBlobClick()
-    App->>useGame: manualClick()
-    useGame->>GameState: Update biomass += clickPower
-    useGame->>AnimationLayer: addFloatingNumber()
-    AnimationLayer->>FloatingNumber: Create floating number animation
-    useGame->>GameStats: Update biomass display
-    GameStats->>User: Show updated biomass
-```
+    U->>A: Click Blob
+    A->>UG: handleBlobClick()
+    UG->>ACT: manualClick(state)
+    ACT->>GS: Update biomass
+    GS-->>UG: New state
+    UG-->>A: Re-render
 
-### User Flow: Purchase Generator
+    U->>A: Buy Generator
+    A->>UG: handleBuyGenerator(id)
+    UG->>ACT: buyGenerator(state, id)
+    ACT->>GS: Update generators & biomass
+    GS-->>UG: New state
+    UG-->>A: Re-render
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant Generators
-    participant Shop
-    participant GameHUD
-    participant useGame
-    participant GameState
-    participant GeneratorState
-    participant GameStats
+    U->>A: Evolve
+    A->>UG: handleEvolve()
+    UG->>ACT: evolveToNextLevel(state)
+    ACT->>GS: Update currentLevelId
+    UG->>UM: mapEvolveToNextLevel(biomass)
+    UM->>MS: Update currentLevel
+    GS-->>UG: New state
+    MS-->>UM: New state
+    UG-->>A: Re-render
 
-    User->>Generators: Click generator
-    Generators->>Shop: onBuyGenerator(generatorId)
-    Shop->>GameHUD: onBuyGenerator(generatorId)
-    GameHUD->>useGame: buyGenerator(generatorId)
-    useGame->>GameState: Check if can afford
-    alt Can afford
-        useGame->>GameState: Deduct biomass
-        useGame->>GeneratorState: Increment level
-        useGame->>GameState: Recalculate growth
-        useGame->>GameStats: Update growth display
-        GameStats->>User: Show updated growth rate
-    else Cannot afford
-        useGame->>Generators: No change (return same state)
+    loop Every tick
+        GL->>GS: tick(state)
+        GS->>ACT: getTotalGrowth()
+        ACT-->>GS: growth value
+        GS->>ACT: spawnMoreNutrients()
+        ACT-->>GS: Updated nutrients
+        GS-->>GL: New state
+        GL-->>A: Re-render
     end
 ```
 
-### User Flow: Level Evolution
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant EvolutionButton
-    participant EvolutionPanel
-    participant GameHUD
-    participant useGame
-    participant GameState
-    participant MapState
-    participant useCameraZoom
-    participant Map
-
-    User->>EvolutionButton: Click evolve
-    EvolutionButton->>EvolutionPanel: onEvolve()
-    EvolutionPanel->>GameHUD: onEvolve()
-    GameHUD->>useGame: evolve()
-    useGame->>GameState: Check evolution conditions
-    alt Can evolve
-        useGame->>GameState: Update currentLevelId
-        useGame->>MapState: evolveToNextLevel()
-        useGame->>useCameraZoom: Reset zoom to 1.0
-        useCameraZoom->>Map: Apply zoom reset
-        MapState->>Map: Update current level
-        Map->>User: Show new level background
-        EvolutionPanel->>User: Show evolution complete
-    else Cannot evolve
-        useGame->>EvolutionPanel: No change
-    end
-```
-
-### User Flow: Camera Zoom with Blob Growth
-
-```mermaid
-sequenceDiagram
-    participant GameState
-    participant useCameraZoom
-    participant useBlobSize
-    participant App
-    participant Map
-    participant Blob
-
-    GameState->>useCameraZoom: biomass changes
-    useCameraZoom->>useBlobSize: getEngineBlobSize()
-    useBlobSize->>useCameraZoom: return blob size (50-400px)
-    useCameraZoom->>useCameraZoom: calculate target zoom
-    useCameraZoom->>useCameraZoom: smooth animation
-    useCameraZoom->>App: return currentSmoothZoom
-    App->>Map: apply transform scale
-    Map->>Blob: render with new zoom level
-```
-
-### User Flow: Nutrient Consumption
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant Blob
-    participant App
-    participant useGame
-    participant GameState
-    participant NutrientState
-    participant MapState
-
-    User->>Blob: Click near nutrient
-    Blob->>App: onBlobClick(position)
-    App->>useGame: consumeNutrient(nutrientId)
-    useGame->>GameState: Find nearby nutrients
-    useGame->>NutrientState: Mark as consumed
-    useGame->>GameState: Add biomass
-    useGame->>MapState: Update cell status
-    MapState->>User: Remove nutrient from map
-```
-
-## State Diagrams
-
-### Game Level Progression
+## Game State Transitions
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Intro
-    Intro --> Microscopic : biomass >= 1
-    Microscopic --> PetriDish : biomass >= 2500
-    PetriDish --> Lab : biomass >= 2,250,000
-    Lab --> City : biomass >= 800,000,000
-    City --> Earth : biomass >= 300,000,000,000
-    Earth --> SolarSystem : biomass >= 100,000,000,000,000
-    SolarSystem --> [*] : Max level reached
+    [*] --> Initializing
+    Initializing --> Playing : Game loaded
 
-    state Intro {
-        [*] --> BasicGenerator
-        BasicGenerator --> ClickPowerUpgrade
-    }
+    Playing --> BuyingGenerator : User clicks buy
+    BuyingGenerator --> Playing : Generator purchased
 
-    state Microscopic {
-        [*] --> MicroscopicCloner
-        MicroscopicCloner --> CellDivider
-        CellDivider --> NucleusReplicator
-    }
+    Playing --> BuyingUpgrade : User clicks upgrade
+    BuyingUpgrade --> Playing : Upgrade purchased
 
-    state PetriDish {
-        [*] --> ColonyExpander
-        ColonyExpander --> SporeLauncher
-        SporeLauncher --> ContaminantConverter
-    }
+    Playing --> Evolving : Biomass threshold reached
+    Evolving --> Playing : Level evolved
 
-    state Lab {
-        [*] --> CentrifugeSorter
-        CentrifugeSorter --> BioreactorTank
-        BioreactorTank --> AutoclaveRecycler
-    }
+    Playing --> ConsumingNutrient : User clicks nutrient
+    ConsumingNutrient --> Playing : Nutrient consumed
 
-    state City {
-        [*] --> HumanoidSlimes
-        HumanoidSlimes --> SewerColonies
-        SewerColonies --> SubwaySpreaders
-    }
+    Playing --> ManualClick : User clicks blob
+    ManualClick --> Playing : Biomass increased
 
-    state Earth {
-        [*] --> CargoShipInfestors
-        CargoShipInfestors --> AirplaneSporeUnits
-        AirplaneSporeUnits --> ForestHiveColonies
-    }
+    Playing --> GameTick : Timer fires
+    GameTick --> Playing : Growth applied
 
-    state SolarSystem {
-        [*] --> TerraformingOoze
-        TerraformingOoze --> AsteroidSeeder
-        AsteroidSeeder --> StarshipIncubator
-    }
-```
+    note right of Playing
+        State includes:
+        - biomass
+        - generators
+        - upgrades
+        - nutrients
+        - currentLevelId
+    end note
 
-### Camera Zoom State
-
-```mermaid
-stateDiagram-v2
-    [*] --> LevelStart
-    LevelStart --> Growing : biomass increases
-    Growing --> NearlyFull : progress >= 0.8
-    NearlyFull --> ReadyToEvolve : progress >= 1.0
-    ReadyToEvolve --> LevelStart : evolution triggered
-    Growing --> Growing : biomass continues
-    NearlyFull --> Growing : biomass decreases
-```
-
-### Generator Purchase State
-
-```mermaid
-stateDiagram-v2
-    [*] --> Available
-    Available --> CanAfford : biomass >= cost
-    Available --> CannotAfford : biomass < cost
-    CanAfford --> Purchasing : user clicks
-    CannotAfford --> Available : biomass increases
-    Purchasing --> Purchased : successful purchase
-    Purchasing --> CanAfford : insufficient biomass
-    Purchased --> Available : new generator level
-```
-
-### Upgrade Purchase State
-
-```mermaid
-stateDiagram-v2
-    [*] --> Unlocked
-    Unlocked --> Available : level requirement met
-    Unlocked --> Locked : level requirement not met
-    Available --> CanAfford : biomass >= cost
-    Available --> CannotAfford : biomass < cost
-    CanAfford --> Purchasing : user clicks
-    CannotAfford --> Available : biomass increases
-    Purchasing --> Purchased : successful purchase
-    Purchasing --> CanAfford : insufficient biomass
-    Purchased --> [*] : upgrade applied
-```
-
-### Blob Animation State
-
-```mermaid
-stateDiagram-v2
-    [*] --> Idle
-    Idle --> Breathing : animation loop
-    Breathing --> Idle : animation cycle
-    Idle --> Clicked : user interaction
-    Clicked --> Shrinking : click animation
-    Shrinking --> Bouncing : bounce back
-    Bouncing --> Idle : animation complete
-    Clicked --> Heating : rapid clicks
-    Heating --> Cooling : click frequency drops
-    Cooling --> Idle : heat dissipates
-```
-
-### Game Session State
-
-```mermaid
-stateDiagram-v2
-    [*] --> Loading
-    Loading --> MainMenu : assets loaded
-    MainMenu --> Playing : start game
-    Playing --> Paused : user pauses
-    Paused --> Playing : user resumes
-    Playing --> GameOver : lose condition
-    Playing --> Victory : win condition
-    GameOver --> MainMenu : restart
-    Victory --> MainMenu : new game
-    MainMenu --> [*] : exit game
+    note right of Evolving
+        Manual sync required:
+        - Update GameState.currentLevelId
+        - Update MapState.currentLevel
+    end note
 ```
 
 ## Component Architecture
 
 ```mermaid
-graph TB
-    subgraph "React App"
-        App[App.tsx]
-        App --> GameHUD
-        App --> Map
-        App --> AnimationLayer
-        App --> Nutrients
+flowchart TD
+    subgraph "App.tsx"
+        APP[App Component]
+        APP --> BL[Blob Component]
+        APP --> NU[Nutrients Component]
+        APP --> GH[GameHUD Component]
+        APP --> MG[MapGenerators Component]
+        APP --> MAP[Map Component]
+        APP --> PS[ParticleSystem Component]
+        APP --> AL[AnimationLayer Component]
     end
 
-    subgraph "Game Engine"
-        GameState[GameState]
-        MapState[MapState]
-        useGame[useGame Hook]
-        useBlobSize[useBlobSize Hook]
-        useCameraZoom[useCameraZoom Hook]
-        useMapSelector[useMapSelector Hook]
+    subgraph "Game HUD"
+        GH --> GS[GameStats Component]
+        GH --> SH[Shop Component]
+        GH --> EP[EvolutionPanel Component]
+
+        SH --> SG[Generators Component]
+        SH --> SU[Upgrades Component]
+
+        EP --> CL[CurrentLevel Component]
+        EP --> NE[NextEvolution Component]
+        EP --> EB[EvolutionButton Component]
+        EP --> ES[EvolutionScale Component]
     end
 
-    subgraph "HUD Components"
-        GameHUD --> Shop
-        GameHUD --> GameStats
-        GameHUD --> EvolutionPanel
-
-        Shop --> Generators
-        Shop --> Upgrades
-
-        EvolutionPanel --> EvolutionScale
-        EvolutionPanel --> CurrentLevel
-        EvolutionPanel --> NextEvolution
-        EvolutionPanel --> EvolutionButton
-    end
-
-    subgraph "Game Objects"
-        Map --> Blob
-        Map --> LevelBackgrounds
+    subgraph "Map System"
+        MAP --> CM[CycleMaps Component]
+        MAP --> IL[IntroLevel Component]
+        MAP --> ML[MicroscopeLevel Component]
+        MAP --> PL[PetriLevel Component]
+        MAP --> LL[LabLevel Component]
+        MAP --> CIL[CityLevel Component]
+        MAP --> EL[EarthLevel Component]
+        MAP --> SSL[SunSolarSystemLevel Component]
     end
 
     subgraph "Animations"
-        AnimationLayer --> FloatingNumber
-        AnimationLayer --> ParticleSystem
-        ParticleSystem --> Particle
+        AL --> FN[FloatingNumber Component]
+        AL --> P[Particle Component]
+        PS --> P
     end
 
-    subgraph "Data Layer"
-        GameState --> Generators
-        GameState --> Upgrades
-        GameState --> Levels
-        MapState --> Cells
-        ScaleLevel[ScaleLevel]
-    end
-
-    %% Connections
-    useGame --> GameState
-    useBlobSize --> GameState
-    useCameraZoom --> GameState
-    useMapSelector --> MapState
-    GameHUD --> useGame
-    Map --> MapState
-    Blob --> useBlobSize
-    Map --> useCameraZoom
-    EvolutionScale --> ScaleLevel
+    style APP fill:#e1f5fe
+    style GH fill:#f3e5f5
+    style MAP fill:#e8f5e8
+    style AL fill:#fff3e0
 ```
 
-## HUD Layout Architecture
+## File Architecture
 
 ```mermaid
-graph TB
-    subgraph "Screen Layout"
-        Screen[1920x1080 Screen]
+flowchart TD
+    subgraph "src/"
+        subgraph "core/"
+            CS[gameState.ts]
+            CA[gameActions.ts]
+            CL[gameLoop.ts]
 
-        subgraph "Left HUD - Shop"
-            Shop[350px width]
-            Shop --> Generators
-            Shop --> Upgrades
+            subgraph "systems/"
+                NS[nutrientSystem.ts]
+                LS[levelSystem.ts]
+                GS[generatorSystem.ts]
+                US[upgradeSystem.ts]
+                MS[mapState.ts]
+            end
+
+            subgraph "content/"
+                CG[generators.ts]
+                CU[upgrades.ts]
+                CL[levels.ts]
+            end
+
+            subgraph "config/"
+                GC[game.ts]
+                PC[particles.ts]
+            end
         end
 
-        subgraph "Right HUD - Evolution"
-            Evolution[300px width]
-            Evolution --> EvolutionScale
-            Evolution --> CurrentLevel
-            Evolution --> NextEvolution
-            Evolution --> EvolutionButton
+        subgraph "types/"
+            TG[game.ts]
+            TGE[generators.ts]
+            TU[upgrades.ts]
+            TL[levels.ts]
+            TP[particles.ts]
+            TM[map.ts]
+            TN[nutrients.ts]
         end
 
-        subgraph "Top HUD - Game Stats"
-            GameStats[Centered, 600px from sides]
-            GameStats --> BiomassDisplay
-            GameStats --> GrowthRate
-            GameStats --> ClickPower
+        subgraph "utils/"
+            UC[calculations.ts]
+            UN[numberFormat.ts]
         end
 
-        subgraph "Playable Area"
-            PlayArea[Available space for blob]
-            PlayArea --> Blob
-            PlayArea --> Map
+        subgraph "hooks/"
+            HG[useGame.ts]
+            HB[useBlobSize.ts]
+            HC[useCameraZoom.ts]
         end
+
+        subgraph "components/"
+            subgraph "hud/"
+                HGH[GameHUD.tsx]
+                HGS[GameStats.tsx]
+
+                subgraph "Shop/"
+                    SG[Generators.tsx]
+                    SU[Upgrades.tsx]
+                    SS[Shop.tsx]
+                    SGV[generatorValue.ts]
+                    SI[index.ts]
+                end
+
+                subgraph "Evolution/"
+                    EC[CurrentLevel.tsx]
+                    EN[NextEvolution.tsx]
+                    EB[EvolutionButton.tsx]
+                    ES[EvolutionScale.tsx]
+                    EP[EvolutionPanel.tsx]
+                    EI[index.ts]
+                    ELS[scaleLevels.ts]
+                end
+            end
+
+            subgraph "map/"
+                MM[Map.tsx]
+                MC[CycleMaps.tsx]
+                MG[MapGenerators.tsx]
+
+                subgraph "levels/"
+                    LI[IntroLevel.tsx]
+                    LM[MicroscopeLevel.tsx]
+                    LP[PetriLevel.tsx]
+                    LL[LabLevel.tsx]
+                    LC[CityLevel.tsx]
+                    LE[EarthLevel.tsx]
+                    LS[SunSolarSystemLevel.tsx]
+                end
+            end
+
+            CB[blob/Blob.tsx]
+            CF[food/Nutrients.tsx]
+        end
+
+        subgraph "animations/"
+            AP[Particle.tsx]
+            APS[ParticleSystem.tsx]
+            AFN[FloatingNumber.tsx]
+            AAL[AnimationLayer.tsx]
+        end
+
+        A[App.tsx]
+        M[main.tsx]
     end
 
-    Screen --> Shop
-    Screen --> Evolution
-    Screen --> GameStats
-    Screen --> PlayArea
+    style core fill:#e3f2fd
+    style types fill:#f3e5f5
+    style utils fill:#e8f5e8
+    style hooks fill:#fff3e0
+    style components fill:#fce4ec
+    style animations fill:#f1f8e9
 ```
 
 ## Data Flow Architecture
@@ -613,97 +348,240 @@ graph TB
 ```mermaid
 flowchart LR
     subgraph "User Input"
-        Click[Blob Click]
-        Purchase[Generator/Upgrade Purchase]
-        Evolution[Level Evolution]
+        UI[User Interactions]
+        UI --> CLICK[Click Blob]
+        UI --> NUTRIENT[Click Nutrient]
+        UI --> BUY_GEN[Buy Generator]
+        UI --> BUY_UP[Buy Upgrade]
+        UI --> EVOLVE[Evolve]
     end
 
-    subgraph "Game Logic"
-        GameEngine[Game Engine]
-        StateManager[State Management]
-        Calculations[Growth Calculations]
-        CameraSystem[Camera Zoom System]
+    subgraph "Game Actions"
+        CLICK --> MC[manualClick]
+        NUTRIENT --> CN[consumeNutrient]
+        BUY_GEN --> BG[buyGenerator]
+        BUY_UP --> BU[buyUpgrade]
+        EVOLVE --> EL[evolveToNextLevel]
+    end
+
+    subgraph "State Updates"
+        MC --> GS[GameState]
+        CN --> GS
+        BG --> GS
+        BU --> GS
+        EL --> GS
+    end
+
+    subgraph "Calculations"
+        GS --> TG[getTotalGrowth]
+        GS --> GCL[getCurrentLevel]
+        GS --> GNN[getNearbyNutrients]
+        GS --> GEC[getEffectiveClickPower]
     end
 
     subgraph "UI Updates"
-        HUD[HUD Components]
-        Animations[Visual Effects]
-        Map[Map Rendering]
-        Blob[Blob Rendering]
+        GS --> UI_COMP[UI Components]
+        TG --> UI_COMP
+        GCL --> UI_COMP
+        GNN --> UI_COMP
+        GEC --> UI_COMP
     end
 
-    subgraph "Data Storage"
-        GameState[Game State]
-        Config[Game Configuration]
-        Levels[Level Definitions]
-        MapState[Map State]
+    subgraph "Game Loop"
+        GS --> TICK[tick function]
+        TICK --> TG
+        TICK --> SMN[spawnMoreNutrients]
+        SMN --> GS
     end
 
-    Click --> GameEngine
-    Purchase --> GameEngine
-    Evolution --> GameEngine
-
-    GameEngine --> StateManager
-    StateManager --> Calculations
-    Calculations --> CameraSystem
-
-    Calculations --> HUD
-    Calculations --> Animations
-    Calculations --> Map
-    CameraSystem --> Blob
-
-    StateManager --> GameState
-    StateManager --> MapState
-    GameEngine --> Config
-    GameEngine --> Levels
-
-    GameState --> HUD
-    MapState --> Map
-    Config --> HUD
-    Levels --> Map
+    style UI fill:#e1f5fe
+    style GS fill:#f3e5f5
+    style UI_COMP fill:#e8f5e8
+    style TICK fill:#fff3e0
 ```
 
-## Camera Zoom System Architecture
+## Class Diagram
 
 ```mermaid
-graph TB
-    subgraph "Camera Zoom System"
-        useCameraZoom[useCameraZoom Hook]
+classDiagram
+    class GameState {
+        +number biomass
+        +number growth
+        +number clickPower
+        +Record~string, GeneratorState~ generators
+        +Record~string, UpgradeState~ upgrades
+        +NutrientState[] nutrients
+        +number currentLevelId
+        +number highestLevelReached
+    }
 
-        subgraph "Zoom Calculation"
-            BlobSize[Engine Blob Size]
-            ScreenBounds[Screen Boundaries]
-            HUDBounds[HUD Boundaries]
-            LevelProgress[Level Progress]
+    class MapState {
+        +Level currentLevel
+        +Cell[] cells
+        +number size
+        +function get(x, y)
+        +function set(x, y, status)
+        +function setLevel(level)
+        +function evolveToNextLevel(biomass)
+    }
+
+    class GeneratorState {
+        +string id
+        +string name
+        +number baseCost
+        +string description
+        +number baseEffect
+        +number level
+        +number costMultiplier
+        +string unlockedAtLevel
+    }
+
+    class UpgradeState {
+        +string id
+        +string name
+        +number cost
+        +string description
+        +number effect
+        +string type
+        +boolean purchased
+        +string unlockedAtLevel
+    }
+
+    class NutrientState {
+        +string id
+        +number x
+        +number y
+        +boolean consumed
+    }
+
+    class Cell {
+        +number x
+        +number y
+        +CellStatus status
+    }
+
+    class Level {
+        +number id
+        +string name
+        +string emoji
+        +number biomassThreshold
+        +string background
+    }
+
+    class Particle {
+        +number x
+        +number y
+        +number vx
+        +number vy
+        +number life
+        +string color
+        +number size
+    }
+
+    GameState --> GeneratorState : contains
+    GameState --> UpgradeState : contains
+    GameState --> NutrientState : contains
+    MapState --> Cell : contains
+    MapState --> Level : contains
+    ParticleSystem --> Particle : manages
+```
+
+## User Flow Diagram
+
+```mermaid
+flowchart TD
+    A[User Opens Game] --> B[Initialize Game State]
+    B --> C[Load Initial Level: Intro]
+    C --> D[Render Game UI]
+
+    D --> E{User Interaction}
+    E -->|Click Blob| F[Manual Click Action]
+    E -->|Click Nutrient| G[Consume Nutrient]
+    E -->|Buy Generator| H[Purchase Generator]
+    E -->|Buy Upgrade| I[Purchase Upgrade]
+    E -->|Evolve| J[Level Evolution]
+
+    F --> K[Add Click Power to Biomass]
+    G --> L[Add 1 Biomass + Mark Consumed]
+    H --> M[Calculate Cost + Apply Generator Effect]
+    I --> N[Calculate Cost + Apply Upgrade Effect]
+    J --> O[Check Threshold + Advance Level]
+
+    K --> P[Game Tick Loop]
+    L --> P
+    M --> P
+    N --> P
+    O --> P
+
+    P --> Q[Calculate Total Growth]
+    Q --> R[Add Growth to Biomass]
+    R --> S[Spawn More Nutrients if Needed]
+    S --> T[Update UI Components]
+    T --> E
+
+    style A fill:#e1f5fe
+    style E fill:#fff3e0
+    style P fill:#f3e5f5
+    style T fill:#e8f5e8
+```
+
+## Proposed Unified State Architecture
+
+```mermaid
+flowchart TD
+    subgraph "Unified State Management"
+        subgraph "Single Source of Truth"
+            US[useGameStore Hook]
+            US --> GS[GameState]
+            GS --> B[biomass: number]
+            GS --> G[growth: number]
+            GS --> CP[clickPower: number]
+            GS --> GEN[generators: Record<string, GeneratorState>]
+            GS --> UP[upgrades: Record<string, UpgradeState>]
+            GS --> N[nutrients: NutrientState[]]
+            GS --> CL[currentLevel: Level]
+            GS --> HL[highestLevelReached: number]
+            GS --> MC[cells: Cell[]]
         end
 
-        subgraph "Zoom Animation"
-            TargetZoom[Target Zoom]
-            SmoothZoom[Smooth Animation]
-            LevelReset[Level Reset]
+        subgraph "Centralized Actions"
+            ACT[Game Actions]
+            ACT --> MC[manualClick]
+            ACT --> CN[consumeNutrient]
+            ACT --> BG[buyGenerator]
+            ACT --> BU[buyUpgrade]
+            ACT --> EL[evolveToNextLevel]
+            ACT --> SMN[spawnMoreNutrients]
         end
 
-        subgraph "Constraints"
-            MinZoom[Minimum Zoom 0.02]
-            MaxZoom[Maximum Zoom]
-            PlayableArea[Playable Area Bounds]
+        subgraph "Optimized Game Loop"
+            GL[Game Loop]
+            GL --> TICK[tick function]
+            TICK --> TG[getTotalGrowth]
+            TICK --> SMN
         end
     end
 
-    useCameraZoom --> BlobSize
-    useCameraZoom --> ScreenBounds
-    useCameraZoom --> HUDBounds
-    useCameraZoom --> LevelProgress
+    subgraph "Benefits"
+        BEN1["Single state source"]
+        BEN2["No synchronization issues"]
+        BEN3["Consistent update patterns"]
+        BEN4["Better performance"]
+        BEN5["Easier testing"]
+    end
 
-    BlobSize --> TargetZoom
-    ScreenBounds --> MaxZoom
-    HUDBounds --> PlayableArea
-    LevelProgress --> TargetZoom
+    GS --> ACT
+    GS --> GL
+    ACT --> GS
+    GL --> GS
 
-    TargetZoom --> SmoothZoom
-    SmoothZoom --> MinZoom
-    SmoothZoom --> MaxZoom
-    LevelReset --> SmoothZoom
+    style GS fill:#e8f5e8
+    style US fill:#e3f2fd
+    style ACT fill:#f3e5f5
+    style GL fill:#fff3e0
+    style BEN1 fill:#c8e6c9
+    style BEN2 fill:#c8e6c9
+    style BEN3 fill:#c8e6c9
+    style BEN4 fill:#c8e6c9
+    style BEN5 fill:#c8e6c9
 ```
-
-This comprehensive architecture documentation shows the relationships between all major components, user flows, state transitions, and data flow patterns in the blob game, including the updated HUD structure and camera zoom system.

@@ -1,7 +1,7 @@
 import { useMemo, useRef, useEffect, useState } from "react";
-import { getNextLevel } from "../engine/content/levels";
-import type { GameState } from "../engine/core/game";
-import type { Level } from "../engine/content/levels";
+import { getNextLevel } from "../core/content/levels";
+import type { GameState } from "../types";
+import type { Level } from "../core/content/levels";
 
 interface UseCameraZoomProps {
     gameState: GameState;

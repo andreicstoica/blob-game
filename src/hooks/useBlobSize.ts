@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { GameState } from '../engine/core/game';
+import type { GameState } from '../types';
 
 export const useBlobSize = (gameState: GameState) => {
     return useMemo(() => {

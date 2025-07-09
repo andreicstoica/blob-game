@@ -1,14 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-
-interface ParticleProps {
-  position: { x: number; y: number };
-  velocity: { x: number; y: number };
-  color?: string;
-  size?: number;
-  startTime: number;
-  lifespan?: number;
-  onComplete?: () => void;
-}
+import type { ParticleProps } from '../types';
 
 export const Particle: React.FC<ParticleProps> = ({
   position: initialPosition,
