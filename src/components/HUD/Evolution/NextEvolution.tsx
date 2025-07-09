@@ -1,20 +1,20 @@
-import React from 'react';
-import { NumberFormatter } from '../../../utils/numberFormat';
+import React from "react";
+import { NumberFormatter } from "../../../utils/numberFormat";
+import type { GameState } from "../../../engine/game";
 
 interface NextEvolutionProps {
-  nextLevel: {
-    displayName: string;
-    name: string;
-    description: string;
-    biomassThreshold: number;
-    biomassDisplayFormat?: string;
-  };
+  nextLevel: any;
   canEvolve: boolean;
   biomass: number;
-  gameState: any;
+  gameState: GameState;
 }
 
-export const NextEvolution: React.FC<NextEvolutionProps> = ({ nextLevel, canEvolve, biomass, gameState }) => (
+export const NextEvolution: React.FC<NextEvolutionProps> = ({
+  nextLevel,
+  canEvolve,
+  biomass,
+  gameState,
+}) => (
   <div
     style={{
       backgroundColor: "rgba(255, 255, 255, 0.1)",
@@ -79,4 +79,4 @@ export const NextEvolution: React.FC<NextEvolutionProps> = ({ nextLevel, canEvol
       </span>
     </div>
   </div>
-); 
+);

@@ -5,7 +5,6 @@ import {
   getNextLevel,
   canEvolveToNextLevel,
 } from "../../../engine/game";
-import { EvolutionScale } from "./EvolutionScale";
 import { CurrentLevel } from "./CurrentLevel";
 import { NextEvolution } from "./NextEvolution";
 import { EvolutionButton } from "./EvolutionButton";
@@ -63,16 +62,11 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
         Evolution
       </h2>
 
-      <EvolutionScale
-        biomass={biomass}
-        blobSize={blobSize}
-        scale={scale}
-        zoom={currentZoom}
-      />
       <CurrentLevel
         displayName={currentLevel.displayName}
         name={currentLevel.name}
         description={currentLevel.description}
+        scale={scale}
       />
       {nextLevel && (
         <NextEvolution

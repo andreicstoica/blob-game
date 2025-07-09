@@ -20,7 +20,7 @@ function App() {
   } = useGame();
 
   const currentLevel = useMapSelector((s) => s.currentLevel);
-  const { zoom: currentZoom, maxZoomForVisibility } = useCameraZoom({
+  const { zoom: currentZoom } = useCameraZoom({
     gameState,
     currentLevel,
   });
