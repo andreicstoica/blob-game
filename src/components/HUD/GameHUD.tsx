@@ -1,8 +1,9 @@
 import React from "react";
 import type { GameState } from "../../engine/game";
-import { GrowthStats } from "./GrowthStats";
+import { GameStats } from "./GameStats";
 import { Shop } from "./Shop";
-import { EvolutionPanel } from "./EvolutionPanel";
+import { EvolutionPanel } from "./Evolution";
+
 
 interface GameHUDProps {
   biomass: number;
@@ -23,7 +24,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
 }) => {
   return (
     <>
-      {/* Growth Stats Header */}
+      {/* Game Stats Header */}
       <div
         style={{
           position: "fixed",
@@ -37,7 +38,10 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           alignItems: "center",
         }}
       >
-        <GrowthStats biomass={biomass} gameState={gameState} />
+        <GameStats
+          biomass={biomass}
+          gameState={gameState}
+        />
       </div>
 
       {/* Shop Section */}
