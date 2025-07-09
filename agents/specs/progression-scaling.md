@@ -49,7 +49,7 @@
 
 | Level        | Generator Name        | Base Cost              | Growth/sec    | Cost Scaling | Unlocks At |
 | ------------ | --------------------- | ---------------------- | ------------- | ------------ | ---------- |
-| Microscopic  | Microscope Cloner     | 90                     | 0.005         | 1.15x        | Micro      |
+| Microscopic  | Microscopic Cloner     | 90                     | 0.005         | 1.15x        | Micro      |
 | Microscopic  | Cell Divider          | 700                    | 0.025         | 1.15x        | Micro      |
 | Microscopic  | Nucleus Replicator    | 5,000                  | 0.125         | 1.15x        | Micro      |
 | Petri Dish   | Colony Expansion      | 35,000                 | 0.625         | 1.15x        | Petri      |
@@ -72,7 +72,7 @@
 
 | Level        | Upgrade Name               | Effect (Multiplier) | Targets              | Cost                   |
 | ------------ | -------------------------- | ------------------- | -------------------- | ---------------------- |
-| Microscopic  | Enhanced Microscope Optics | 1.5x                | Microscope Cloner    | 500                    |
+| Microscopic  | Enhanced Microscope Optics | 1.5x                | Microscopic Cloner    | 500                    |
 | Microscopic  | Sterile Technique Mastery  | 2x                  | Cell Divider         | 1,500                  |
 | Microscopic  | Rapid Binary Fission       | 3x                  | Nucleus Replicator   | 5,000                  |
 | Petri Dish   | Temperature Control Module | 3x                  | All Microscopic Gens | 35,000                 |

@@ -12,11 +12,11 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     unlockedAtLevel: 'intro'
   },
   // Microscopic Level
-  'microscope-cloner': {
-    id: 'microscope-cloner',
-    name: '🦠 Microscope Cloner',
+  'microscopic-cloner': {
+    id: 'microscopic-cloner',
+    name: '🦠 Microscopic Cloner',
     baseCost: 15,
-    description: 'Clones basic cells for exponential growth',
+    description: 'Clones basic slime cells',
     baseEffect: 0.1,
     costMultiplier: 1.15,
     unlockedAtLevel: 'microscopic'
@@ -34,7 +34,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     id: 'nucleus-replicator',
     name: '🦠 Nucleus Replicator',
     baseCost: 1500,
-    description: 'Replicates nuclei for advanced growth',
+    description: 'Splits nuclei for advanced growth',
     baseEffect: 10,
     costMultiplier: 1.15,
     unlockedAtLevel: 'microscopic'
@@ -197,7 +197,7 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
     id: 'enhanced-microscope-optics',
     name: '🦠 Enhanced Microscope Optics',
     cost: 0,
-    description: '1.5x Microscope Cloner',
+    description: '1.5x Microscopic Cloner',
     effect: 1.5,
     type: 'growth',
     unlockedAtLevel: 'microscopic'
