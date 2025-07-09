@@ -27,11 +27,6 @@ function App() {
   });
   const blobSize = useBlobSize(gameState);
 
-  const handleParticleAbsorbed = (particle: any) => {
-    // Optional: Add sound effects, visual feedback, or biomass increase here
-    console.log("Particle absorbed:", particle);
-  };
-
   return (
     <div className="w-screen h-screen relative overflow-hidden">
       <div
@@ -64,11 +59,11 @@ function App() {
           blobSize={blobSize}
         />
 
-
         {/* Particle System for off-screen growth effect */}
         {currentLevel && (
           <ParticleSystem gameState={gameState} currentLevel={currentLevel} />
         )}
+      </div>
 
       <GameHUD
         biomass={gameState.biomass}
