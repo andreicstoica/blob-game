@@ -1,6 +1,7 @@
 export interface Level {
   id: number;
   name: string;
+  displayName: string;
   biomassThreshold: number;
   biomassDisplayFormat: 'standard' | 'scientific' | 'decimal' | 'whole';
   background: string;
@@ -12,65 +13,72 @@ export const LEVELS: Level[] = [
   {
     id: 0,
     name: 'intro',
+    displayName: '⚪ Intro',
     biomassThreshold: 0,
-    biomassDisplayFormat: 'standard',
+    biomassDisplayFormat: 'decimal',
     background: 'intro-bg',
-    foodTypes: ['nutrients'],
+    foodTypes: [],
     description: 'Welcome to the beginning of your journey'
   },
   {
     id: 1,
     name: 'microscopic',
-    biomassThreshold: 1e-6, // 0.000001
-    biomassDisplayFormat: 'scientific',
+    displayName: '🦠 Microscopic',
+    biomassThreshold: 1,
+    biomassDisplayFormat: 'decimal',
     background: 'microscopic-bg',
-    foodTypes: ['amoeba', 'bacteria'],
-    description: 'You are being observed under a microscope'
+    foodTypes: [],
+    description: 'Begin as a single cell in a drop of water.'
   },
   {
     id: 2,
     name: 'petri-dish',
-    biomassThreshold: 10,
+    displayName: '🔍 Petri Dish',
+    biomassThreshold: 2500,
     biomassDisplayFormat: 'decimal',
     background: 'petri-bg',
-    foodTypes: ['nutrients', 'organic-matter'],
-    description: 'Growing in a petri dish environment'
+    foodTypes: [],
+    description: 'Grow into visible colonies in a petri dish.'
   },
   {
     id: 3,
     name: 'lab',
-    biomassThreshold: 10000000, // 10 million
+    displayName: '🧪 Lab',
+    biomassThreshold: 2250000,
     biomassDisplayFormat: 'whole',
     background: 'lab-bg',
-    foodTypes: ['chemicals', 'compounds'],
-    description: 'The laboratory where experiments are conducted'
+    foodTypes: [],
+    description: 'Expand your experiments in a high-tech lab.'
   },
   {
     id: 4,
     name: 'city',
-    biomassThreshold: 500000000000, // 500 billion
+    displayName: '🏙️ City',
+    biomassThreshold: 800000000,
     biomassDisplayFormat: 'whole',
     background: 'city-bg',
-    foodTypes: ['people', 'vehicles'],
-    description: 'A bustling cityscape'
+    foodTypes: [],
+    description: 'Infiltrate and spread through a bustling city.'
   },
   {
     id: 5,
     name: 'earth',
-    biomassThreshold: 1.758e15, // 1.758 quadrillion
-    biomassDisplayFormat: 'scientific',
+    displayName: '🌍 Earth',
+    biomassThreshold: 300000000000,
+    biomassDisplayFormat: 'whole',
     background: 'earth-bg',
-    foodTypes: ['buildings', 'landmarks'],
-    description: 'The entire planet Earth'
+    foodTypes: [],
+    description: 'Spread your biomass across the planet.'
   },
   {
     id: 6,
     name: 'solar-system',
-    biomassThreshold: 1e18, // 1 quintillion
+    displayName: '🚀 Solar System',
+    biomassThreshold: 100000000000000,
     biomassDisplayFormat: 'scientific',
     background: 'solar-system-bg',
-    foodTypes: ['planets', 'asteroids'],
-    description: 'The vast solar system'
+    foodTypes: [],
+    description: 'Expand your reach to the entire solar system.'
   }
 ];
 
@@ -103,11 +111,28 @@ export function formatBiomass(biomass: number, format: 'standard' | 'scientific'
     case 'scientific':
       return biomass.toExponential(3);
     case 'decimal':
-      return biomass.toFixed(3);
     case 'whole':
-      return biomass.toLocaleString();
     case 'standard':
     default:
-      return biomass.toString();
+      return Math.floor(biomass).toLocaleString();
+  }
+}
+
+export function getDecimalPrecisionForLevel(level: Level): number {
+  switch (level.id) {
+    case 0: // intro
+      return 3;
+    case 1: // microscopic
+      return 2;
+    case 2: // petri-dish
+      return 1;
+    case 3: // lab
+    case 4: // city
+    case 5: // earth
+      return 0;
+    case 6: // solar-system
+      return 3; // scientific notation
+    default:
+      return 1;
   }
 } 

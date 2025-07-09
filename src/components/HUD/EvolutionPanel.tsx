@@ -54,7 +54,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
                     fontSize: '18px',
                     color: '#4ade80'
                 }}>
-                    Current Level: {currentLevel.name}
+                    Current Level: {currentLevel.displayName || currentLevel.name}
                 </h3>
                 <p style={{
                     margin: '0',
@@ -77,7 +77,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
                         fontSize: '18px',
                         color: '#4ade80'
                     }}>
-                        Next Evolution: {nextLevel.name}
+                        Next Evolution: {nextLevel.displayName || nextLevel.name}
                     </h3>
                     <p style={{
                         margin: '0 0 15px 0',
@@ -110,7 +110,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
                         <span style={{ 
                             fontSize: '16px', 
                             fontWeight: 'bold',
-                            color: canEvolve ? '#4ade80' : '#ef4444'
+                            color: canEvolve ? '#4ade80' : '#9ca3af'
                         }}>
                             {formatBiomass(biomass, nextLevel.biomassDisplayFormat)}
                         </span>
