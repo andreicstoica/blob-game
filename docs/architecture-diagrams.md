@@ -1,5 +1,7 @@
 # Blob Game Architecture Diagrams
 
+LAST UPDATED: JULY 8th
+
 ## Class Diagram
 
 ```mermaid
