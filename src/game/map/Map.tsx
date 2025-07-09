@@ -2,6 +2,7 @@ import { useMapSelector } from "../../engine/systems/mapState";
 
 interface MapProps {
   className?: string;
+  zoom?: number;
 }
 
 export default function Map({ className }: MapProps) {
