@@ -68,7 +68,7 @@ const spawnOffScreenParticle = (
     speed: particleConfig.speed,
     size: particleConfig.size * particleConfig.sizeVariation,
     color: particleConfig.color,
-    type: particleConfig.visualType as any,
+    type: particleConfig.visualType as 'nutrient' | 'energy' | 'matter' | 'cosmic',
     useImage: particleConfig.visualType === "bacteria",
     image:
       particleConfig.visualType === "bacteria"
@@ -99,25 +99,21 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
   gameState,
   currentLevel,
 }) => {
-  if (!currentLevel) return null;
-
   const [particles, setParticles] = useState<Particle[]>([]);
 
   // Get particle configuration from game engine
   const particleConfig = useMemo(
     () => calculateParticleConfig(gameState),
-    [gameState.biomass, currentLevel.id]
+    [gameState.biomass, currentLevel?.id]
   );
 
-  // Get blob position
+  // Get blob position - match actual blob rendering position
   const blobPosition = useMemo(() => {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
-    const hudWidth = 350;
-    const rightHudWidth = 350;
 
-    const playableWidth = screenWidth - hudWidth - rightHudWidth;
-    const centerX = hudWidth + playableWidth / 2;
+    // Blob is actually rendered at true screen center, not offset by HUDs
+    const centerX = screenWidth / 2;
     const centerY = screenHeight / 2;
 
     return { x: centerX, y: centerY };
@@ -127,6 +123,8 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
 
   // Spawn particles based on engine configuration
   useEffect(() => {
+    if (!currentLevel) return;
+
     const spawnInterval = setInterval(() => {
       const shouldSpawn = Math.random() < particleConfig.spawnRate / 60; // 60fps
 
@@ -140,10 +138,12 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
     }, 16); // 60fps
 
     return () => clearInterval(spawnInterval);
-  }, [particleConfig, blobPosition]);
+  }, [particleConfig, blobPosition, currentLevel]);
 
   // Animate particles
   useEffect(() => {
+    if (!currentLevel || particles.length === 0) return;
+
     let animationId: number;
 
     const animate = () => {
@@ -175,32 +175,18 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
       animationId = requestAnimationFrame(animate);
     };
 
-    if (particles.length > 0) {
-      animationId = requestAnimationFrame(animate);
-    }
+    animationId = requestAnimationFrame(animate);
 
     return () => {
       if (animationId) cancelAnimationFrame(animationId);
     };
-  }, [particles.length, blobPosition, blobSize]);
+  }, [particles.length, blobPosition, blobSize, currentLevel]);
+
+  // Early return after all hooks
+  if (!currentLevel) return null;
 
   return (
     <div className="absolute inset-0 w-full h-full z-30 pointer-events-none">
-      {/* Debug: Show target blob position */}
-      <div
-        style={{
-          position: "absolute",
-          left: blobPosition.x,
-          top: blobPosition.y,
-          width: 20,
-          height: 20,
-          backgroundColor: "red",
-          borderRadius: "50%",
-          transform: "translate(-50%, -50%)",
-          zIndex: 100,
-        }}
-      />
-
       {/* Render particles */}
       {particles.map((particle) => (
         <div

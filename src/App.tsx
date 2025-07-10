@@ -32,9 +32,6 @@ function App() {
       <GameWorld zoom={currentZoom}>
         {/* Background Layer - z-index: 0 */}
         <Map className="absolute inset-0 w-full h-full z-0" />
-
-        {/* Particle System Layer - z-index: 30 */}
-        <FlyingParticles gameState={gameState} currentLevel={currentLevel} />
       </GameWorld>
 
       {/* HUD Layer - Outside zoom container */}
@@ -78,6 +75,9 @@ function App() {
           </>
         )}
       </AnimationLayer>
+
+      {/* Particle System Layer - Outside zoom container, same as blob */}
+      <FlyingParticles gameState={gameState} currentLevel={currentLevel} />
     </div>
   );
 }
