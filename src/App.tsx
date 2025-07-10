@@ -51,12 +51,7 @@ function App() {
 
         {/* Particle System Layer - z-index: 30 */}
         {currentLevel && (
-          <FlyingParticles
-            gameState={gameState}
-            currentLevel={currentLevel}
-            zoomRate={zoomRates.particles}
-            currentZoom={currentZoom}
-          />
+          <FlyingParticles gameState={gameState} currentLevel={currentLevel} />
         )}
 
         {/* Blob Layer - z-index: 70 (above generators) */}

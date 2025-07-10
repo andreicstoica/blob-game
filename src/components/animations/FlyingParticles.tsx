@@ -1,219 +1,148 @@
 import React, { useState, useEffect, useMemo } from "react";
 import type { GameState } from "../../game/types";
-import type { Level, Particle, ParticleConfig } from "../../game/types";
-import { getNextLevel } from "../../game/content/levels";
+import type { Level, Particle } from "../../game/types";
+import {
+  calculateParticleConfig,
+  checkParticleCollision,
+} from "../../game/systems/particles";
 import brownBacteria from "/assets/images/bacteria/brown-bacteria.png";
 import greenBacteria from "/assets/images/bacteria/green-bacteria.png";
 import purpleBacteria from "/assets/images/bacteria/purple-bacteria.png";
 
-const PARTICLE_CONFIGS = {
-  intro: {
-    type: "nutrient",
-    spawnRate: 2,
-    speed: 100,
-    size: 4,
-    color: "#4ade80",
-    level: 1,
-    useImage: false,
-  },
-  microscopic: {
-    type: "nutrient",
-    spawnRate: 5,
-    speed: 120,
-    size: 40,
-    color: "#22c55e",
-    level: 2,
-    useImage: true,
-    images: [brownBacteria, greenBacteria, purpleBacteria],
-  },
-  "petri-dish": {
-    type: "energy",
-    spawnRate: 8,
-    speed: 150,
-    size: 6,
-    color: "#eab308",
-    level: 3,
-    useImage: false,
-  },
-  lab: {
-    type: "matter",
-    spawnRate: 12,
-    speed: 180,
-    size: 7,
-    color: "#3b82f6",
-    level: 4,
-    useImage: false,
-  },
-  city: {
-    type: "matter",
-    spawnRate: 18,
-    speed: 200,
-    size: 8,
-    color: "#8b5cf6",
-    level: 5,
-    useImage: false,
-  },
-  earth: {
-    type: "cosmic",
-    spawnRate: 25,
-    speed: 250,
-    size: 10,
-    color: "#ec4899",
-    level: 6,
-    useImage: false,
-  },
-  "solar-system": {
-    type: "cosmic",
-    spawnRate: 35,
-    speed: 300,
-    size: 12,
-    color: "#f59e0b",
-    level: 7,
-    useImage: false,
-  },
+// Visual assets for different particle types
+const VISUAL_ASSETS = {
+  bacteria: [brownBacteria, greenBacteria, purpleBacteria],
+  energy: [], // Use color circles
+  matter: [], // Use color circles
+  cosmic: [], // Use color circles
 };
 
-// Off-screen spawning logic
+// Spawn particle from screen edge toward blob
 const spawnOffScreenParticle = (
-  config: ParticleConfig,
   blobPosition: { x: number; y: number },
-  progressRatio: number
+  particleConfig: ReturnType<typeof calculateParticleConfig>
 ): Particle => {
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
-  const centerX = blobPosition.x;
-  const centerY = blobPosition.y;
 
-  // Particles start big and get smaller as level progresses
-  const sizeMultiplier = Math.max(0.3, 2.5 - progressRatio * 2.0); // Range: 2.5 to 0.3
+  // Target the actual blob position
+  const targetX = blobPosition.x;
+  const targetY = blobPosition.y;
 
-  // Spawn from all four screen edges
-  const margin = 100;
+  // Spawn from screen edges
+  const margin = 50;
   const edge = Math.floor(Math.random() * 4);
   let x: number, y: number;
 
   switch (edge) {
-    case 0: // Top
+    case 0: // Top edge
       x = Math.random() * screenWidth;
       y = -margin;
       break;
-    case 1: // Right
+    case 1: // Right edge
       x = screenWidth + margin;
       y = Math.random() * screenHeight;
       break;
-    case 2: // Bottom
+    case 2: // Bottom edge
       x = Math.random() * screenWidth;
       y = screenHeight + margin;
       break;
-    case 3: // Left
+    case 3: // Left edge
     default:
       x = -margin;
       y = Math.random() * screenHeight;
       break;
   }
 
-  // Calculate direction toward center with some randomness
-  const dx = centerX - x;
-  const dy = centerY - y;
+  // Calculate direction toward center
+  const dx = targetX - x;
+  const dy = targetY - y;
+  const magnitude = Math.sqrt(dx * dx + dy * dy);
+  const directionX = dx / magnitude;
+  const directionY = dy / magnitude;
 
-  // Add some randomness to the direction (not perfectly straight)
-  const randomAngle = (Math.random() - 0.5) * 0.5; // ±0.25 radians (~±14 degrees)
-  const cos = Math.cos(randomAngle);
-  const sin = Math.sin(randomAngle);
-
-  // Apply rotation to the direction vector
-  const rotatedDx = dx * cos - dy * sin;
-  const rotatedDy = dx * sin + dy * cos;
-
-  // Normalize direction vector
-  const magnitude = Math.sqrt(rotatedDx * rotatedDx + rotatedDy * rotatedDy);
-  const directionX = rotatedDx / magnitude;
-  const directionY = rotatedDy / magnitude;
-
-  return {
+  const particle = {
     id: Math.random().toString(36),
-    x: typeof x === "number" ? x : 0,
-    y: typeof y === "number" ? y : 0,
-    speed: config.speed,
-    size: config.size * sizeMultiplier,
-    color: config.color,
-    type: config.type,
-    useImage: config.useImage,
-    image: config.images
-      ? config.images[Math.floor(Math.random() * config.images.length)]
-      : undefined,
+    x,
+    y,
+    speed: particleConfig.speed,
+    size: particleConfig.size * particleConfig.sizeVariation,
+    color: particleConfig.color,
+    type: particleConfig.visualType as any,
+    useImage: particleConfig.visualType === "bacteria",
+    image:
+      particleConfig.visualType === "bacteria"
+        ? VISUAL_ASSETS.bacteria[
+            Math.floor(Math.random() * VISUAL_ASSETS.bacteria.length)
+          ]
+        : undefined,
     direction: { x: directionX, y: directionY },
   };
+
+  console.log("Particle spawn:", {
+    edge,
+    startPos: { x, y },
+    target: { x: targetX, y: targetY },
+    direction: { x: directionX, y: directionY },
+    speed: particleConfig.speed,
+  });
+
+  return particle;
 };
 
 interface FlyingParticlesProps {
   gameState: GameState;
   currentLevel: Level;
-  zoomRate?: number;
-  currentZoom?: number;
 }
 
 export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
   gameState,
   currentLevel,
-  zoomRate = 1,
-  currentZoom = 1,
 }) => {
   if (!currentLevel) return null;
 
   const [particles, setParticles] = useState<Particle[]>([]);
-  const config = (PARTICLE_CONFIGS[
-    currentLevel?.name as keyof typeof PARTICLE_CONFIGS
-  ] || PARTICLE_CONFIGS.intro) as ParticleConfig;
 
-  // Get blob position - target center of screen
+  // Get particle configuration from game engine
+  const particleConfig = useMemo(
+    () => calculateParticleConfig(gameState),
+    [gameState.biomass, currentLevel.id]
+  );
+
+  // Get blob position
   const blobPosition = useMemo(() => {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
+    const hudWidth = 350;
+    const rightHudWidth = 350;
 
-    return {
-      x: screenWidth / 2,
-      y: screenHeight / 2,
-    };
+    const playableWidth = screenWidth - hudWidth - rightHudWidth;
+    const centerX = hudWidth + playableWidth / 2;
+    const centerY = screenHeight / 2;
+
+    return { x: centerX, y: centerY };
   }, []);
-  const blobSize = 100; // Base blob size from useBlobSize hook
 
-  // Spawn particles based on growth rate and level progress
+  const blobSize = 100;
+
+  // Spawn particles based on engine configuration
   useEffect(() => {
     const spawnInterval = setInterval(() => {
-      const nextLevel = getNextLevel(currentLevel);
-      let progressRatio = 0;
-
-      if (nextLevel) {
-        const progressInLevel = Math.max(
-          0,
-          gameState.biomass - currentLevel.biomassThreshold
-        );
-        const levelRange =
-          nextLevel.biomassThreshold - currentLevel.biomassThreshold;
-        progressRatio = Math.min(1, progressInLevel / levelRange);
-      }
-
-      // High spawn rate with level progression
-      const baseSpawnRate = config.spawnRate * 2; // Double the base rate
-      const progressMultiplier = 0.5 + progressRatio * 1.5; // 0.5x at start, 2.0x at end
-      const spawnRate = baseSpawnRate * progressMultiplier;
-      const shouldSpawn = Math.random() < spawnRate / 60; // 60fps
+      const shouldSpawn = Math.random() < particleConfig.spawnRate / 60; // 60fps
 
       if (shouldSpawn) {
         const newParticle = spawnOffScreenParticle(
-          config,
           blobPosition,
-          progressRatio
+          particleConfig
         );
         setParticles((prev) => [...prev, newParticle]);
       }
     }, 16); // 60fps
 
     return () => clearInterval(spawnInterval);
-  }, [config, gameState.growth, gameState.biomass, currentLevel, blobPosition]);
+  }, [particleConfig, blobPosition]);
 
-  // Animate particles moving across screen
+  // Animate particles
   useEffect(() => {
     let animationId: number;
 
@@ -226,43 +155,19 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
               const newX = particle.x + particle.direction.x * speed;
               const newY = particle.y + particle.direction.y * speed;
 
-              // Optimized collision detection - use squared distances to avoid sqrt
-              const dx = newX - blobPosition.x;
-              const dy = newY - blobPosition.y;
-              const distanceSquared = dx * dx + dy * dy;
-              const collisionDistanceSquared = Math.pow(
-                blobSize / 2 + particle.size / 2,
-                2
-              );
-
-              if (distanceSquared <= collisionDistanceSquared) {
-                // Particle hit blob - remove it
-                return null;
-              }
-
-              // Check if particle is in the middle third of the screen
-              const screenWidth = window.innerWidth;
-              const screenHeight = window.innerHeight;
-              const middleThirdStartX = screenWidth / 3;
-              const middleThirdEndX = (screenWidth * 2) / 3;
-              const middleThirdStartY = screenHeight / 3;
-              const middleThirdEndY = (screenHeight * 2) / 3;
-
+              // Check collision with blob using game engine
               if (
-                newX >= middleThirdStartX &&
-                newX <= middleThirdEndX &&
-                newY >= middleThirdStartY &&
-                newY <= middleThirdEndY
+                checkParticleCollision(
+                  { x: newX, y: newY },
+                  particle.size,
+                  blobPosition,
+                  blobSize
+                )
               ) {
-                // Particle reached middle third - remove it
-                return null;
+                return null; // Remove particle
               }
 
-              return {
-                ...particle,
-                x: newX,
-                y: newY,
-              };
+              return { ...particle, x: newX, y: newY };
             })
             .filter(Boolean) as Particle[]
       );
@@ -280,18 +185,26 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
   }, [particles.length, blobPosition, blobSize]);
 
   return (
-    <div
-      className="absolute inset-0 w-full h-full z-30"
-      style={{
-        transform: `scale(${zoomRate / currentZoom})`,
-        transformOrigin: "center center",
-      }}
-    >
-      {/* Particles flying across screen */}
+    <div className="absolute inset-0 w-full h-full z-30 pointer-events-none">
+      {/* Debug: Show target blob position */}
+      <div
+        style={{
+          position: "absolute",
+          left: blobPosition.x,
+          top: blobPosition.y,
+          width: 20,
+          height: 20,
+          backgroundColor: "red",
+          borderRadius: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 100,
+        }}
+      />
+
+      {/* Render particles */}
       {particles.map((particle) => (
         <div
           key={particle.id}
-          className="particle"
           style={{
             position: "absolute",
             left: particle.x,
@@ -301,7 +214,6 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
             backgroundColor: particle.useImage ? "transparent" : particle.color,
             borderRadius: particle.useImage ? "0%" : "50%",
             transform: "translate(-50%, -50%)",
-            pointerEvents: "none",
             zIndex: 30,
             boxShadow: particle.useImage
               ? "none"
