@@ -4,7 +4,9 @@ import IntroLevel from "./levels/IntroLevel";
 import MicroscopeLevel from "./levels/MicroscopeLevel";
 import PetriLevel from "./levels/PetriLevel";
 import LabLevel from "./levels/LabLevel";
+import NeighborhoodLevel from "./levels/NeighborhoodLevel";
 import CityLevel from "./levels/CityLevel";
+import ContinentLevel from "./levels/ContinentLevel";
 import EarthLevel from "./levels/EarthLevel";
 import SunSolarSystemLevel from "./levels/SunSolarSystemLevel";
 
@@ -42,8 +44,12 @@ export default function Map({ className }: MapProps) {
         return <PetriLevel {...props} />;
       case "lab":
         return <LabLevel {...props} />;
+      case "neighborhood":
+        return <NeighborhoodLevel {...props} />;
       case "city":
         return <CityLevel {...props} />;
+      case "continent":
+        return <ContinentLevel {...props} />;
       case "earth":
         return <EarthLevel {...props} />;
       case "solar-system":
