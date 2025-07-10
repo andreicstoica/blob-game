@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { GAME_CONFIG } from '../../game/content/config';
 import type { BlobProps } from '../../game/types';
+import {
+  calculateBlobSize,
+  getHeatColor,
+  updateBlobAnimations,
+  handleBlobClick,
+  generateAmoebePath,
+  createBlobAnimationValues,
+  type BlobAnimationValues,
+} from '../../game/systems/blobSystem';
 
 const Blob = React.memo(
   ({
@@ -22,15 +30,7 @@ const Blob = React.memo(
   const filterId = `glow-${id}`;
 
   const calculateCurrentSize = useCallback(() => {
-      return (
-        propSize ||
-        (biomass
-          ? Math.max(
-      GAME_CONFIG.minBlobSize,
-      biomass * GAME_CONFIG.blobSizeMultiplier
-            )
-          : 100)
-      );
+    return calculateBlobSize(propSize, biomass);
   }, [propSize, biomass]);
 
   const [stableSize, setStableSize] = useState(() => calculateCurrentSize());
@@ -38,15 +38,9 @@ const Blob = React.memo(
   const [scale, setScale] = useState(1);
   const [isPressed, setIsPressed] = useState(false);
 
-  const animationValuesRef = useRef({
-    breathing: 0,
-    clickBoost: 0,
-    amoebaNoise: [] as number[],
-    pressure: 0,
-    lastClickTime: 0,
-    clickHeat: 0,
-    clickTimes: [] as number[],
-  });
+  const animationValuesRef = useRef<BlobAnimationValues>(
+    createBlobAnimationValues()
+  );
 
   const [, forceRender] = useState({});
   const lastRenderTime = useRef(0);
@@ -117,35 +111,8 @@ const Blob = React.memo(
     }
     onBlobRelease?.(id);
 
-    const now = Date.now();
-    const animValues = animationValuesRef.current;
-
-    // Add pressure for click animation
-    const pressureBoost = 0.2;
-    const maxPressure = 1.5;
-      animValues.pressure = Math.min(
-        maxPressure,
-        animValues.pressure + pressureBoost
-      );
-    animValues.lastClickTime = now;
-
-    // Track click for heat/color effect
-    animValues.clickTimes.push(now);
-    
-    // Remove old clicks (older than 2 seconds)
-    const heatWindow = 2000;
-      animValues.clickTimes = animValues.clickTimes.filter(
-        (time) => now - time < heatWindow
-      );
-    
-    // Calculate click heat based on recent click frequency
-    // Need at least 3 clicks in the window to start heating up
-    if (animValues.clickTimes.length >= 3) {
-        const clickFrequency =
-          animValues.clickTimes.length / (heatWindow / 1000); // clicks per second
-      const maxFrequency = 5; // Max expected clicks per second for full heat
-      animValues.clickHeat = Math.min(1, clickFrequency / maxFrequency);
-    }
+    // Handle blob click animation and effects
+    handleBlobClick(animationValuesRef.current, Date.now());
   };
 
   const handleMouseLeave = () => {
@@ -156,7 +123,6 @@ const Blob = React.memo(
     let animationId: number;
     const animate = () => {
       const now = Date.now();
-      const time = now * 0.001;
       const animValues = animationValuesRef.current;
       
       // Core animation logic for smooth growth
@@ -165,46 +131,9 @@ const Blob = React.memo(
           (stableSize - visualSizeRef.current) * interpolationFactor;
 
       const currentVisualSize = visualSizeRef.current;
-      const stableRadius = currentVisualSize * 0.35;
 
-      // Update breathing and noise based on the current visual size
-        animValues.breathing =
-          Math.abs(Math.sin(time * 0.6)) * (stableRadius * 0.1);
-      
-      const amoebaNoise = [];
-      for (let i = 0; i < 8; i++) {
-        const angle = (i / 8) * Math.PI * 2;
-        const noiseFreq = time * 0.4 + angle * 3;
-          const noise =
-            Math.sin(noiseFreq) * 0.15 + Math.cos(noiseFreq * 1.7) * 0.1;
-        amoebaNoise.push(noise);
-      }
-      animValues.amoebaNoise = amoebaNoise;
-      
-      // CLICK ANIMATION (Shrink & Bounce)
-      const timeSinceLastClick = now - animValues.lastClickTime;
-      const recoveryDelay = 150;
-
-      if (timeSinceLastClick > recoveryDelay) {
-        if (animValues.pressure > 0) {
-          animValues.pressure *= 0.88; // Keep size decay at 0.88
-          if (animValues.pressure < 0.01) {
-            animValues.pressure = 0;
-          }
-        }
-      }
-      
-      // HEAT/COLOR DECAY - Cool down when not clicking rapidly
-      if (timeSinceLastClick > 500) {
-        animValues.clickHeat *= 0.97; // Faster color decay: was 0.985, now 0.95
-        if (animValues.clickHeat < 0.01) {
-          animValues.clickHeat = 0;
-        }
-      }
-      
-        // Use a fixed shrink amount instead of percentage-based
-        const maxShrinkAmount = Math.min(15, stableRadius * 0.15); // Cap at 15px, or 15% of radius (whichever is smaller)
-      animValues.clickBoost = -animValues.pressure * maxShrinkAmount;
+      // Update all blob animations
+      updateBlobAnimations(animValues, currentVisualSize, now);
 
       // Update overall scale
       let scaleVariation = 1.0;
@@ -224,83 +153,7 @@ const Blob = React.memo(
     return () => cancelAnimationFrame(animationId);
   }, [stableSize, isDisabled]);
 
-  const generateAmoebePath = () => {
-    const currentSize = visualSizeRef.current;
-    const centerX = currentSize;
-    const centerY = currentSize;
-    const baseRadius = currentSize * 0.35;
-    const { breathing, clickBoost, amoebaNoise } = animationValuesRef.current;
-    
-    const numPoints = 8;
-    const points = [];
-    for (let i = 0; i < numPoints; i++) {
-      const angle = (i / numPoints) * Math.PI * 2;
-      const noise = (amoebaNoise && amoebaNoise[i]) || 0;
-        const radius = baseRadius + breathing + clickBoost + noise * baseRadius;
-      points.push({ 
-          x: centerX + Math.cos(angle) * radius, 
-          y: centerY + Math.sin(angle) * radius,
-      });
-    }
-
-      if (points.length < 2) return "";
-    const firstPoint = points[0];
-    const lastPoint = points[points.length - 1];
-      let path = `M ${(lastPoint.x + firstPoint.x) / 2} ${
-        (lastPoint.y + firstPoint.y) / 2
-      }`;
-
-    for (let i = 0; i < points.length; i++) {
-      const currentPoint = points[i];
-      const nextPoint = points[(i + 1) % points.length];
-      const midX = (currentPoint.x + nextPoint.x) / 2;
-      const midY = (currentPoint.y + nextPoint.y) / 2;
-      path += ` Q ${currentPoint.x} ${currentPoint.y} ${midX} ${midY}`;
-    }
-      path += " Z";
-    return path;
-  };
-
   const currentVisualSize = visualSizeRef.current;
-
-  // Function to interpolate between green and orange based on heat
-  const getHeatColor = (baseColor: string, heat: number) => {
-    if (heat === 0) return baseColor;
-    
-    const hexToRgb = (hex: string) => {
-      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result
-          ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-              b: parseInt(result[3], 16),
-            }
-          : { r: 0, g: 0, b: 0 };
-    };
-    
-    const rgbToHex = (r: number, g: number, b: number) => {
-        return (
-          "#" +
-          (
-            (1 << 24) +
-            (Math.round(r) << 16) +
-            (Math.round(g) << 8) +
-            Math.round(b)
-          )
-            .toString(16)
-            .slice(1)
-        );
-    };
-    
-    const greenRgb = hexToRgb(baseColor);
-    const orangeRgb = { r: 255, g: 140, b: 0 };
-    
-    const r = greenRgb.r + (orangeRgb.r - greenRgb.r) * heat;
-    const g = greenRgb.g + (orangeRgb.g - greenRgb.g) * heat;
-    const b = greenRgb.b + (orangeRgb.b - greenRgb.b) * heat;
-    
-    return rgbToHex(r, g, b);
-  };
 
   // Get current heated colors
   const currentHeat = animationValuesRef.current.clickHeat;
@@ -368,7 +221,7 @@ const Blob = React.memo(
             </filter>
         </defs>
         <path
-          d={generateAmoebePath()}
+          d={generateAmoebePath(currentVisualSize, animationValuesRef.current)}
           fill={`url(#gradient-${id})`}
           stroke={heatedStrokeColor}
           strokeWidth="2"
