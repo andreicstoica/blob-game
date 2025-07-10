@@ -5,6 +5,7 @@ import brownBacteria from "/assets/images/bacteria/brown-bacteria.png";
 import greenBacteria from "/assets/images/bacteria/green-bacteria.png";
 import purpleBacteria from "/assets/images/bacteria/purple-bacteria.png";
 
+// FIXME Call levels.ts
 interface NutrientsProps {
   nutrients: NutrientState[];
   phase:
