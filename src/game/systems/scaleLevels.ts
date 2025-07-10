@@ -1,117 +1,77 @@
 import type { ScaleLevel } from '../types';
 
 export const getScaleLevel = (biomass: number): ScaleLevel => {
-  if (biomass < 30) {
+  if (biomass < 1) {
     return {
-      name: "Atomic",
-      description: "Individual atoms and molecules",
-      unit: "1-10 nm",
+      name: "Primordial",
+      description: "The very beginning of existence",
+      unit: "Pre-cellular",
       color: "#10b981",
-      icon: "⚛️",
+      icon: "⚪",
     };
-  } else if (biomass < 300) {
+  } else if (biomass < 2500) {
     return {
-      name: "Molecular",
-      description: "Complex molecules and compounds",
-      unit: "10-100 nm",
-      color: "#3b82f6",
-      icon: "🧬",
-    };
-  } else if (biomass < 3000) {
-    return {
-      name: "Cellular",
-      description: "Individual cells and organelles",
-      unit: "0.1-1 μm",
-      color: "#8b5cf6",
-      icon: "🔬",
-    };
-  } else if (biomass < 30000) {
-    return {
-      name: "Tissue",
-      description: "Cell clusters and tissues",
+      name: "Microscopic",
+      description: "Single cells and microorganisms",
       unit: "1-10 μm",
-      color: "#f59e0b",
+      color: "#3b82f6",
       icon: "🦠",
     };
-  } else if (biomass < 300000) {
+  } else if (biomass < 2250000) {
     return {
-      name: "Organ",
-      description: "Organs and small organisms",
-      unit: "1-10 mm",
-      color: "#ef4444",
-      icon: "🐛",
+      name: "Petri Scale",
+      description: "Visible colonies and cultures",
+      unit: "10-100 μm",
+      color: "#8b5cf6",
+      icon: "🔍",
     };
-  } else if (biomass < 3000000) {
+  } else if (biomass < 50000000) {
     return {
-      name: "Organism",
-      description: "Complete living beings",
-      unit: "10 cm - 1 m",
-      color: "#84cc16",
-      icon: "🐕",
+      name: "Laboratory",
+      description: "Experimental scale organisms",
+      unit: "0.1-1 mm",
+      color: "#f59e0b",
+      icon: "🧪",
     };
-  } else if (biomass < 30000000) {
+  } else if (biomass < 800000000) {
     return {
-      name: "Building",
-      description: "Structures and buildings",
+      name: "Neighborhood",
+      description: "Community-scale spread",
       unit: "1-100 m",
-      color: "#06b6d4",
-      icon: "🏢",
+      color: "#ef4444",
+      icon: "🏘️",
     };
-  } else if (biomass < 300000000) {
+  } else if (biomass < 15000000000) {
     return {
-      name: "City",
-      description: "Urban areas and districts",
+      name: "Urban",
+      description: "City-wide influence",
       unit: "100 m - 10 km",
-      color: "#f97316",
+      color: "#84cc16",
       icon: "🏙️",
-    };
-  } else if (biomass < 3000000000) {
-    return {
-      name: "Regional",
-      description: "States and provinces",
-      unit: "10-1000 km",
-      color: "#a855f7",
-      icon: "🗺️",
-    };
-  } else if (biomass < 30000000000) {
-    return {
-      name: "Continental",
-      description: "Continents and large landmasses",
-      unit: "1000-10000 km",
-      color: "#ec4899",
-      icon: "🌎",
     };
   } else if (biomass < 300000000000) {
     return {
+      name: "Continental",
+      description: "Continent-spanning presence",
+      unit: "10-1000 km",
+      color: "#06b6d4",
+      icon: "🗺️",
+    };
+  } else if (biomass < 100000000000000) {
+    return {
       name: "Planetary",
-      description: "Planets and moons",
-      unit: "10000-100000 km",
-      color: "#14b8a6",
+      description: "Planet-wide dominance",
+      unit: "1000-10000 km",
+      color: "#f97316",
       icon: "🌍",
-    };
-  } else if (biomass < 3000000000000) {
-    return {
-      name: "Stellar",
-      description: "Stars and solar systems",
-      unit: "100000-1000000 km",
-      color: "#fbbf24",
-      icon: "⭐",
-    };
-  } else if (biomass < 30000000000000) {
-    return {
-      name: "Galactic",
-      description: "Galaxies and star clusters",
-      unit: "1-100 light years",
-      color: "#8b5cf6",
-      icon: "🌌",
     };
   } else {
     return {
       name: "Cosmic",
-      description: "Intergalactic structures",
-      unit: "100+ light years",
-      color: "#6366f1",
-      icon: "🌌",
+      description: "Solar system and beyond",
+      unit: "10000+ km",
+      color: "#8b5cf6",
+      icon: "🚀",
     };
   }
 }; 

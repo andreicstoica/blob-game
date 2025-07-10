@@ -257,7 +257,7 @@ export default function Map({ className, zoom = 1.0 }: MapProps) {
     <div
       className={`relative w-full h-full ${className}`}
       style={{
-        backgroundImage: `url(/src/assets/background-images/${currentLevel.background}.png)`,
+        backgroundImage: `url(/assets/images/backgrounds/${currentLevel.background}.png)`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

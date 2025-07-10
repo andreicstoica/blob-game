@@ -15,7 +15,7 @@ This spec outlines a comprehensive restructuring of the blob-game codebase to im
 
 ### 2. Asset Organization
 
-- Assets split between `/public/assets` and `/src/assets`
+- Assets consolidated in `/public/assets`
 - No clear categorization of asset types
 - Inconsistent naming conventions
 
@@ -74,7 +74,7 @@ This spec outlines a comprehensive restructuring of the blob-game codebase to im
 
 ```
 /public/assets/          # Static images (world-map.jpg, solar-system.webp, galaxies/, earth/)
-/src/assets/             # Sounds and bacteria images
+/public/assets/         # All assets consolidated here
 ```
 
 **Proposed Structure:**
@@ -299,7 +299,7 @@ Engine (State) → Hooks (Logic) → Components (UI) → Animations (Effects)
 
 ### Files to Move:
 
-- [ ] `/src/assets/` → `/public/assets/`
+- [x] `/src/assets/` → `/public/assets/`
 - [ ] `/src/components/Animations/` → `/src/animations/`
 - [ ] `/src/components/Blob/BlobTest.tsx` → `/src/dev/`
 - [ ] `/src/components/GeneratorVisualization.tsx` → `/src/game/map/`

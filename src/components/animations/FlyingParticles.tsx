@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
-import type { GameState } from "../../game/types";
-import type { Level, Particle } from "../../game/types";
+import type { GameState, Level, Particle } from "../../game/types";
 import {
   calculateParticleConfig,
   checkParticleCollision,
 } from "../../game/systems/particles";
-import brownBacteria from "/assets/images/bacteria/brown-bacteria.png";
-import greenBacteria from "/assets/images/bacteria/green-bacteria.png";
-import purpleBacteria from "/assets/images/bacteria/purple-bacteria.png";
+import brownBacteria from "/assets/images/particles/bacteria/brown-bacteria.png";
+import greenBacteria from "/assets/images/particles/bacteria/green-bacteria.png";
+import purpleBacteria from "/assets/images/particles/bacteria/purple-bacteria.png";
 
 // Visual assets for different particle types
 const VISUAL_ASSETS = {
