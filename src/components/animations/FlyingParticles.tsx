@@ -2,11 +2,23 @@ import React, { useState, useEffect, useMemo } from "react";
 import type { GameState, Level, Particle } from "../../game/types";
 import {
   calculateParticleConfig,
-  checkParticleCollision,
 } from "../../game/systems/particles";
 import brownBacteria from "/assets/images/particles/bacteria/brown-bacteria.png";
 import greenBacteria from "/assets/images/particles/bacteria/green-bacteria.png";
 import purpleBacteria from "/assets/images/particles/bacteria/purple-bacteria.png";
+
+// Interface for burst particles (firework effect)
+interface BurstParticle {
+  id: string;
+  x: number;
+  y: number;
+  vx: number; // velocity x
+  vy: number; // velocity y
+  color: string;
+  life: number; // 0 to 1, decreases over time
+  size: number;
+  maxLife: number;
+}
 
 // Visual assets for different particle types
 const VISUAL_ASSETS = {
@@ -92,13 +104,16 @@ const spawnOffScreenParticle = (
 interface FlyingParticlesProps {
   gameState: GameState;
   currentLevel: Level;
+  blobSize: number; // Receive calculated blob size from parent
 }
 
 export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
   gameState,
   currentLevel,
+  blobSize,
 }) => {
   const [particles, setParticles] = useState<Particle[]>([]);
+  const [burstParticles, setBurstParticles] = useState<BurstParticle[]>([]);
 
   // Get particle configuration from game engine
   const particleConfig = useMemo(
@@ -118,14 +133,51 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
     return { x: centerX, y: centerY };
   }, []);
 
-  const blobSize = 100;
+  // Use blob size passed from parent (already calculated with all constraints)
+  const blobRadius = blobSize * 0.35; // Same calculation as blob component
+
+  // Create burst effect when particle is absorbed  
+  const createBurstEffect = (x: number, y: number) => {
+    
+    const burstCount = 4 + Math.floor(Math.random() * 3); // 4-6 burst particles (reduced)
+    const newBursts: BurstParticle[] = [];
+    
+    // Use blob glow color to match the glow effect around the blob
+    const blobGlowColor = '#cfffb1'; // Default blob glow color (yellow-green)
+    
+          // Create burst particles at absorption point
+      
+      for (let i = 0; i < burstCount; i++) {
+        const angle = (i / burstCount) * Math.PI * 2; // Spread evenly in circle
+        const speed = 80 + Math.random() * 40; // Speed: 80-120
+        const maxLife = 0.4 + Math.random() * 0.2; // Shorter lifetime: 0.4-0.6 seconds
+        
+                // Scale burst size with blob size for proportional appearance
+        const baseBurstSize = Math.max(3, blobSize * 0.02); // 2% of blob size, minimum 3px
+        const burstSize = baseBurstSize + Math.random() * (baseBurstSize * 0.5); // +0-50% variation
+        
+        newBursts.push({
+          id: Math.random().toString(36),
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          color: blobGlowColor,
+          life: maxLife,
+          maxLife,
+          size: burstSize,
+        });
+    }
+    
+    setBurstParticles(prev => [...prev, ...newBursts]);
+  };
 
   // Spawn particles based on engine configuration
   useEffect(() => {
     if (!currentLevel) return;
 
     const spawnInterval = setInterval(() => {
-      const shouldSpawn = Math.random() < particleConfig.spawnRate / 60; // 60fps
+      const shouldSpawn = Math.random() < (particleConfig.spawnRate * 0.4) / 60; // 60fps, reduced to 40% of original
 
       if (shouldSpawn) {
         const newParticle = spawnOffScreenParticle(
@@ -139,13 +191,14 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
     return () => clearInterval(spawnInterval);
   }, [particleConfig, blobPosition, currentLevel]);
 
-  // Animate particles
+  // Combined animation loop for both particles and bursts (Performance optimization)
   useEffect(() => {
-    if (!currentLevel || particles.length === 0) return;
+    if (!currentLevel || (particles.length === 0 && burstParticles.length === 0)) return;
 
     let animationId: number;
 
     const animate = () => {
+      // Update main particles
       setParticles(
         (prev) =>
           prev
@@ -154,21 +207,68 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
               const newX = particle.x + particle.direction.x * speed;
               const newY = particle.y + particle.direction.y * speed;
 
-              // Check collision with blob using game engine
-              if (
-                checkParticleCollision(
-                  { x: newX, y: newY },
-                  particle.size,
-                  blobPosition,
-                  blobSize
-                )
-              ) {
+              // Calculate distance to blob for dissolving effect
+              const dx = newX - blobPosition.x;
+              const dy = newY - blobPosition.y;
+              const distanceToBlob = Math.sqrt(dx * dx + dy * dy);
+              
+              // Define absorption zones  
+              const absorptionZone = blobRadius + 30; // 30px fade zone around blob
+              const collisionZone = blobRadius - 10; // Remove when very close
+              
+              // Remove particle if it's in the collision zone
+              if (distanceToBlob <= collisionZone) {
+                // Calculate burst position at blob edge instead of absorption point
+                const directionX = dx / distanceToBlob; // Normalized direction from blob center to particle
+                const directionY = dy / distanceToBlob;
+                // Scale edge offset with blob size (larger blob = larger offset for visibility)
+                const edgeOffset = Math.max(2, blobRadius * 0.15); // 15% of blob radius, minimum 5px
+                const burstX = blobPosition.x + directionX * (blobRadius + edgeOffset);
+                const burstY = blobPosition.y + directionY * (blobRadius + edgeOffset);
+                
+                // Particle absorbed - create burst effect
+                createBurstEffect(burstX, burstY);
                 return null; // Remove particle
               }
+              
+              // Calculate opacity based on distance (dissolving effect)
+              let opacity = 1.0;
+              if (distanceToBlob <= absorptionZone) {
+                // Fade from 1.0 to 0.0 as particle approaches blob
+                opacity = Math.max(0.1, distanceToBlob / absorptionZone);
+              }
 
-              return { ...particle, x: newX, y: newY };
+              return { 
+                ...particle, 
+                x: newX, 
+                y: newY,
+                opacity // Add opacity to particle state
+              } as Particle & { opacity: number };
             })
             .filter(Boolean) as Particle[]
+      );
+
+      // Update burst particles in the same loop
+      setBurstParticles(prev => 
+        prev
+          .map(burst => {
+            const deltaTime = 0.016; // 60fps
+            const newLife = burst.life - deltaTime;
+            
+            if (newLife <= 0) {
+              return null; // Remove expired burst particle
+            }
+
+            return {
+              ...burst,
+              x: burst.x + burst.vx * deltaTime,
+              y: burst.y + burst.vy * deltaTime,
+              vx: burst.vx * 0.95, // Slight deceleration
+              vy: burst.vy * 0.95,
+              life: newLife,
+            };
+          })
+          .filter(Boolean) as BurstParticle[]
       );
 
       animationId = requestAnimationFrame(animate);
@@ -179,26 +279,26 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
     return () => {
       if (animationId) cancelAnimationFrame(animationId);
     };
-  }, [particles.length, blobPosition, blobSize, currentLevel]);
+  }, [particles.length, burstParticles.length, blobPosition, blobSize, currentLevel]);
 
   // Early return after all hooks
   if (!currentLevel) return null;
 
   return (
     <div className="absolute inset-0 w-full h-full z-30 pointer-events-none">
-      {/* Render particles */}
+      {/* Render main particles */}
       {particles.map((particle) => (
         <div
           key={particle.id}
           style={{
             position: "absolute",
-            left: particle.x,
-            top: particle.y,
+            left: 0,
+            top: 0,
             width: particle.size,
             height: particle.size,
             backgroundColor: particle.useImage ? "transparent" : particle.color,
             borderRadius: particle.useImage ? "0%" : "50%",
-            transform: "translate(-50%, -50%)",
+            transform: `translate3d(${particle.x - particle.size/2}px, ${particle.y - particle.size/2}px, 0)`,
             zIndex: 30,
             boxShadow: particle.useImage
               ? "none"
@@ -210,9 +310,36 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
+            opacity: 'opacity' in particle ? (particle as Particle & { opacity: number }).opacity : 1, // Apply opacity
+            willChange: "transform, opacity", // GPU optimization hint
           }}
         />
       ))}
+      
+      {/* Render burst particles (firework effect) */}
+      {burstParticles.map((burst) => {
+        const opacity = burst.life / burst.maxLife; // Fade out as life decreases
+        const glowSize = burst.size * 2; // Simplified single glow
+        return (
+          <div
+            key={burst.id}
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              width: burst.size,
+              height: burst.size,
+              backgroundColor: burst.color,
+              borderRadius: "50%",
+              transform: `translate3d(${burst.x - burst.size/2}px, ${burst.y - burst.size/2}px, 0)`,
+              zIndex: 31, // Above main particles
+              opacity,
+              boxShadow: `0 0 ${glowSize}px ${burst.color}`, // Single glow for performance
+              willChange: "transform, opacity", // GPU optimization hint
+            }}
+          />
+        );
+      })}
     </div>
   );
 };

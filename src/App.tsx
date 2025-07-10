@@ -69,7 +69,7 @@ function App() {
       </AnimationLayer>
 
       {/* Particle System Layer - Outside zoom container, same as blob */}
-      <FlyingParticles gameState={gameState} currentLevel={currentLevel} />
+      <FlyingParticles gameState={gameState} currentLevel={currentLevel} blobSize={blobSize} />
     </div>
   );
 }
