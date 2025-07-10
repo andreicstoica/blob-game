@@ -140,8 +140,8 @@ export function calculateFloatingNumbers(
   const totalGrowth = getTotalGrowth(gameState);
 
   generators.forEach((generator) => {
-    // Check if it's time for a floating number (every 1 second)
-    if (currentTime - generator.lastFloatingNumber >= 1000) {
+    // Check if it's time for a floating number (every 3 seconds)
+    if (currentTime - generator.lastFloatingNumber >= 3000) {
       const contributionRatio = generator.totalEffect / totalGrowth;
       
       let color = colors.highContribution; // Default green

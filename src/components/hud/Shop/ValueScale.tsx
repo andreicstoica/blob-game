@@ -27,7 +27,7 @@ export const ValueScale: React.FC<ValueScaleProps> = ({ gameState, highThreshold
         color: '#fff'
       }}>Value:</span>
       
-      {/* High Value (Green) */}
+      {/* Best Value (Green) */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -50,7 +50,7 @@ export const ValueScale: React.FC<ValueScaleProps> = ({ gameState, highThreshold
           fontSize: '12px',
           textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)'
         }}>
-          {NumberFormatter.compact(highThreshold)}+
+          {NumberFormatter.compact(lowThreshold)}-
         </span>
       </div>
       
@@ -81,7 +81,7 @@ export const ValueScale: React.FC<ValueScaleProps> = ({ gameState, highThreshold
         </span>
       </div>
       
-      {/* Low Value (Red) */}
+      {/* Worst Value (Red) */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -104,7 +104,7 @@ export const ValueScale: React.FC<ValueScaleProps> = ({ gameState, highThreshold
           fontSize: '12px',
           textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)'
         }}>
-          {NumberFormatter.compact(lowThreshold)}-
+          {NumberFormatter.compact(highThreshold)}+
         </span>
       </div>
     </div>
