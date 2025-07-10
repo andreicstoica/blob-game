@@ -103,7 +103,7 @@ export function getNextLevel(currentLevel: Level): Level | null {
   return LEVELS[currentIndex + 1];
 }
 
-export function canEvolve(biomass: number): boolean {
+export function canEvolve(): boolean {
   // This function should be removed or updated to take gameState instead
   // For now, we'll keep it but it should use evolution-based logic
   // The UI should use canEvolveToNextLevel(gameState) instead

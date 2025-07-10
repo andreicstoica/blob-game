@@ -8,7 +8,7 @@ interface ValueScaleProps {
   lowThreshold: number;
 }
 
-export const ValueScale: React.FC<ValueScaleProps> = ({ gameState, highThreshold, lowThreshold }) => {
+export const ValueScale: React.FC<ValueScaleProps> = ({ highThreshold, lowThreshold }) => {
   return (
     <div style={{
       backgroundColor: 'rgba(255, 255, 255, 0.05)',

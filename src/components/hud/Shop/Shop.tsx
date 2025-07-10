@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import type { GameState } from '../../../game/types';
 import { getCurrentLevel, getUnlockedGenerators } from '../../../game/systems/actions';
 import { Generators, Upgrades, FilterToggle, BuyMultiplierToggle, ValueScale } from './index';
-import { calculateAllGeneratorValues } from '../../../game/systems/generatorValue';
+
 
 interface ShopProps {
   biomass: number;

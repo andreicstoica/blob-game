@@ -4,20 +4,6 @@ export interface BlobState {
     size: number
 }
 
-// Tutorial system types
-export interface TutorialStep {
-  id: string
-  type: 'click-blob' | 'buy-generator' | 'evolve'
-  target?: { x: number, y: number }
-  completed: boolean
-}
-
-export interface TutorialState {
-  currentStep: TutorialStep | null
-  completedSteps: Set<string>
-  isActive: boolean
-}
-
 export interface GameState {
     blobs: BlobState[]
     biomass: number
@@ -42,4 +28,5 @@ export interface FormatOptions {
 }
 
 // Import types that are used in GameState
-import type { GeneratorState, UpgradeState, NutrientState } from './progression'; 
+import type { GeneratorState, UpgradeState, NutrientState } from './progression';
+import type { TutorialState } from './ui'; 

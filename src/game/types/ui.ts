@@ -1,5 +1,19 @@
 // UI component props and visual elements
 
+// Tutorial system types
+export interface TutorialStep {
+  id: string
+  type: 'click-blob' | 'buy-generator' | 'evolve'
+  target?: { x: number, y: number }
+  completed: boolean
+}
+
+export interface TutorialState {
+  currentStep: TutorialStep | null
+  completedSteps: Set<string>
+  isActive: boolean
+}
+
 export interface BlobProps {
   id: string;
   position: { x: number; y: number };

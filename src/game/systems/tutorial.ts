@@ -1,4 +1,5 @@
-import type { TutorialState, TutorialStep, GameState } from '../types/core';
+import type { TutorialState, TutorialStep } from '../types/ui';
+import type { GameState } from '../types/core';
 
 // Tutorial step definitions
 export const TUTORIAL_STEPS: Record<string, Omit<TutorialStep, 'completed'>> = {

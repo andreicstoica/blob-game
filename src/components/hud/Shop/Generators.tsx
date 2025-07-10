@@ -35,7 +35,7 @@ export const Generators: React.FC<GeneratorsProps> = ({
           }
         })
         .map(generator => {
-        const singleCost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
+
         const totalCost = calculateTotalCost(generator, buyMultiplier);
         const canAfford = biomass >= totalCost;
         const valueInfo = getGeneratorValueInfo(generator.id, gameState);
