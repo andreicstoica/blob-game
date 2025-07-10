@@ -11,6 +11,10 @@ import { useBlobSize } from "./hooks/useBlobSize";
 import { useMapSelector } from "./game/systems/mapState";
 import Map from "./components/map/Map";
 import { useMemo } from "react";
+import {
+  calculateBlobPosition,
+  calculateZoomRates,
+} from "./game/systems/calculations";
 
 function App() {
   const {
@@ -29,34 +33,13 @@ function App() {
   const blobSize = useBlobSize(gameState);
 
   // Calculate blob position to keep it centered in the playable area
-  const blobPosition = useMemo(() => {
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-    const hudWidth = 350; // left
-    const rightHudWidth = 350; // right
-
-    const playableWidth = screenWidth - hudWidth - rightHudWidth;
-    const centerX = hudWidth + playableWidth / 2;
-    const centerY = screenHeight / 2;
-
-    return { x: centerX, y: centerY };
-  }, []);
+  const blobPosition = useMemo(() => calculateBlobPosition(), []);
 
   // Calculate different zoom rates for parallax effect
-  const zoomRates = useMemo(() => {
-    return {
-      // Background zooms normally
-      background: currentZoom,
-      // Particles zoom at 80% of the rate for depth effect
-      particles: 1 + (currentZoom - 1) * 0.8,
-      // Blob scales inversely to maintain visibility
-      blob: 1 + (currentZoom - 1) * 0.3,
-      // Nutrients zoom at 90% rate
-      nutrients: 1 + (currentZoom - 1) * 0.9,
-      // Generators zoom at 70% rate for more depth
-      generators: 1 + (currentZoom - 1) * 0.7,
-    };
-  }, [currentZoom]);
+  const zoomRates = useMemo(
+    () => calculateZoomRates(currentZoom),
+    [currentZoom]
+  );
 
   return (
     <div className="w-screen h-screen relative overflow-hidden">
