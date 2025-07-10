@@ -22,6 +22,7 @@ function App() {
 
   return (
     <div className="w-screen h-screen relative overflow-hidden">
+
       {/* Game Scene - All game visuals */}
       <GameScene 
         gameState={gameState}

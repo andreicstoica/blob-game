@@ -10,39 +10,71 @@ This is like separating the "brain" (engine) from the "face" (UI) of our game. O
 
 ```
 src/
-├── App.tsx                 # 🎯 Main App Router (should be simple and "dumb"!)
-├── game/                   # 🧠 Game Engine (The Brain)
-│   ├── types/                  # Type/interface definitions
-│   │   ├── core.ts                 # Core game state types
-│   │   ├── progression.ts          # Levels, progression, economy types
-│   │   ├── ui.ts                   # UI component types
-│   │   └── index.ts                # Re-exports all types from a single location
-│   ├── systems/                # Game logic systems
-│   │   ├── actions.ts              # Game actions (tick, buy, evolve)
-│   │   ├── calculations.ts         # Math and calculations
-│   │   ├── initialization.ts       # Game setup
-│   │   ├── mapState.ts             # Map and level management
-│   │   ├── nutrients.ts            # Food/nutrient logic
-│   │   ├── scaleLevels.ts          # Evolution scaling
-│   │   └── generatorValue.ts       # Shop value calculations
-│   └── content/                # Game data
-│       ├── config.ts               # Game configuration
-│       ├── generators.ts           # Generator definitions
-│       ├── upgrades.ts             # Upgrade definitions
-│       └── levels.ts               # Level definitions
-├── components/             # 🎨 UI Components (The Face)
-│   ├── animations/             # Visual effects
-│   ├── blob/                   # Blob component
-│   ├── food/                   # Food/nutrient display
-│   ├── hud/                    # Heads-up display
-│   │   ├── Evolution/              # Evolution panel
-│   │   ├── Shop/                   # Shop interface
-│   │   └── GameStats.tsx           # Game statistics
-│   └── map/                    # Map display
-└── hooks/                  # 🔗 React hooks (The Bridge)
-    ├── useGame.ts              # Main game hook
-    ├── useCameraZoom.ts        # Camera logic
-    └── useBlobSize.ts          # Blob sizing
+├── App.tsx                                # 🎯 Main App Router (should be simple and "dumb"!)
+├── game/                                  # 🧠 Game Engine (The Brain)
+│   ├── types/                                 # Type/interface definitions
+│   │   ├── core.ts                                # Core game state types
+│   │   ├── progression.ts                         # Levels, progression, economy types
+│   │   ├── ui.ts                                  # UI component types
+│   │   └── index.ts                               # Re-exports all types from a single location
+│   ├── systems/                               # Game logic systems
+│   │   ├── actions.ts                             # Game actions (tick, buy, evolve)
+│   │   ├── blobSystem.ts                          # Blob-specific logic
+│   │   ├── calculations.ts                        # Math and calculations
+│   │   ├── generatorValue.ts                      # Shop value calculations
+│   │   ├── generatorVisualization.ts              # Generator visualization logic
+│   │   ├── initialization.ts                      # Game setup
+│   │   ├── mapState.ts                            # Map and level management
+│   │   ├── nutrients.ts                           # Food/nutrient logic
+│   │   ├── particles.ts                           # Particle system logic
+│   │   ├── scaleLevels.ts                         # Evolution scaling
+│   │   └── tutorial.ts                            # Tutorial system logic
+│   └── content/                               # Game data
+│       ├── config.ts                              # Game configuration
+│       ├── generators.ts                          # Generator definitions
+│       ├── upgrades.ts                            # Upgrade definitions
+│       └── levels.ts                              # Level definitions
+├── components/                            # 🎨 UI Components (The Face)
+│   ├── animations/                            # Visual effects
+│   │   └── FloatingNumber.tsx                     # Floating number animations
+│   ├── blob/                                  # Blob component
+│   │   ├── Blob.tsx                               # Main blob component
+│   │   └── BlobContainer.tsx                      # Blob container wrapper
+│   ├── generators/                            # Generator system UI
+│   │   ├── GeneratorSystem.tsx                    # Main generator system
+│   │   ├── GeneratorElement.tsx                   # Individual generator
+│   │   └── StackedGeneratorElement.tsx            # Stacked generators
+│   ├── particles/                             # Particle system UI
+│   │   ├── ParticleSystem.tsx                     # Main particle system
+│   │   ├── ParticleSpawner.tsx                    # Particle spawning logic
+│   │   └── ParticleRenderer.tsx                   # Particle rendering
+│   ├── hud/                                   # Heads-up display
+│   │   ├── Evolution/                             # Evolution panel
+│   │   │   ├── CurrentLevel.tsx                       # Current level display
+│   │   │   ├── EvolutionButton.tsx                    # Evolution button
+│   │   │   ├── EvolutionPanel.tsx                     # Main evolution panel
+│   │   │   ├── EvolutionScale.tsx                     # Evolution scale display
+│   │   │   ├── NextEvolution.tsx                      # Next evolution preview
+│   │   │   └── index.ts                               # Evolution exports
+│   │   ├── Shop/                                  # Shop interface
+│   │   │   ├── BuyMultiplierToggle.tsx                # Buy multiplier toggle
+│   │   │   ├── FilterToggle.tsx                       # Filter toggle
+│   │   │   ├── Generators.tsx                         # Generators in shop
+│   │   │   ├── Shop.tsx                               # Main shop component
+│   │   │   ├── Upgrades.tsx                           # Upgrades in shop
+│   │   │   ├── ValueScale.tsx                         # Value scale display
+│   │   │   └── index.ts                               # Shop exports
+│   │   ├── GameHUD.tsx                            # Main HUD component
+│   │   └── GameStats.tsx                          # Game statistics
+│   ├── map/                                   # Map display
+│   │   └── Map.tsx                                # Background map with zoom
+│   ├── tutorial/                              # Tutorial UI
+│   └── GameScene.tsx                              # Main game scene (all game rendering)
+└── hooks/                                 # 🔗 React hooks (The Bridge)
+    ├── useGame.ts                             # Main game hook
+    ├── useCameraZoom.ts                       # Camera logic
+    ├── useBlobSize.ts                         # Blob sizing
+    └── useGeneratorAnimation.ts               # Generator animation logic
 ```
 
 ## Architecture Diagrams
@@ -53,8 +85,8 @@ src/
 graph TB
     subgraph "🎨 Frontend (UI)"
         App[App.tsx - Router]
-        Components[React Components]
-        Hooks[React Hooks]
+        GameScene[GameScene - Game World]
+        HUD[GameHUD - UI Layer]
     end
 
     subgraph "🧠 Game Engine"
@@ -68,10 +100,11 @@ graph TB
         MapState[Map State]
     end
 
-    App --> Components
-    Components --> Hooks
-    Hooks --> GameState
-    GameState --> Systems
+    App --> GameScene
+    App --> HUD
+    GameScene --> Systems
+    HUD --> Systems
+    Systems --> GameState
     Systems --> Content
     Systems --> Types
     MapState --> Systems
@@ -103,15 +136,16 @@ sequenceDiagram
 graph TB
     subgraph "🎯 App.tsx Router"
         App[App.tsx]
-        App --> GameContainer[GameContainer]
+        App --> GameScene[GameScene]
+        App --> HUD[GameHUD]
     end
 
-    subgraph "🎮 Game Container"
-        GameContainer --> Blob[Blob]
-        GameContainer --> HUD[GameHUD]
-        GameContainer --> Map[Map]
-        GameContainer --> Particles[ParticleSystem]
-        GameContainer --> Nutrients[Nutrients]
+    subgraph "🎮 GameScene (Game World)"
+        GameScene --> Map[Map background zoom]
+        GameScene --> Blob[BlobContainer]
+        GameScene --> GeneratorSystem[GeneratorSystem]
+        GameScene --> Particles[ParticleSystem]
+        GameScene --> Floating[FloatingNumber Animations]
     end
 
     subgraph "🎮 GameHUD Components"
@@ -120,7 +154,7 @@ graph TB
         HUD --> Evolution[EvolutionPanel]
 
         subgraph "🏪 Shop"
-            Shop --> Generators[Generators]
+            Shop --> ShopGenerators[Generators]
             Shop --> Upgrades[Upgrades]
         end
 
@@ -290,6 +324,24 @@ All game state, props, and data structures are defined in `game/types/`. This en
 - Better IDE support and error catching
 - Self-documenting code
 
+### 4. Domain-Based Component Organization
+
+**New Structure**: Components are organized by domain rather than technical layers:
+
+- `components/blob/` - All blob-related UI
+- `components/generators/` - All generator-related UI
+- `components/particles/` - All particle-related UI
+- `components/map/` - Map background UI
+- `components/animations/` - Animation UI components
+- `GameScene.tsx` - Main game world container
+
+**Why This Matters**:
+
+- Easier to find related components
+- Clear separation of concerns
+- No confusion between `src/game` (engine) and `src/components/game` (UI)
+- Flat structure is more intuitive
+
 ## Adding New Features
 
 ### Step 1: Define Types
@@ -318,11 +370,13 @@ If your feature needs configuration data, add it to `game/content/`:
 
 ### Step 4: Create UI Components
 
-Build React components in `components/` that:
+Build React components in the appropriate `components/` domain folder:
 
-- Import types from `game/types`
-- Use hooks to access game state
-- Don't contain business logic
+- Blob-related → `components/blob/`
+- Generator-related → `components/generators/`
+- Particle-related → `components/particles/`
+- Animation-related → `components/animations/`
+- Map-related → `components/map/`
 
 ### Step 5: Connect Everything
 
@@ -385,7 +439,8 @@ const App = () => {
 const App = () => {
   return (
     <div className="game-container">
-      <GameContainer />
+      <GameScene />
+      <GameHUD />
     </div>
   );
 };
@@ -434,5 +489,7 @@ This architecture provides a solid foundation for a maintainable, scalable game.
 - Make changes without breaking other parts
 - Onboard new team members more easily
 - Add features more confidently
+
+The new domain-based component organization makes it easier to find and work with related components, while the flat structure eliminates confusion between engine and UI code.
 
 Remember: **The game engine is the brain, the UI is the face. Keep them separate, and everything will work better.**
