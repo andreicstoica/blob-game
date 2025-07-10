@@ -1,4 +1,4 @@
-import type { UpgradeState } from '../types';
+import type { UpgradeState } from '../../game/types';
 
 export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
   // Microscopic Level
@@ -12,35 +12,35 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
     unlockedAtLevel: 'microscopic',
     targetLevel: 'microscopic'
   },
-  // 'sterile-technique-mastery': {
-  //   id: 'sterile-technique-mastery',
-  //   name: '🦠 Sterile Technique Mastery',
-  //   cost: 1500,
-  //   description: '2x Cell Divider',
-  //   effect: 2,
-  //   type: 'growth',
-  //   unlockedAtLevel: 'microscopic',
-  //   targetLevel: 'microscopic'
-  // },
-  // 'rapid-binary-fission': {
-  //   id: 'rapid-binary-fission',
-  //   name: '🦠 Rapid Binary Fission',
-  //   cost: 5000,
-  //   description: '3x Nucleus Replicator',
-  //   effect: 3,
-  //   type: 'growth',
-  //   unlockedAtLevel: 'microscopic',
-  //   targetLevel: 'microscopic'
-  // },
-  // 'click-mastery': {
-  //   id: 'click-mastery',
-  //   name: '🦠 Click Mastery',
-  //   cost: 500,
-  //   description: 'Click power = 15% of growth rate (instead of 10%)',
-  //   effect: 1.5,
-  //   type: 'click',
-  //   unlockedAtLevel: 'microscopic'
-  // },
+  'sterile-technique-mastery': {
+    id: 'sterile-technique-mastery',
+    name: '🦠 Sterile Technique Mastery',
+    cost: 1500,
+    description: '2x Cell Divider',
+    effect: 2,
+    type: 'growth',
+    unlockedAtLevel: 'microscopic',
+    targetLevel: 'microscopic'
+  },
+  'rapid-binary-fission': {
+    id: 'rapid-binary-fission',
+    name: '🦠 Rapid Binary Fission',
+    cost: 5000,
+    description: '3x Nucleus Replicator',
+    effect: 3,
+    type: 'growth',
+    unlockedAtLevel: 'microscopic',
+    targetLevel: 'microscopic'
+  },
+  'click-mastery': {
+    id: 'click-mastery',
+    name: '🦠 Click Mastery',
+    cost: 500,
+    description: 'Click power = 15% of growth rate (instead of 10%)',
+    effect: 1.5,
+    type: 'click',
+    unlockedAtLevel: 'microscopic'
+  },
 
   // Petri Dish Level
   'temperature-control-module': {
@@ -63,16 +63,16 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
     unlockedAtLevel: 'petri-dish',
     targetLevel: 'petri-dish'
   },
-  // 'antibiotic-resistance': {
-  //   id: 'antibiotic-resistance',
-  //   name: '🔍 Antibiotic Resistance',
-  //   cost: 1800000,
-  //   description: '2x All Petri Gens',
-  //   effect: 2,
-  //   type: 'growth',
-  //   unlockedAtLevel: 'petri-dish',
-  //   targetLevel: 'petri-dish'
-  // },
+  'antibiotic-resistance': {
+    id: 'antibiotic-resistance',
+    name: '🔍 Antibiotic Resistance',
+    cost: 1800000,
+    description: '2x All Petri Gens',
+    effect: 2,
+    type: 'growth',
+    unlockedAtLevel: 'petri-dish',
+    targetLevel: 'petri-dish'
+  },
 
   // Lab Level
   'lab-assistant-automation': {
@@ -95,25 +95,25 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
     unlockedAtLevel: 'lab',
     targetLevel: 'lab'
   },
-  // 'precision-pipetting': {
-  //   id: 'precision-pipetting',
-  //   name: '🧪 Precision Pipetting',
-  //   cost: 650000000,
-  //   description: '3x All Lab Gens',
-  //   effect: 3,
-  //   type: 'growth',
-  //   unlockedAtLevel: 'lab',
-  //   targetLevel: 'lab'
-  // },
-  // 'precision-clicking': {
-  //   id: 'precision-clicking',
-  //   name: '🧪 Precision Clicking',
-  //   cost: 50000000,
-  //   description: 'Click power = 20% of growth rate',
-  //   effect: 2.0,
-  //   type: 'click',
-  //   unlockedAtLevel: 'lab'
-  // },
+  'precision-pipetting': {
+    id: 'precision-pipetting',
+    name: '🧪 Precision Pipetting',
+    cost: 650000000,
+    description: '3x All Lab Gens',
+    effect: 3,
+    type: 'growth',
+    unlockedAtLevel: 'lab',
+    targetLevel: 'lab'
+  },
+  'precision-clicking': {
+    id: 'precision-clicking',
+    name: '🧪 Precision Clicking',
+    cost: 50000000,
+    description: 'Click power = 20% of growth rate',
+    effect: 2.0,
+    type: 'click',
+    unlockedAtLevel: 'lab'
+  },
 
   // Neighborhood Level
   'neighborhood-awareness': {
@@ -136,16 +136,16 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
     unlockedAtLevel: 'neighborhood',
     targetLevel: 'neighborhood'
   },
-  // 'community-integration': {
-  //   id: 'community-integration',
-  //   name: '🏘️ Community Integration',
-  //   cost: 65000000000,
-  //   description: '3x All Neighborhood Generators',
-  //   effect: 3,
-  //   type: 'growth',
-  //   unlockedAtLevel: 'neighborhood',
-  //   targetLevel: 'neighborhood'
-  // },
+  'community-integration': {
+    id: 'community-integration',
+    name: '🏘️ Community Integration',
+    cost: 65000000000,
+    description: '3x All Neighborhood Generators',
+    effect: 3,
+    type: 'growth',
+    unlockedAtLevel: 'neighborhood',
+    targetLevel: 'neighborhood'
+  },
 
   // City Level
   'mimicry-training': {
@@ -168,25 +168,25 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
     unlockedAtLevel: 'city',
     targetLevel: 'city'
   },
-  // 'subway-expansion-plan': {
-  //   id: 'subway-expansion-plan',
-  //   name: '🏙️ Subway Expansion Plan',
-  //   cost: 230000000000,
-  //   description: '3x All City Gens',
-  //   effect: 3,
-  //   type: 'growth',
-  //   unlockedAtLevel: 'city',
-  //   targetLevel: 'city'
-  // },
-  // 'rapid-clicking': {
-  //   id: 'rapid-clicking',
-  //   name: '🏙️ Rapid Clicking',
-  //   cost: 5000000000,
-  //   description: 'Click power = 25% of growth rate',
-  //   effect: 2.5,
-  //   type: 'click',
-  //   unlockedAtLevel: 'city'
-  // },
+  'subway-expansion-plan': {
+    id: 'subway-expansion-plan',
+    name: '🏙️ Subway Expansion Plan',
+    cost: 230000000000,
+    description: '3x All City Gens',
+    effect: 3,
+    type: 'growth',
+    unlockedAtLevel: 'city',
+    targetLevel: 'city'
+  },
+  'rapid-clicking': {
+    id: 'rapid-clicking',
+    name: '🏙️ Rapid Clicking',
+    cost: 5000000000,
+    description: 'Click power = 25% of growth rate',
+    effect: 2.5,
+    type: 'click',
+    unlockedAtLevel: 'city'
+  },
 
   // Continent Level
   'intercontinental-railway': {
@@ -209,16 +209,16 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
     unlockedAtLevel: 'continent',
     targetLevel: 'continent'
   },
-  // 'geographic-expansion': {
-  //   id: 'geographic-expansion',
-  //   name: '🗺️ Geographic Expansion',
-  //   cost: 52000000000000,
-  //   description: '5x All Continent Generators',
-  //   effect: 5,
-  //   type: 'growth',
-  //   unlockedAtLevel: 'continent',
-  //   targetLevel: 'continent'
-  // },
+  'geographic-expansion': {
+    id: 'geographic-expansion',
+    name: '🗺️ Geographic Expansion',
+    cost: 52000000000000,
+    description: '5x All Continent Generators',
+    effect: 5,
+    type: 'growth',
+    unlockedAtLevel: 'continent',
+    targetLevel: 'continent'
+  },
 
   // Earth Level
   'intercontinental-mutation': {
@@ -241,16 +241,16 @@ export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
     unlockedAtLevel: 'earth',
     targetLevel: 'earth'
   },
-  // 'accelerated-core-evolution': {
-  //   id: 'accelerated-core-evolution',
-  //   name: '🌍 Accelerated Core Evolution',
-  //   cost: 80000000000000,
-  //   description: '5x All Earth Gens',
-  //   effect: 5,
-  //   type: 'growth',
-  //   unlockedAtLevel: 'earth',
-  //   targetLevel: 'earth'
-  // },
+  'accelerated-core-evolution': {
+    id: 'accelerated-core-evolution',
+    name: '🌍 Accelerated Core Evolution',
+    cost: 80000000000000,
+    description: '5x All Earth Gens',
+    effect: 5,
+    type: 'growth',
+    unlockedAtLevel: 'earth',
+    targetLevel: 'earth'
+  },
 
   // Solar System Level
   'cosmic-radiation-tolerance': {

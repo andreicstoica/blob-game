@@ -91,6 +91,7 @@ const Blob = React.memo(
       ];
       const randomColor = colors[Math.floor(Math.random() * colors.length)];
       
+      // Use the same formatting as generator floating numbers (raw value)
       addFloatingNumber(
         { x: worldX, y: worldY }, 
         clickPower, 
