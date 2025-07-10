@@ -22,7 +22,7 @@ export const TutorialManager: React.FC<TutorialManagerProps> = ({
 
   return (
     <div className="tutorial-overlay fixed inset-0 pointer-events-none z-50">
-      {/* Arrow pointing at blob */}
+      {/* Arrow pointing up at blob from below */}
       <TutorialArrow
         targetPosition={blobPosition}
         isVisible={true}
@@ -32,7 +32,7 @@ export const TutorialManager: React.FC<TutorialManagerProps> = ({
       <ClickIndicator
         position={{
           x: blobPosition.x,
-          y: blobPosition.y + 120 // Position below the arrow
+          y: blobPosition.y + 110 // Position with extra 10px spacing
         }}
         isVisible={true}
       />

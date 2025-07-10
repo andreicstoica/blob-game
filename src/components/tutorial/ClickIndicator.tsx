@@ -16,7 +16,6 @@ export const ClickIndicator: React.FC<ClickIndicatorProps> = ({
     left: position.x,
     top: position.y,
     transform: 'translate(-50%, -50%)',
-    animation: 'clickPulse 1.5s ease-in-out infinite',
     zIndex: 1000,
   };
 
@@ -25,74 +24,74 @@ export const ClickIndicator: React.FC<ClickIndicatorProps> = ({
       {/* CSS Animation Styles */}
       <style>
         {`
-          @keyframes clickPulse {
-            0%, 100% {
-              transform: translate(-50%, -50%) scale(1);
-              opacity: 1;
+          @keyframes leftButtonFlicker {
+            0%, 50% {
+              fill: #22c55e;
             }
-            50% {
-              transform: translate(-50%, -50%) scale(1.1);
-              opacity: 0.8;
+            51%, 100% {
+              fill: white;
             }
           }
           
+          .left-button-flicker {
+            animation: leftButtonFlicker 2s ease-in-out infinite;
+          }
+          
           @media (prefers-reduced-motion: reduce) {
-            .click-indicator {
+            .left-button-flicker {
               animation: none;
+              fill: #22c55e;
             }
           }
         `}
       </style>
       
       <div style={indicatorStyle} className="click-indicator">
-        <div className="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg border border-green-200">
-          <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
-            {/* Left Click Icon */}
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {/* Mouse body */}
-              <rect
-                x="8"
-                y="4"
-                width="8"
-                height="16"
-                rx="4"
-                stroke="#374151"
-                strokeWidth="2"
-                fill="#f3f4f6"
+        <svg
+          width="48"
+          height="72"
+          viewBox="0 0 48 72"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* Mouse shadow/glow effect */}
+          <defs>
+            <filter id="mouseGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow
+                dx="0"
+                dy="2"
+                stdDeviation="4"
+                floodColor="#000000"
+                floodOpacity="0.1"
               />
-              
-              {/* Left click area highlight */}
-              <rect
-                x="8"
-                y="4"
-                width="4"
-                height="8"
-                rx="4"
-                fill="#22c55e"
-                fillOpacity="0.3"
-              />
-              
-              {/* Scroll wheel */}
-              <line
-                x1="12"
-                y1="6"
-                x2="12"
-                y2="10"
-                stroke="#374151"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
-            
-            <span>Click me!</span>
-          </div>
-        </div>
+            </filter>
+          </defs>
+          
+          {/* Mouse body (bottom section) - with gap from buttons */}
+          <path
+            d="M 8 33 L 40 33 L 40 48 A 16 16 0 0 1 24 64 A 16 16 0 0 1 8 48 L 8 33 Z"
+            fill="white"
+            stroke="#e5e7eb"
+            strokeWidth="1"
+            filter="url(#mouseGlow)"
+          />
+          
+          {/* Left click button (top left, flickering) - with gaps */}
+          <path
+            d="M 8 24 A 16 16 0 0 1 24 8 L 22 8 L 22 29 L 8 29 A 16 16 0 0 1 8 24 Z"
+            className="left-button-flicker"
+            stroke="#e5e7eb"
+            strokeWidth="1"
+          />
+          
+          {/* Right click button (top right, white) - with gaps */}
+          <path
+            d="M 26 8 L 24 8 A 16 16 0 0 1 40 24 A 16 16 0 0 1 40 29 L 26 29 L 26 8 Z"
+            fill="white"
+            stroke="#e5e7eb"
+            strokeWidth="1"
+          />
+        </svg>
       </div>
     </>
   );
