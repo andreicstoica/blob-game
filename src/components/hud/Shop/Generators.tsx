@@ -3,6 +3,7 @@ import type { GameState } from '../../../game/types';
 import { NumberFormatter } from '../../../utils/numberFormat';
 import { getGeneratorValueInfo } from '../../../game/systems/generatorValue';
 import { isContentAvailable, calculateTotalCost } from '../../../game/systems/actions';
+import { GAME_CONFIG } from '../../../game/content/config';
 
 interface GeneratorsProps {
   biomass: number;
@@ -135,14 +136,14 @@ export const Generators: React.FC<GeneratorsProps> = ({
                 fontSize: '13px',
                 fontWeight: 'normal'
               }}>
-                Per: <span style={{ fontSize: '15px' }}>{NumberFormatter.rate(generator.baseEffect, gameState)}</span>
+                Per: <span style={{ fontSize: '15px' }}>{NumberFormatter.rate(generator.baseEffect * (1000 / GAME_CONFIG.tickRate), gameState)}</span>
               </div>
               <div style={{ 
                 color: '#60a5fa',
                 fontSize: '13px',
                 fontWeight: 'bold'
               }}>
-                Total: <span style={{ fontSize: '15px' }}>{NumberFormatter.rate(generator.baseEffect * generator.level, gameState)}</span>
+                Total: <span style={{ fontSize: '15px' }}>{NumberFormatter.rate(generator.baseEffect * generator.level * (1000 / GAME_CONFIG.tickRate), gameState)}</span>
               </div>
             </div>
             

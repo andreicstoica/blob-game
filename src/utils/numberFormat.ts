@@ -217,11 +217,7 @@ function formatLargeNumber(value: number, maxDecimals: number): string {
 }
 
 // Formats numbers in compact notation (e.g., 5.7K, 1.3M, 4.5B)
-function formatCompact(value: number, maxDecimals: number = 1): string {
-  if (value < 10) {
-    return value.toFixed(Math.min(maxDecimals, 1));
-  }
-  
+function formatCompact(value: number): string {
   if (value < 1000) {
     return Math.floor(value).toString();
   }
@@ -264,7 +260,7 @@ export const NumberFormatter = {
   custom: (value: number, options: FormatOptions) => formatNumber(value, options),
   
   // Compact format for value scales (K, M, B notation without plus)
-  compact: (value: number, maxDecimals: number = 1) => formatCompact(value, maxDecimals)
+  compact: (value: number) => formatCompact(value)
 };
 
  

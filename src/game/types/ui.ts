@@ -61,6 +61,11 @@ export interface GeneratorVisualization {
   totalEffect: number;
   levelId: string;
   lastFloatingNumber: number; // timestamp
+  // Wave movement properties
+  waveOffset: number; // Random offset for wave timing
+  waveFrequency: number; // How fast the wave oscillates
+  waveAmplitude: number; // How far the wave deviates
+  speedMultiplier: number; // Individual speed variation
 }
 
 export interface FloatingNumberData {
