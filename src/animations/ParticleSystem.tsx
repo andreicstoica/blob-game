@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import type { GameState } from "../engine/core/game";
 import type { Level } from "../engine/content/levels";
 import { getNextLevel } from "../engine/content/levels";
@@ -100,58 +100,40 @@ const PARTICLE_CONFIGS = {
 // Off-screen spawning logic
 const spawnOffScreenParticle = (
   config: ParticleConfig,
-  gameState: GameState,
-  currentLevel: Level
+  blobPosition: { x: number; y: number },
+  progressRatio: number
 ): Particle => {
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
-  const centerX = screenWidth / 2;
-  const centerY = screenHeight / 2;
+  const centerX = blobPosition.x;
+  const centerY = blobPosition.y;
 
-  // Calculate progress within current level for dynamic sizing
-  const nextLevel = getNextLevel(currentLevel);
-  let sizeMultiplier = 1.0;
+  // Particles start big and get smaller as level progresses
+  const sizeMultiplier = Math.max(0.3, 2.5 - progressRatio * 2.0); // Range: 2.5 to 0.3
 
-  if (nextLevel) {
-    const progressInLevel = Math.max(
-      0,
-      gameState.biomass - currentLevel.biomassThreshold
-    );
-    const levelRange =
-      nextLevel.biomassThreshold - currentLevel.biomassThreshold;
-    const progressRatio = Math.min(1, progressInLevel / levelRange);
-
-    // Bacteria start big when level just starts (progressRatio = 0)
-    // and get smaller as player approaches next level (progressRatio = 1)
-    // Use inverse relationship: bigger particles when progress is smaller
-    sizeMultiplier = Math.max(0.3, 3.0 - progressRatio * 2.5);
-  }
-
-  // Spawn from one of the four screen edges
+  // Spawn from all four screen edges
+  const margin = 100;
   const edge = Math.floor(Math.random() * 4);
-  let x: number = 0,
-    y: number = 0;
+  let x: number, y: number;
 
   switch (edge) {
     case 0: // Top
       x = Math.random() * screenWidth;
-      y = -config.size * sizeMultiplier;
+      y = -margin;
       break;
     case 1: // Right
-      x = screenWidth + config.size * sizeMultiplier;
+      x = screenWidth + margin;
       y = Math.random() * screenHeight;
       break;
     case 2: // Bottom
       x = Math.random() * screenWidth;
-      y = screenHeight + config.size * sizeMultiplier;
+      y = screenHeight + margin;
       break;
     case 3: // Left
-      x = -config.size * sizeMultiplier;
+    default:
+      x = -margin;
       y = Math.random() * screenHeight;
       break;
-    default:
-      x = 0;
-      y = 0;
   }
 
   // Calculate direction toward center with some randomness
@@ -204,8 +186,16 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({
     currentLevel?.name as keyof typeof PARTICLE_CONFIGS
   ] || PARTICLE_CONFIGS.intro) as ParticleConfig;
 
-  // Get blob position and size
-  const blobPosition = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+  // Get blob position - target center of screen
+  const blobPosition = useMemo(() => {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    return {
+      x: screenWidth / 2,
+      y: screenHeight / 2,
+    };
+  }, []);
   const blobSize = 100; // Base blob size from useBlobSize hook
 
   // Spawn particles based on growth rate and level progress
@@ -224,26 +214,24 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({
         progressRatio = Math.min(1, progressInLevel / levelRange);
       }
 
-      // Spawn rate increases as you progress through the level
-      const progressMultiplier = 0.3 + progressRatio * 0.7; // 0.3x at start, 1.0x at end
-      const spawnRate =
-        config.spawnRate *
-        progressMultiplier *
-        (1 + (gameState.growth || 0) / 1000);
+      // High spawn rate with level progression
+      const baseSpawnRate = config.spawnRate * 2; // Double the base rate
+      const progressMultiplier = 0.5 + progressRatio * 1.5; // 0.5x at start, 2.0x at end
+      const spawnRate = baseSpawnRate * progressMultiplier;
       const shouldSpawn = Math.random() < spawnRate / 60; // 60fps
 
       if (shouldSpawn) {
         const newParticle = spawnOffScreenParticle(
           config,
-          gameState,
-          currentLevel
+          blobPosition,
+          progressRatio
         );
         setParticles((prev) => [...prev, newParticle]);
       }
     }, 16); // 60fps
 
     return () => clearInterval(spawnInterval);
-  }, [config, gameState.growth, gameState.biomass, currentLevel]);
+  }, [config, gameState.growth, gameState.biomass, currentLevel, blobPosition]);
 
   // Animate particles moving across screen
   useEffect(() => {
@@ -309,7 +297,7 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({
     return () => {
       if (animationId) cancelAnimationFrame(animationId);
     };
-  }, [particles.length, blobPosition.x, blobPosition.y, blobSize]);
+  }, [particles.length, blobPosition, blobSize]);
 
   return (
     <div className="particle-system">
@@ -328,7 +316,7 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({
             borderRadius: particle.useImage ? "0%" : "50%",
             transform: "translate(-50%, -50%)",
             pointerEvents: "none",
-            zIndex: 10,
+            zIndex: 30,
             boxShadow: particle.useImage
               ? "none"
               : `0 0 ${particle.size * 2}px ${particle.color}`,

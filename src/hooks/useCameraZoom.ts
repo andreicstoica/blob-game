@@ -16,13 +16,13 @@ interface CameraState {
 
 // Level-specific zoom ranges (zoom decreases from start to end)
 const ZOOM_RANGES = {
-    intro: { start: 10.0, end: 1.0 }, // Start zoomed in, end at normal
-    microscopic: { start: 10.0, end: 1.0 },
-    "petri-dish": { start: 10.0, end: 1.0 },
-    lab: { start: 10.0, end: 1.0 },
-    city: { start: 10.0, end: 1.0 },
-    earth: { start: 10.0, end: 1.0 },
-    "solar-system": { start: 10.0, end: 1.0 },
+    intro: { start: 4.0, end: 1.0 }, // Smaller range for more noticeable changes
+    microscopic: { start: 4.0, end: 1.0 },
+    "petri-dish": { start: 4.0, end: 1.0 },
+    lab: { start: 4.0, end: 1.0 },
+    city: { start: 4.0, end: 1.0 },
+    earth: { start: 4.0, end: 1.0 },
+    "solar-system": { start: 4.0, end: 1.0 },
 };
 
 // Helper functions
@@ -38,7 +38,7 @@ const calculateLevelZoom = (
 ) => {
     if (!nextLevel) {
         // At max level, use simple logarithmic zoom
-        const maxZoom = ZOOM_RANGES[currentLevel.name as keyof typeof ZOOM_RANGES]?.start || 10.0;
+        const maxZoom = ZOOM_RANGES[currentLevel.name as keyof typeof ZOOM_RANGES]?.start || 4.0;
         const minZoom = 1.0;
         const progress = Math.min(1, Math.log10(biomass + 1) / 10);
         return maxZoom - progress * (maxZoom - minZoom);
@@ -50,13 +50,14 @@ const calculateLevelZoom = (
 
     const { start, end } = ZOOM_RANGES[currentLevel.name as keyof typeof ZOOM_RANGES] || ZOOM_RANGES.intro;
 
-    // Use ease-out curve for more natural zoom progression
-    const easedProgress = 1 - Math.pow(1 - progressRatio, 2);
+    // Use power curve for fast start, slow finish
+    // x^0.3 creates aggressive zoom-out at start, gentle slowdown at end
+    const easedProgress = Math.pow(progressRatio, 0.3);
 
     const calculatedZoom = start - easedProgress * (start - end);
 
     // Debug logging
-    console.log(`Zoom calculation: biomass=${biomass}, progress=${progressRatio.toFixed(3)}, zoom=${calculatedZoom.toFixed(3)}`);
+    console.log(`Zoom calculation: biomass=${biomass}, progress=${progressRatio.toFixed(3)}, easedProgress=${easedProgress.toFixed(3)}, zoom=${calculatedZoom.toFixed(3)}`);
 
     return calculatedZoom;
 };
@@ -75,12 +76,12 @@ const calculateMaxZoom = () => {
     const maxZoomForWidth = availableWidth / 200; // Assuming 200px blob size
     const maxZoomForHeight = availableHeight / 200;
 
-    return Math.min(maxZoomForWidth, maxZoomForHeight, 10.0); // Cap at 10x zoom
+    return Math.min(maxZoomForWidth, maxZoomForHeight, 4.0); // Cap at 4x zoom
 };
 
 export const useCameraZoom = ({ gameState, currentLevel }: UseCameraZoomProps) => {
     // Initialize with the correct starting zoom for the current level
-    const initialZoom = ZOOM_RANGES[currentLevel.name as keyof typeof ZOOM_RANGES]?.start || 10.0;
+    const initialZoom = ZOOM_RANGES[currentLevel.name as keyof typeof ZOOM_RANGES]?.start || 4.0;
 
     const [cameraState, setCameraState] = useState<CameraState>({
         currentZoom: initialZoom,
@@ -110,7 +111,7 @@ export const useCameraZoom = ({ gameState, currentLevel }: UseCameraZoomProps) =
     useEffect(() => {
         if (currentLevel.id !== lastLevelIdRef.current) {
             // Evolution detected - reset to zoomed-in state
-            const newLevelZoom = ZOOM_RANGES[currentLevel.name as keyof typeof ZOOM_RANGES]?.start || 10.0;
+            const newLevelZoom = ZOOM_RANGES[currentLevel.name as keyof typeof ZOOM_RANGES]?.start || 4.0;
 
             setCameraState((prev) => ({
                 ...prev,
@@ -130,7 +131,7 @@ export const useCameraZoom = ({ gameState, currentLevel }: UseCameraZoomProps) =
     // Calculate target zoom based on biomass progress
     const targetZoom = useMemo(() => {
         if (cameraState.isEvolving) {
-            return ZOOM_RANGES[currentLevel.name as keyof typeof ZOOM_RANGES]?.start || 10.0;
+            return ZOOM_RANGES[currentLevel.name as keyof typeof ZOOM_RANGES]?.start || 4.0;
         }
 
         const nextLevel = getNextLevel(currentLevel);
@@ -160,7 +161,7 @@ export const useCameraZoom = ({ gameState, currentLevel }: UseCameraZoomProps) =
         const animate = () => {
             setCameraState((prev) => ({
                 ...prev,
-                currentZoom: lerp(prev.currentZoom, prev.targetZoom, 0.015),
+                currentZoom: lerp(prev.currentZoom, prev.targetZoom, 0.04), // Faster animation
             }));
 
             animationId = requestAnimationFrame(animate);
