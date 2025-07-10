@@ -105,11 +105,6 @@ export function canEvolveToNextLevel(state: GameState): boolean {
     return nextLevel !== null && state.biomass >= nextLevel.biomassThreshold;
 }
 
-export function getCurrentLevel(state: GameState) {
-    // Use the highest level reached, not current biomass
-    return getLevelById(state.highestLevelReached);
-}
-
 export function getNextLevel(state: GameState) {
     const currentLevel = getLevelById(state.highestLevelReached);
     return getNextLevelByCurrent(currentLevel);
@@ -126,4 +121,11 @@ export function evolveToNextLevel(state: GameState): GameState {
         // Biomass carries over, generators and upgrades are preserved
         // Zoom reset is handled by useCameraZoom hook when currentLevelId changes
     };
+}
+
+// Canonical selector for current level from game state
+export function getCurrentLevel(state: GameState) {
+  // Use the highest level reached, not current biomass
+  const level = LEVELS.find(l => l.id === state.highestLevelReached) || LEVELS[0];
+  return level;
 } 

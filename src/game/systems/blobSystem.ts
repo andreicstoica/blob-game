@@ -1,15 +1,5 @@
 import { GAME_CONFIG } from '../content/config';
-
-// Animation state interface
-export interface BlobAnimationValues {
-  breathing: number;
-  clickBoost: number;
-  amoebaNoise: number[];
-  pressure: number;
-  lastClickTime: number;
-  clickHeat: number;
-  clickTimes: number[];
-}
+import type { BlobAnimationValues } from '../types/ui';
 
 // Size calculation
 export const calculateBlobSize = (

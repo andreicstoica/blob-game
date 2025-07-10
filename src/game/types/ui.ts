@@ -16,12 +16,44 @@ export interface BlobProps {
   isDisabled?: boolean;
   isActive?: boolean;
   clickPower?: number;
+  addFloatingNumber?: (position: { x: number; y: number }, value: number, color?: string) => void;
 }
 
 export interface CameraState {
   currentZoom: number;
   targetZoom: number;
   isEvolving: boolean;
+}
+
+// Blob animation state interface
+export interface BlobAnimationValues {
+  breathing: number;
+  clickBoost: number;
+  amoebaNoise: number[];
+  pressure: number;
+  lastClickTime: number;
+  clickHeat: number;
+  clickTimes: number[];
+}
+
+// Generator visualization interfaces
+export interface GeneratorVisualization {
+  id: string;
+  type: 'individual' | 'stacked';
+  emoji: string;
+  position: { x: number; y: number };
+  velocity: { x: number; y: number };
+  count: number;
+  totalEffect: number;
+  levelId: string;
+  lastFloatingNumber: number; // timestamp
+}
+
+export interface FloatingNumberData {
+  x: number;
+  y: number;
+  value: number;
+  color: string;
 }
 
 export interface GeneratorEmoji {

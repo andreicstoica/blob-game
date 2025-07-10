@@ -9,13 +9,8 @@ import { GameWorld } from "./components/GameWorld";
 import { useGame } from "./hooks/useGame";
 import { useCameraZoom } from "./hooks/useCameraZoom";
 import { useBlobSize } from "./hooks/useBlobSize";
-import { useMapSelector } from "./game/systems/mapState";
 import Map from "./components/map/Map";
-import { useMemo } from "react";
-import {
-  calculateBlobPosition,
-  calculateZoomRates,
-} from "./game/systems/calculations";
+import { getCurrentLevel } from "./game/systems/actions";
 
 function App() {
   const {
@@ -26,21 +21,9 @@ function App() {
     handleEvolve,
   } = useGame();
 
-  const currentLevel = useMapSelector((s) => s.currentLevel);
-  const currentZoom = useCameraZoom({
-    gameState,
-    currentLevel,
-  });
+  const currentLevel = getCurrentLevel(gameState);
+  const currentZoom = useCameraZoom({ gameState, currentLevel });
   const blobSize = useBlobSize(gameState);
-
-  // Calculate blob position to keep it centered in the playable area
-  const blobPosition = useMemo(() => calculateBlobPosition(), []);
-
-  // Calculate different zoom rates for parallax effect
-  const zoomRates = useMemo(
-    () => calculateZoomRates(currentZoom),
-    [currentZoom]
-  );
 
   return (
     <div className="w-screen h-screen relative overflow-hidden">
@@ -50,20 +33,7 @@ function App() {
         <Map className="absolute inset-0 w-full h-full z-0" />
 
         {/* Particle System Layer - z-index: 30 */}
-        {currentLevel && (
-          <FlyingParticles gameState={gameState} currentLevel={currentLevel} />
-        )}
-
-        {/* Blob Layer - z-index: 70 (above generators) */}
-        <BlobContainer
-          id="main-blob"
-          biomass={gameState.biomass}
-          size={blobSize}
-          onBlobClick={handleBlobClick}
-          clickPower={gameState.clickPower}
-          zoomRate={zoomRates.blob}
-          currentZoom={currentZoom}
-        />
+        <FlyingParticles gameState={gameState} currentLevel={currentLevel} />
       </GameWorld>
 
       {/* HUD Layer - Outside zoom container */}
@@ -74,14 +44,30 @@ function App() {
         onBuyUpgrade={handleBuyUpgrade}
         onEvolve={handleEvolve}
         blobSize={blobSize}
-        zoom={currentZoom}
       />
 
-      {/* Generators Layer - Outside zoom container */}
-      <MapGenerators gameState={gameState} blobPosition={blobPosition} />
-
-      {/* Animation Layer - Outside zoom container */}
-      <AnimationLayer />
+      {/* Animation Layer with BlobContainer and MapGenerators - Outside zoom container */}
+      <AnimationLayer>
+        {(addFloatingNumber) => (
+          <>
+            {/* Blob Layer - z-index: 70 (above generators) */}
+            <BlobContainer
+              id="main-blob"
+              biomass={gameState.biomass}
+              size={blobSize}
+              onBlobClick={handleBlobClick}
+              clickPower={gameState.clickPower}
+              addFloatingNumber={addFloatingNumber}
+            />
+            
+            <MapGenerators 
+              gameState={gameState} 
+              blobSize={blobSize}
+              addFloatingNumber={addFloatingNumber}
+            />
+          </>
+        )}
+      </AnimationLayer>
     </div>
   );
 }

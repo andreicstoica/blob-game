@@ -1,17 +1,13 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
 import { FloatingNumber } from './FloatingNumber';
 import type { FloatingNumberAnimation, ParticleData } from '../../game/types';
 
-declare global {
-  interface Window {
-    addFloatingNumber?: (position: { x: number; y: number }, value: number, color?: string) => void;
-    addParticleBurst?: (position: { x: number; y: number }, count?: number, colors?: string[]) => void;
-  }
+interface AnimationLayerProps {
+  children?: (addFloatingNumber: (position: { x: number; y: number }, value: number, color?: string) => void) => React.ReactNode;
 }
 
-export const AnimationLayer: React.FC = React.memo(() => {
+export const AnimationLayer: React.FC<AnimationLayerProps> = React.memo(({ children }) => {
   const [floatingNumbers, setFloatingNumbers] = useState<FloatingNumberAnimation[]>([]);
-  const isInitialized = useRef(false);
 
   const addFloatingNumber = useCallback((position: { x: number; y: number }, value: number, color?: string) => {
     const id = Math.random().toString();
@@ -61,31 +57,30 @@ export const AnimationLayer: React.FC = React.memo(() => {
     setFloatingNumbers(prev => prev.filter(anim => anim.id !== id));
   }, []);
 
-  // Set up global functions
-  React.useEffect(() => {
-    if (!isInitialized.current) {
-      window.addFloatingNumber = addFloatingNumber;
-      window.addParticleBurst = addParticleBurst;
-      isInitialized.current = true;
-    }
-  }, [addFloatingNumber, addParticleBurst]);
+
 
   return (
-    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
-      {/* Floating Numbers */}
-      {floatingNumbers.map(anim => (
-        <FloatingNumber
-          key={anim.id}
-          value={anim.value}
-          position={anim.position}
-          color={anim.color}
-          startTime={anim.startTime}
-          onComplete={() => removeFloatingNumber(anim.id)}
-        />
-      ))}
+    <>
+      {/* Render children with addFloatingNumber function */}
+      {children?.(addFloatingNumber)}
       
-      {/* Particles */}
-    </div>
+      {/* Animation Layer */}
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+        {/* Floating Numbers */}
+        {floatingNumbers.map(anim => (
+          <FloatingNumber
+            key={anim.id}
+            value={anim.value}
+            position={anim.position}
+            color={anim.color}
+            startTime={anim.startTime}
+            onComplete={() => removeFloatingNumber(anim.id)}
+          />
+        ))}
+        
+        {/* Particles */}
+      </div>
+    </>
   );
 });
 

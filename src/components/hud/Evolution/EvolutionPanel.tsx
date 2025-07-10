@@ -1,6 +1,6 @@
 import React from 'react';
 import type { GameState } from '../../../game/types';
-import { getCurrentLevel, getNextLevel, canEvolveToNextLevel } from '../../../game/systems/actions';
+import { getNextLevel, canEvolveToNextLevel, getCurrentLevel } from '../../../game/systems/actions';
 import { CurrentLevel } from './CurrentLevel';
 import { NextEvolution } from './NextEvolution';
 import { EvolutionButton } from './EvolutionButton';

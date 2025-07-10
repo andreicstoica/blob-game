@@ -7,8 +7,8 @@ import {
   handleBlobClick,
   generateAmoebePath,
   createBlobAnimationValues,
-  type BlobAnimationValues,
 } from '../../game/systems/blobSystem';
+import type { BlobAnimationValues } from '../../game/types/ui';
 
 const Blob = React.memo(
   ({
@@ -25,6 +25,7 @@ const Blob = React.memo(
   onBlobRelease,
   isActive = true,
     clickPower = 1, // Default click power
+    addFloatingNumber,
 }: BlobProps) => {
   const filterId = `glow-${id}`;
 
@@ -68,7 +69,7 @@ const Blob = React.memo(
     const worldY = e.clientY; // Move up from the click point to avoid mouse cursor
 
     // Trigger floating number animation
-    if (window.addFloatingNumber && clickPower > 0) {
+    if (addFloatingNumber && clickPower > 0) {
       // Generate random color in blue-purple-white gradient
       const colors = [
           "#6366f1", // Indigo
@@ -89,7 +90,7 @@ const Blob = React.memo(
       ];
       const randomColor = colors[Math.floor(Math.random() * colors.length)];
       
-      window.addFloatingNumber(
+      addFloatingNumber(
         { x: worldX, y: worldY }, 
         clickPower, 
         randomColor

@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  INITIAL_STATE,
+import { 
+    INITIAL_STATE,
   tick,
   manualClick,
-  buyGenerator,
-  buyUpgrade,
-  consumeNutrient,
+    buyGenerator,
+    buyUpgrade,
+    consumeNutrient,
   getNearbyNutrients
 } from '../game/systems/actions';
 import { GENERATORS } from '../game/content/generators';

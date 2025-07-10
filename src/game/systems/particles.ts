@@ -1,5 +1,6 @@
 import type { GameState } from '../types';
-import { getNextLevel, getCurrentLevel } from '../content/levels';
+import { getNextLevel } from '../content/levels';
+import { getCurrentLevel } from './actions';
 
 export interface ParticleSystemConfig {
     spawnRate: number; // particles per second
@@ -78,7 +79,7 @@ const BASE_PARTICLE_CONFIGS = {
 };
 
 export function calculateParticleConfig(gameState: GameState): ParticleSystemConfig {
-    const currentLevel = getCurrentLevel(gameState.biomass);
+    const currentLevel = getCurrentLevel(gameState);
     const nextLevel = getNextLevel(currentLevel);
 
     // Get base config for current level
