@@ -1,34 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
 import type { GameState } from "../engine/core/game";
-import type { Level } from "../engine/content/levels";
+import type { Level, Particle, ParticleConfig } from '../game/types';
 import { getNextLevel } from "../engine/content/levels";
 import brownBacteria from "/assets/images/bacteria/brown-bacteria.png";
 import greenBacteria from "/assets/images/bacteria/green-bacteria.png";
 import purpleBacteria from "/assets/images/bacteria/purple-bacteria.png";
-
-interface Particle {
-  id: string;
-  x: number;
-  y: number;
-  speed: number;
-  size: number;
-  color: string;
-  type: "nutrient" | "energy" | "matter" | "cosmic";
-  useImage?: boolean;
-  image?: string;
-  direction: { x: number; y: number };
-}
-
-interface ParticleConfig {
-  type: "nutrient" | "energy" | "matter" | "cosmic";
-  spawnRate: number; // particles per second
-  speed: number; // pixels per second
-  size: number;
-  color: string;
-  level: number;
-  useImage: boolean;
-  images?: string[];
-}
 
 const PARTICLE_CONFIGS = {
   intro: {

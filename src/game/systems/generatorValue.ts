@@ -1,11 +1,5 @@
 import type { GameState, GeneratorState } from '../../../engine/core/game';
-
-export interface GeneratorValue {
-  generatorId: string;
-  value: number; // growth per biomass
-  color: string; // hex color for the indicator
-  rank: number; // 1 = best value, n = worst value
-}
+import type { GeneratorValue } from '../../game/types';
 
 // Calculate the value of purchasing the next level of a generator: Value = (increase in growth) / (cost of next generator)
 export function calculateGeneratorValue(

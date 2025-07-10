@@ -1,24 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { FloatingNumber } from './FloatingNumber';
-
-interface FloatingNumberAnimation {
-  id: string;
-  type: 'floatingNumber';
-  position: { x: number; y: number };
-  value: number;
-  color?: string;
-  startTime: number;
-}
-
-interface ParticleData {
-  id: string;
-  position: { x: number; y: number };
-  velocity: { x: number; y: number };
-  color: string;
-  size: number;
-  startTime: number;
-  lifespan: number;
-}
+import type { FloatingNumberAnimation, ParticleData } from '../game/types';
 
 declare global {
   interface Window {

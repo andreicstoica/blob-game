@@ -1,13 +1,4 @@
-export interface Level {
-  id: number;
-  name: string;
-  displayName: string;
-  biomassThreshold: number;
-  biomassDisplayFormat: 'standard' | 'scientific' | 'decimal' | 'whole';
-  background: string;
-  foodTypes: string[];
-  description: string;
-}
+import type { Level } from '../types';
 
 export const LEVELS: Level[] = [
   {

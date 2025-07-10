@@ -2,16 +2,11 @@ import { useMemo, useRef, useEffect, useState } from "react";
 import { getNextLevel } from "../engine/content/levels";
 import type { GameState } from "../engine/core/game";
 import type { Level } from "../engine/content/levels";
+import type { CameraState } from '../game/types';
 
 interface UseCameraZoomProps {
     gameState: GameState;
     currentLevel: Level;
-}
-
-interface CameraState {
-    currentZoom: number;
-    targetZoom: number;
-    isEvolving: boolean;
 }
 
 // Level-specific zoom ranges (zoom decreases from start to end)

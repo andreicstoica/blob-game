@@ -1,10 +1,4 @@
-export interface ScaleLevel {
-  name: string;
-  description: string;
-  unit: string;
-  color: string;
-  icon: string;
-}
+import type { ScaleLevel } from '../../game/types';
 
 export const getScaleLevel = (biomass: number): ScaleLevel => {
   if (biomass < 30) {

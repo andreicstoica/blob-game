@@ -1,23 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GAME_CONFIG } from '../../engine/content/content';
-
-export interface BlobProps {
-  id: string;
-  position: { x: number; y: number };
-  size?: number;
-  biomass?: number;
-  onBlobClick?:
-    | ((blobId: string, clickPosition: { x: number; y: number }) => void)
-    | (() => void);
-  onBlobPress?: (blobId: string) => void;
-  onBlobRelease?: (blobId: string) => void;
-  color?: string;
-  strokeColor?: string;
-  glowColor?: string;
-  isDisabled?: boolean;
-  isActive?: boolean;
-  clickPower?: number; // The current click power value to display
-}
+import type { BlobProps } from '../../game/types';
 
 const Blob = React.memo(
   ({

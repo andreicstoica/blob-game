@@ -2,18 +2,11 @@ import React, { useMemo, useEffect } from "react";
 import type { GameState } from "../../engine/core/game";
 import { GENERATORS } from "../../engine/content/content";
 import { getTotalGrowth } from "../../engine/core/game";
+import type { GeneratorEmoji } from '../../game/types';
 
 interface GeneratorVisualizationProps {
   gameState: GameState;
   blobPosition: { x: number; y: number };
-}
-
-interface GeneratorEmoji {
-  generatorId: string;
-  emoji: string;
-  angle: number;
-  count: number;
-  name: string;
 }
 
 // Ring radius in pixels (inside the blob)
