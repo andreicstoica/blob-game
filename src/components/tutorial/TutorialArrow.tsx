@@ -13,8 +13,8 @@ export const TutorialArrow: React.FC<TutorialArrowProps> = ({
 
   const arrowStyle: React.CSSProperties = {
     position: 'absolute',
-    left: targetPosition.x - 30, // Center the arrow horizontally
-    top: targetPosition.y - 120, // Position above the blob
+    left: targetPosition.x, // Center at blob's x-midpoint
+    top: targetPosition.y + 40, // Position with 40px gap from blob
     transform: 'translateX(-50%)',
     animation: 'tutorialBounce 2s ease-in-out infinite',
     zIndex: 1000,
@@ -66,18 +66,18 @@ export const TutorialArrow: React.FC<TutorialArrowProps> = ({
             </filter>
           </defs>
           
-          {/* Arrow body */}
+          {/* Arrow body - now pointing upward */}
           <path
-            d="M30 10 L30 55"
+            d="M30 25 L30 70"
             stroke="#22c55e"
             strokeWidth="4"
             strokeLinecap="round"
             filter="url(#arrowGlow)"
           />
           
-          {/* Arrow head */}
+          {/* Arrow head - now pointing upward */}
           <path
-            d="M20 45 L30 60 L40 45"
+            d="M20 35 L30 20 L40 35"
             stroke="#22c55e"
             strokeWidth="4"
             strokeLinecap="round"
