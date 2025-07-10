@@ -23,8 +23,9 @@ interface ParticleRendererProps {
 export const ParticleRenderer: React.FC<ParticleRendererProps> = ({ 
   particles, 
   burstParticles,
-  trailParticles 
+  trailParticles
 }) => {
+
   return (
     <>
       {/* Render trail particles (behind main particles) */}
@@ -102,6 +103,8 @@ export const ParticleRenderer: React.FC<ParticleRendererProps> = ({
           />
         );
       })}
+
+
     </>
   );
 }; 

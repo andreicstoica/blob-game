@@ -31,6 +31,7 @@ export interface BlobProps {
   isActive?: boolean;
   clickPower?: number;
   addFloatingNumber?: (position: { x: number; y: number }, value: number, color?: string) => void;
+  onAnimationStateChange?: (animationState: { clickBoost: number; pressure: number }) => void;
 }
 
 export interface CameraState {

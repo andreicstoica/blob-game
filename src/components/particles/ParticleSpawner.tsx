@@ -18,6 +18,8 @@ interface BurstParticle {
   maxLife: number;
 }
 
+
+
 // Visual assets for different particle types
 const VISUAL_ASSETS = {
   bacteria: [brownBacteria, greenBacteria, purpleBacteria],
@@ -52,7 +54,7 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
   // Get particle configuration from game engine
   const particleConfig = useMemo(
     () => calculateParticleConfig(gameState),
-    [gameState.biomass, currentLevel?.id]
+    [gameState]
   );
 
   // Get blob position - match actual blob rendering position
@@ -123,7 +125,9 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
     }
     
     setBurstParticles(prev => [...prev, ...newBursts]);
-};
+  };
+
+
 
 // Spawn particle from screen edge toward blob
 const spawnOffScreenParticle = (
@@ -211,7 +215,8 @@ const spawnOffScreenParticle = (
     return () => clearInterval(spawnInterval);
   }, [particleConfig, blobPosition, currentLevel]);
 
-  // Combined animation loop for both particles and bursts (Performance optimization)
+  // Combined animation loop for particles and bursts (Performance optimization)
+   
   useEffect(() => {
     if (!currentLevel || (particles.length === 0 && burstParticles.length === 0)) return;
 
@@ -270,14 +275,27 @@ const spawnOffScreenParticle = (
                 // Calculate burst position at blob edge with smart scaling
                 const directionX = (particle.x - blobPosition.x) / distanceToBlob;
                 const directionY = (particle.y - blobPosition.y) / distanceToBlob;
-                // Smart edge offset: smaller percentage for larger blobs, but with reasonable min/max
-                const edgeOffsetPercent = Math.max(0.05, Math.min(0.15, 30 / blobRadius)); // 5-15% based on size
-                const edgeOffset = Math.max(5, Math.min(25, blobRadius * edgeOffsetPercent)); // 5-25px range
+                // Smart edge offset: much closer for massive blobs
+                const edgeOffsetPercent = Math.max(0.02, Math.min(0.15, 30 / blobRadius)); // 2-15% based on size
+                // Reduced max offset for huge blobs: closer burst effect
+                const maxOffset = blobRadius > 400 ? 15 : 25; // 15px max for huge blobs, 25px for smaller ones
+                const edgeOffset = Math.max(3, Math.min(maxOffset, blobRadius * edgeOffsetPercent));
                 const burstX = blobPosition.x + directionX * (blobRadius + edgeOffset);
                 const burstY = blobPosition.y + directionY * (blobRadius + edgeOffset);
                 
-                // Create enhanced burst effect for combos
+                // Create enhanced burst effect for combos (external)
                 createBurstEffect(burstX, burstY, comboTracker.isActive);
+                
+                // Emit event for ripple system with particle direction
+                window.dispatchEvent(new CustomEvent('particle-absorbed', {
+                  detail: { 
+                    x: particle.x, 
+                    y: particle.y, 
+                    isCombo: comboTracker.isActive,
+                    direction: { x: newDirection.x, y: newDirection.y }
+                  }
+                }));
+                
                 return null; // Remove particle
               }
               
@@ -361,6 +379,8 @@ const spawnOffScreenParticle = (
           .filter(Boolean) as BurstParticle[]
       );
 
+
+
       animationId = requestAnimationFrame(animate);
     };
 
@@ -369,6 +389,7 @@ const spawnOffScreenParticle = (
     return () => {
       if (animationId) cancelAnimationFrame(animationId);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [particles.length, burstParticles.length, blobPosition, blobSize, currentLevel]);
 
   // Early return after all hooks

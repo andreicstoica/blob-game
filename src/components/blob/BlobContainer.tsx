@@ -5,11 +5,13 @@ import type { BlobProps } from "../../game/types";
 interface BlobContainerProps extends Omit<BlobProps, "position"> {
   zoomRate?: number;
   currentZoom?: number;
+  onAnimationStateChange?: (animationState: { clickBoost: number; pressure: number }) => void;
 }
 
 export const BlobContainer: React.FC<BlobContainerProps> = ({
   zoomRate = 1,
   currentZoom = 1,
+  onAnimationStateChange,
   ...blobProps
 }) => {
   return (
@@ -22,7 +24,7 @@ export const BlobContainer: React.FC<BlobContainerProps> = ({
         zIndex: 70,
       }}
     >
-      <Blob {...blobProps} position={{ x: 0, y: 0 }} />
+      <Blob {...blobProps} position={{ x: 0, y: 0 }} onAnimationStateChange={onAnimationStateChange} />
     </div>
   );
 };

@@ -26,6 +26,7 @@ const Blob = React.memo(
   isActive = true,
     clickPower = 1, // Default click power
     addFloatingNumber,
+    onAnimationStateChange,
 }: BlobProps) => {
   const filterId = `glow-${id}`;
 
@@ -135,6 +136,14 @@ const Blob = React.memo(
       // Update all blob animations
       updateBlobAnimations(animValues, currentVisualSize, now);
 
+      // Notify parent of animation state changes for ripple system
+      if (onAnimationStateChange) {
+        onAnimationStateChange({
+          clickBoost: animValues.clickBoost,
+          pressure: animValues.pressure,
+        });
+      }
+
       // Update overall scale
       let scaleVariation = 1.0;
       if (isDisabled) {
@@ -151,7 +160,7 @@ const Blob = React.memo(
     };
     animate();
     return () => cancelAnimationFrame(animationId);
-  }, [stableSize, isDisabled]);
+  }, [stableSize, isDisabled, onAnimationStateChange]);
 
   const currentVisualSize = visualSizeRef.current;
 
