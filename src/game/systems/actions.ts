@@ -137,15 +137,15 @@ export function isContentAvailable(unlockedAtLevel: string, currentLevelName: st
   return levelIndex <= currentLevelIndex;
 }
 
-// Calculate total cost for buying multiple generators
-export function calculateTotalCost(generator: any, count: number): number {
-  let totalCost = 0;
-  for (let i = 0; i < count; i++) {
-    const currentLevel = generator.level + i;
-    const cost = generator.baseCost * Math.pow(generator.costMultiplier, currentLevel);
-    totalCost += cost;
-  }
-  return totalCost;
+// Calculate total cost for buying multiple generators (from incoming branch)
+export function calculateTotalCost(generator: { baseCost: number; costMultiplier: number; level: number }, count: number): number {
+    let totalCost = 0;
+    for (let i = 0; i < count; i++) {
+        const currentLevel = generator.level + i;
+        const cost = generator.baseCost * Math.pow(generator.costMultiplier, currentLevel);
+        totalCost += cost;
+    }
+    return totalCost;
 }
 
 // Get all generators unlocked through the current level
