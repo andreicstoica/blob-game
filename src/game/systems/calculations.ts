@@ -42,4 +42,27 @@ export function getTotalGrowth(state: GameState): number {
     });
 
     return finalGrowth;
+}
+
+export function calculateBlobPosition(): { x: number; y: number } {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const hudWidth = 350;
+    const rightHudWidth = 350;
+
+    const playableWidth = screenWidth - hudWidth - rightHudWidth;
+    const centerX = hudWidth + playableWidth / 2;
+    const centerY = screenHeight / 2;
+
+    return { x: centerX, y: centerY };
+}
+
+export function calculateZoomRates(currentZoom: number) {
+    return {
+        background: currentZoom,
+        particles: 1 + (currentZoom - 1) * 0.8,
+        blob: 1 + (currentZoom - 1) * 0.3,
+        nutrients: 1 + (currentZoom - 1) * 0.9,
+        generators: 1 + (currentZoom - 1) * 0.7,
+    };
 } 
