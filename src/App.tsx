@@ -22,7 +22,7 @@ function App() {
 
   return (
     <div className="w-screen h-screen relative overflow-hidden">
-      {/* HUD Layer - Outside zoom container */}
+      {/* HUD Layer */}
       <GameHUD
         biomass={gameState.biomass}
         gameState={gameState}
