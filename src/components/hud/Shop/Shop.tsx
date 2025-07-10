@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import type { GameState } from '../../../game/types';
 import { getCurrentLevel } from '../../../game/systems/actions';
-import { Generators, Upgrades } from './index';
+import { Generators, Upgrades, FilterToggle, BuyMultiplierToggle, ValueScale } from './index';
+import { calculateAllGeneratorValues } from '../../../game/systems/generatorValue';
 
 interface ShopProps {
   biomass: number;
@@ -17,6 +18,7 @@ export const Shop: React.FC<ShopProps> = ({
   onBuyUpgrade 
 }) => {
   const [generatorFilter, setGeneratorFilter] = useState<'current' | 'all'>('current');
+  const [buyMultiplier, setBuyMultiplier] = useState<1 | 10 | 100>(1);
 
   if (!gameState || !onBuyGenerator || !onBuyUpgrade) {
     return null;
@@ -24,8 +26,42 @@ export const Shop: React.FC<ShopProps> = ({
 
   const currentLevel = getCurrentLevel(gameState);
 
+  // Calculate value thresholds for the scale - use useMemo to recalculate when gameState changes
+  const valueThresholds = useMemo(() => {
+    const allValues = calculateAllGeneratorValues(gameState);
+    
+    if (allValues.length === 0) {
+      return { highThreshold: 0, lowThreshold: 0 };
+    }
+    
+    // Get all valid values
+    const validValues = allValues.map(v => v.value).filter(v => v > 0);
+    
+    if (validValues.length === 0) {
+      return { highThreshold: 0, lowThreshold: 0 };
+    }
+    
+    // Find min and max values
+    const minValue = Math.min(...validValues);
+    const maxValue = Math.max(...validValues);
+    const valueRange = maxValue - minValue;
+    
+    if (valueRange === 0) {
+      return { highThreshold: minValue, lowThreshold: minValue };
+    }
+    
+    // Calculate thresholds based on value ranges
+    const lowThreshold = minValue + (valueRange * 0.33); // 33% from min (green/yellow boundary)
+    const highThreshold = minValue + (valueRange * 0.66); // 66% from min (yellow/red boundary)
+    
+    return { highThreshold, lowThreshold };
+  }, [gameState]);
+
   const handleBuyGenerator = (generatorId: string) => {
-    onBuyGenerator(generatorId);
+    // Buy multiple generators based on multiplier
+    for (let i = 0; i < buyMultiplier; i++) {
+      onBuyGenerator(generatorId);
+    }
   };
 
   const handleBuyUpgrade = (upgradeId: string) => {
@@ -52,53 +88,30 @@ export const Shop: React.FC<ShopProps> = ({
         Shop
       </h2>
       
-      {/* Filter Toggle */}
+      {/* Filter and Buy Multiplier Row */}
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center',
-        marginBottom: '15px'
+        marginBottom: '15px',
+        gap: '10px'
       }}>
-        <div style={{ 
-          display: 'flex', 
-          backgroundColor: 'rgba(255, 255, 255, 0.1)',
-          borderRadius: '6px',
-          padding: '2px'
-        }}>
-          <button
-            onClick={() => setGeneratorFilter(generatorFilter === 'current' ? 'all' : 'current')}
-            style={{
-              padding: '4px 8px',
-              fontSize: '12px',
-              backgroundColor: generatorFilter === 'current' ? '#60a5fa' : 'transparent',
-              color: generatorFilter === 'current' ? '#000' : '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: generatorFilter === 'current' ? 'bold' : 'normal',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            Current
-          </button>
-          <button
-            onClick={() => setGeneratorFilter(generatorFilter === 'all' ? 'current' : 'all')}
-            style={{
-              padding: '4px 12px',
-              fontSize: '12px',
-              backgroundColor: generatorFilter === 'all' ? '#60a5fa' : 'transparent',
-              color: generatorFilter === 'all' ? '#000' : '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: generatorFilter === 'all' ? 'bold' : 'normal',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            All
-          </button>
-        </div>
+        <FilterToggle 
+          filter={generatorFilter} 
+          onFilterChange={setGeneratorFilter} 
+        />
+        <BuyMultiplierToggle 
+          multiplier={buyMultiplier} 
+          onMultiplierChange={setBuyMultiplier} 
+        />
       </div>
+
+      {/* Value Scale Display */}
+      <ValueScale 
+        gameState={gameState}
+        highThreshold={valueThresholds.highThreshold}
+        lowThreshold={valueThresholds.lowThreshold}
+      />
 
       {/* Generators Component */}
       <Generators
@@ -107,6 +120,7 @@ export const Shop: React.FC<ShopProps> = ({
         onBuyGenerator={handleBuyGenerator}
         generatorFilter={generatorFilter}
         currentLevel={currentLevel}
+        buyMultiplier={buyMultiplier}
       />
 
       {/* Upgrades Component */}

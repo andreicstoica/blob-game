@@ -107,16 +107,6 @@ export function buyUpgrade(state: GameState, upgradeId: string): GameState {
     return state;
 }
 
-// Helper function to get level by ID
-function getLevelById(levelId: number) {
-    return LEVELS.find(level => level.id === levelId) || LEVELS[0];
-}
-
-// Get current level from game state
-export function getCurrentLevel(gameState: GameState) {
-    return getLevelById(gameState.currentLevelId);
-}
-
 // Get the next level if it exists
 export function getNextLevel(state: GameState) {
     const currentLevel = getCurrentLevel(state);
@@ -155,4 +145,38 @@ export function evolveToNextLevel(state: GameState): GameState {
     }
 
     return newState;
+}
+
+// Helper function to get level by ID (keep existing for compatibility)
+function getLevelById(levelId: number) {
+    return LEVELS.find(level => level.id === levelId) || LEVELS[0];
+}
+
+// Get current level from game state (original version for our tutorial system)
+export function getCurrentLevel(gameState: GameState) {
+    return getLevelById(gameState.currentLevelId);
+}
+
+// Alternative level selector using highest reached (from incoming branch)
+export function getCurrentLevelByProgress(state: GameState) {
+    const level = LEVELS.find(l => l.id === state.highestLevelReached) || LEVELS[0];
+    return level;
+}
+
+// Check if content is available based on current level (from incoming branch)
+export function isContentAvailable(unlockedAtLevel: string, currentLevelName: string): boolean {
+    const levelIndex = LEVELS.findIndex(level => level.name === unlockedAtLevel);
+    const currentLevelIndex = LEVELS.findIndex(level => level.name === currentLevelName);
+    return levelIndex <= currentLevelIndex;
+}
+
+// Calculate total cost for buying multiple generators (from incoming branch)
+export function calculateTotalCost(generator: { baseCost: number; costMultiplier: number; level: number }, count: number): number {
+    let totalCost = 0;
+    for (let i = 0; i < count; i++) {
+        const currentLevel = generator.level + i;
+        const cost = generator.baseCost * Math.pow(generator.costMultiplier, currentLevel);
+        totalCost += cost;
+    }
+    return totalCost;
 } 

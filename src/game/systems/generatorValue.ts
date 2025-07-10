@@ -1,16 +1,18 @@
 import type { GameState, GeneratorState } from '../types';
 import type { GeneratorValue } from '../types';
 
-// Calculate the value of purchasing the next level of a generator: Value = (increase in growth) / (cost of next generator)
+// Calculate the value of purchasing the next level of a generator: Value = (cost of next generator) / (increase in growth)
+// Lower values are better (cheaper per unit of growth)
 export function calculateGeneratorValue(
   generator: GeneratorState
 ): number {
   const nextCost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
   const growthIncrease = generator.baseEffect; // Each level adds baseEffect growth
   
-  if (nextCost <= 0) return 0;
+  if (growthIncrease <= 0) return Infinity;
   
-  return growthIncrease / nextCost;
+  // Lower values = better value (cheaper per unit of growth)
+  return nextCost / growthIncrease;
 }
 
 /**
@@ -29,10 +31,10 @@ export function calculateAllGeneratorValues(gameState: GameState): GeneratorValu
     });
   });
   
-  // Sort by value (highest first)
-  values.sort((a, b) => b.value - a.value);
+  // Don't sort - keep generators in their original order
+  // values.sort((a, b) => a.value - b.value);
   
-  // Assign colors and ranks
+  // Assign colors and ranks based on value ranges
   values.forEach((item, index) => {
     item.rank = index + 1;
     
@@ -40,18 +42,29 @@ export function calculateAllGeneratorValues(gameState: GameState): GeneratorValu
       // Only one generator, make it green
       item.color = '#22c55e';
     } else {
-      // Use simple green/yellow/red based on thirds
-      const ratio = index / (values.length - 1);
+      // Find min and max values for color assignment
+      const allValues = values.map(v => v.value).filter(v => v !== Infinity);
+      const minValue = Math.min(...allValues);
+      const maxValue = Math.max(...allValues);
+      const valueRange = maxValue - minValue;
       
-      if (ratio <= 0.33) {
-        // Top third: green
+      if (valueRange === 0) {
+        // All values are the same
         item.color = '#22c55e';
-      } else if (ratio <= 0.66) {
+      } else {
+        // Normalize value to 0-1 range
+        const normalizedValue = (item.value - minValue) / valueRange;
+        
+        if (normalizedValue <= 0.33) {
+          // Lowest third: green (best value)
+          item.color = '#22c55e';
+        } else if (normalizedValue <= 0.66) {
         // Middle third: yellow
         item.color = '#f59e0b';
       } else {
-        // Bottom third: red
+          // Highest third: red (worst value)
         item.color = '#ef4444';
+        }
       }
     }
   });

@@ -216,6 +216,24 @@ function formatLargeNumber(value: number, maxDecimals: number): string {
   return scaled.toFixed(Math.min(maxDecimals, 2)) + ' ' + suffix;
 }
 
+// Formats numbers in compact notation (e.g., 5.7K, 1.3M, 4.5B)
+function formatCompact(value: number, maxDecimals: number = 1): string {
+  if (value < 10) {
+    return value.toFixed(Math.min(maxDecimals, 1));
+  }
+  
+  if (value < 1000) {
+    return Math.floor(value).toString();
+  }
+  
+  const exp = Math.floor(Math.log(value) / Math.log(1000));
+  const scaled = value / Math.pow(1000, exp);
+  const suffixes = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc'];
+  const suffix = suffixes[exp] || `e${exp * 3}`;
+  
+  return Math.floor(scaled).toString() + suffix;
+}
+
 // Convenience functions for common formatting needs
 export const NumberFormatter = {
   // Format biomass values with level-appropriate formatting
@@ -243,7 +261,10 @@ export const NumberFormatter = {
     formatNumber(value, { type: 'owned', gameState, ...options }),
   
   // Format any number with custom options
-  custom: (value: number, options: FormatOptions) => formatNumber(value, options)
+  custom: (value: number, options: FormatOptions) => formatNumber(value, options),
+  
+  // Compact format for value scales (K, M, B notation without plus)
+  compact: (value: number, maxDecimals: number = 1) => formatCompact(value, maxDecimals)
 };
 
  
