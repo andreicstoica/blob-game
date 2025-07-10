@@ -52,6 +52,16 @@ export const LEVELS: Level[] = [
   },
   {
     id: 4,
+    name: 'neighborhood',
+    displayName: '🏘️ Neighborhood',
+    biomassThreshold: 50000000,
+    biomassDisplayFormat: 'whole',
+    background: 'neighborhood-bg',
+    foodTypes: [],
+    description: 'Spread through suburban neighborhoods.'
+  },
+  {
+    id: 5,
     name: 'city',
     displayName: '🏙️ City',
     biomassThreshold: 800000000,
@@ -61,7 +71,17 @@ export const LEVELS: Level[] = [
     description: 'Infiltrate and spread through a bustling city.'
   },
   {
-    id: 5,
+    id: 6,
+    name: 'continent',
+    displayName: '🗺️ Continent',
+    biomassThreshold: 15000000000,
+    biomassDisplayFormat: 'whole',
+    background: 'continent-bg',
+    foodTypes: [],
+    description: 'Expand across entire continents.'
+  },
+  {
+    id: 7,
     name: 'earth',
     displayName: '🌍 Earth',
     biomassThreshold: 300000000000,
@@ -71,7 +91,7 @@ export const LEVELS: Level[] = [
     description: 'Spread your biomass across the planet.'
   },
   {
-    id: 6,
+    id: 8,
     name: 'solar-system',
     displayName: '🚀 Solar System',
     biomassThreshold: 100000000000000,

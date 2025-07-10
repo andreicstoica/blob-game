@@ -8,13 +8,13 @@ LAST UPDATED: JULY 8th
 classDiagram
     %% Core Game Engine
     class GameState {
-        +blobs: BlobState[]
+        +blobs: BlobState
         +biomass: number
         +growth: number
         +clickPower: number
         +generators: Record~string, GeneratorState~
         +upgrades: Record~string, UpgradeState~
-        +nutrients: NutrientState[]
+        +nutrients: NutrientState
         +currentLevelId: number
         +highestLevelReached: number
     }
@@ -152,7 +152,7 @@ classDiagram
 
     class Blob {
         +id: string
-        +position: {x, y}
+        +position: x, y
         +size: number
         +biomass: number
         +onBlobClick(): void
@@ -209,36 +209,36 @@ classDiagram
     }
 
     %% Relationships
-    GameState ||--o{ BlobState : contains
-    GameState ||--o{ NutrientState : contains
-    GameState ||--o{ GeneratorState : contains
-    GameState ||--o{ UpgradeState : contains
-    GameState ||--|| Level : current
-    MapState ||--o{ Cell : contains
-    MapState ||--|| Level : current
+    GameState --o BlobState : contains
+    GameState --o NutrientState : contains
+    GameState --o GeneratorState : contains
+    GameState --o UpgradeState : contains
+    GameState -- Level : current
+    MapState --o Cell : contains
+    MapState --o Level : current
 
-    GameHUD ||--|| Shop : contains
-    GameHUD ||--|| GameStats : contains
-    GameHUD ||--|| EvolutionPanel : contains
+    GameHUD <--> Shop : contains
+    GameHUD <--> GameStats : contains
+    GameHUD <--> EvolutionPanel : contains
 
-    Shop ||--|| Generators : contains
-    Shop ||--|| Upgrades : contains
+    Shop <--> Generators : contains
+    Shop <--> Upgrades : contains
 
-    EvolutionPanel ||--|| EvolutionScale : contains
-    EvolutionPanel ||--|| CurrentLevel : contains
-    EvolutionPanel ||--|| NextEvolution : contains
-    EvolutionPanel ||--|| EvolutionButton : contains
+    EvolutionPanel <--> EvolutionScale : contains
+    EvolutionPanel <--> CurrentLevel : contains
+    EvolutionPanel <--> NextEvolution : contains
+    EvolutionPanel <--> EvolutionButton : contains
 
-    useGame ||--|| GameState : manages
-    useBlobSize ||--|| GameState : reads
-    useCameraZoom ||--|| GameState : reads
-    useMapSelector ||--|| MapState : reads
+    useGame <--> GameState : manages
+    useBlobSize <--> GameState : reads
+    useCameraZoom <--> GameState : reads
+    useMapSelector <--> MapState : reads
 
-    Map ||--o{ Blob : renders
-    AnimationLayer ||--o{ FloatingNumber : manages
-    AnimationLayer ||--o{ Particle : manages
+    Map <--> Blob : renders
+    AnimationLayer <--o FloatingNumber : manages
+    AnimationLayer <--o Particle : manages
 
-    ScaleLevel ||--|| EvolutionScale : used by
+    ScaleLevel <--> EvolutionScale : used by
 ```
 
 ## Sequence Diagrams
