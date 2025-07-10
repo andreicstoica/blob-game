@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import type { GameState, Level, Particle } from "../../game/types";
-import {
-  calculateParticleConfig,
-} from "../../game/systems/particles";
+import { calculateParticleConfig } from "../../game/systems/particles";
 import brownBacteria from "/assets/images/particles/bacteria/brown-bacteria.png";
 import greenBacteria from "/assets/images/particles/bacteria/green-bacteria.png";
 import purpleBacteria from "/assets/images/particles/bacteria/purple-bacteria.png";
@@ -28,89 +26,18 @@ const VISUAL_ASSETS = {
   cosmic: [], // Use color circles
 };
 
-// Spawn particle from screen edge toward blob
-const spawnOffScreenParticle = (
-  blobPosition: { x: number; y: number },
-  particleConfig: ReturnType<typeof calculateParticleConfig>
-): Particle => {
-  const screenWidth = window.innerWidth;
-  const screenHeight = window.innerHeight;
-
-  // Target the actual blob position
-  const targetX = blobPosition.x;
-  const targetY = blobPosition.y;
-
-  // Spawn from screen edges
-  const margin = 50;
-  const edge = Math.floor(Math.random() * 4);
-  let x: number, y: number;
-
-  switch (edge) {
-    case 0: // Top edge
-      x = Math.random() * screenWidth;
-      y = -margin;
-      break;
-    case 1: // Right edge
-      x = screenWidth + margin;
-      y = Math.random() * screenHeight;
-      break;
-    case 2: // Bottom edge
-      x = Math.random() * screenWidth;
-      y = screenHeight + margin;
-      break;
-    case 3: // Left edge
-    default:
-      x = -margin;
-      y = Math.random() * screenHeight;
-      break;
-  }
-
-  // Calculate direction toward center
-  const dx = targetX - x;
-  const dy = targetY - y;
-  const magnitude = Math.sqrt(dx * dx + dy * dy);
-  const directionX = dx / magnitude;
-  const directionY = dy / magnitude;
-
-  const particle = {
-    id: Math.random().toString(36),
-    x,
-    y,
-    speed: particleConfig.speed,
-    size: particleConfig.size * particleConfig.sizeVariation,
-    color: particleConfig.color,
-    type: particleConfig.visualType as 'nutrient' | 'energy' | 'matter' | 'cosmic',
-    useImage: particleConfig.visualType === "bacteria",
-    image:
-      particleConfig.visualType === "bacteria"
-        ? VISUAL_ASSETS.bacteria[
-            Math.floor(Math.random() * VISUAL_ASSETS.bacteria.length)
-          ]
-        : undefined,
-    direction: { x: directionX, y: directionY },
-  };
-
-  console.log("Particle spawn:", {
-    edge,
-    startPos: { x, y },
-    target: { x: targetX, y: targetY },
-    direction: { x: directionX, y: directionY },
-    speed: particleConfig.speed,
-  });
-
-  return particle;
-};
-
-interface FlyingParticlesProps {
+interface ParticleSpawnerProps {
   gameState: GameState;
   currentLevel: Level;
-  blobSize: number; // Receive calculated blob size from parent
+  blobSize: number; // Need blob size for proper scaling
+  children: (particles: Particle[], burstParticles: BurstParticle[]) => React.ReactNode;
 }
 
-export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
+export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
   gameState,
   currentLevel,
   blobSize,
+  children,
 }) => {
   const [particles, setParticles] = useState<Particle[]>([]);
   const [burstParticles, setBurstParticles] = useState<BurstParticle[]>([]);
@@ -125,51 +52,111 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
   const blobPosition = useMemo(() => {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
-
-    // Blob is actually rendered at true screen center, not offset by HUDs
     const centerX = screenWidth / 2;
     const centerY = screenHeight / 2;
-
     return { x: centerX, y: centerY };
   }, []);
 
   // Use blob size passed from parent (already calculated with all constraints)
   const blobRadius = blobSize * 0.35; // Same calculation as blob component
 
-  // Create burst effect when particle is absorbed  
+  // Create burst effect when particle is absorbed
   const createBurstEffect = (x: number, y: number) => {
-    
     const burstCount = 4 + Math.floor(Math.random() * 3); // 4-6 burst particles (reduced)
     const newBursts: BurstParticle[] = [];
     
     // Use blob glow color to match the glow effect around the blob
     const blobGlowColor = '#cfffb1'; // Default blob glow color (yellow-green)
     
-          // Create burst particles at absorption point
+    // Create burst particles at absorption point
+    for (let i = 0; i < burstCount; i++) {
+      const angle = (i / burstCount) * Math.PI * 2; // Spread evenly in circle
+      const speed = 80 + Math.random() * 40; // Speed: 80-120
+      const maxLife = 0.4 + Math.random() * 0.2; // Shorter lifetime: 0.4-0.6 seconds
       
-      for (let i = 0; i < burstCount; i++) {
-        const angle = (i / burstCount) * Math.PI * 2; // Spread evenly in circle
-        const speed = 80 + Math.random() * 40; // Speed: 80-120
-        const maxLife = 0.4 + Math.random() * 0.2; // Shorter lifetime: 0.4-0.6 seconds
-        
-                // Scale burst size with blob size for proportional appearance
-        const baseBurstSize = Math.max(3, blobSize * 0.02); // 2% of blob size, minimum 3px
-        const burstSize = baseBurstSize + Math.random() * (baseBurstSize * 0.5); // +0-50% variation
-        
-        newBursts.push({
-          id: Math.random().toString(36),
-          x,
-          y,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
-          color: blobGlowColor,
-          life: maxLife,
-          maxLife,
-          size: burstSize,
-        });
+      // Scale burst size with blob size for proportional appearance
+      const baseBurstSize = Math.max(3, blobSize * 0.02); // 2% of blob size, minimum 3px
+      const burstSize = baseBurstSize + Math.random() * (baseBurstSize * 0.5); // +0-50% variation
+      
+      newBursts.push({
+        id: Math.random().toString(36),
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        color: blobGlowColor,
+        life: maxLife,
+        maxLife,
+        size: burstSize,
+      });
     }
     
     setBurstParticles(prev => [...prev, ...newBursts]);
+  };
+
+  // Spawn particle from screen edge toward blob
+  const spawnOffScreenParticle = (
+    blobPosition: { x: number; y: number },
+    particleConfig: ReturnType<typeof calculateParticleConfig>
+  ): Particle => {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    // Target the actual blob position
+    const targetX = blobPosition.x;
+    const targetY = blobPosition.y;
+
+    // Spawn from screen edges
+    const margin = 50;
+    const edge = Math.floor(Math.random() * 4);
+    let x: number, y: number;
+
+    switch (edge) {
+      case 0: // Top edge
+        x = Math.random() * screenWidth;
+        y = -margin;
+        break;
+      case 1: // Right edge
+        x = screenWidth + margin;
+        y = Math.random() * screenHeight;
+        break;
+      case 2: // Bottom edge
+        x = Math.random() * screenWidth;
+        y = screenHeight + margin;
+        break;
+      case 3: // Left edge
+      default:
+        x = -margin;
+        y = Math.random() * screenHeight;
+        break;
+    }
+
+    // Calculate direction toward center
+    const dx = targetX - x;
+    const dy = targetY - y;
+    const magnitude = Math.sqrt(dx * dx + dy * dy);
+    const directionX = dx / magnitude;
+    const directionY = dy / magnitude;
+
+    const particle = {
+      id: Math.random().toString(36),
+      x,
+      y,
+      speed: particleConfig.speed,
+      size: particleConfig.size * particleConfig.sizeVariation,
+      color: particleConfig.color,
+      type: particleConfig.visualType as 'nutrient' | 'energy' | 'matter' | 'cosmic',
+      useImage: particleConfig.visualType === "bacteria",
+      image:
+        particleConfig.visualType === "bacteria"
+          ? VISUAL_ASSETS.bacteria[
+              Math.floor(Math.random() * VISUAL_ASSETS.bacteria.length)
+            ]
+          : undefined,
+      direction: { x: directionX, y: directionY },
+    };
+
+    return particle;
   };
 
   // Spawn particles based on engine configuration
@@ -180,10 +167,7 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
       const shouldSpawn = Math.random() < (particleConfig.spawnRate * 0.4) / 60; // 60fps, reduced to 40% of original
 
       if (shouldSpawn) {
-        const newParticle = spawnOffScreenParticle(
-          blobPosition,
-          particleConfig
-        );
+        const newParticle = spawnOffScreenParticle(blobPosition, particleConfig);
         setParticles((prev) => [...prev, newParticle]);
       }
     }, 16); // 60fps
@@ -222,7 +206,7 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
                 const directionX = dx / distanceToBlob; // Normalized direction from blob center to particle
                 const directionY = dy / distanceToBlob;
                 // Scale edge offset with blob size (larger blob = larger offset for visibility)
-                const edgeOffset = Math.max(2, blobRadius * 0.15); // 15% of blob radius, minimum 5px
+                const edgeOffset = Math.max(5, blobRadius * 0.15); // 15% of blob radius, minimum 5px
                 const burstX = blobPosition.x + directionX * (blobRadius + edgeOffset);
                 const burstY = blobPosition.y + directionY * (blobRadius + edgeOffset);
                 
@@ -284,62 +268,5 @@ export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
   // Early return after all hooks
   if (!currentLevel) return null;
 
-  return (
-    <div className="absolute inset-0 w-full h-full z-30 pointer-events-none">
-      {/* Render main particles */}
-      {particles.map((particle) => (
-        <div
-          key={particle.id}
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            width: particle.size,
-            height: particle.size,
-            backgroundColor: particle.useImage ? "transparent" : particle.color,
-            borderRadius: particle.useImage ? "0%" : "50%",
-            transform: `translate3d(${particle.x - particle.size/2}px, ${particle.y - particle.size/2}px, 0)`,
-            zIndex: 30,
-            boxShadow: particle.useImage
-              ? "none"
-              : `0 0 ${particle.size * 2}px ${particle.color}`,
-            backgroundImage:
-              particle.useImage && particle.image
-                ? `url(${particle.image})`
-                : "none",
-            backgroundSize: "contain",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
-            opacity: 'opacity' in particle ? (particle as Particle & { opacity: number }).opacity : 1, // Apply opacity
-            willChange: "transform, opacity", // GPU optimization hint
-          }}
-        />
-      ))}
-      
-      {/* Render burst particles (firework effect) */}
-      {burstParticles.map((burst) => {
-        const opacity = burst.life / burst.maxLife; // Fade out as life decreases
-        const glowSize = burst.size * 2; // Simplified single glow
-        return (
-          <div
-            key={burst.id}
-            style={{
-              position: "absolute",
-              left: 0,
-              top: 0,
-              width: burst.size,
-              height: burst.size,
-              backgroundColor: burst.color,
-              borderRadius: "50%",
-              transform: `translate3d(${burst.x - burst.size/2}px, ${burst.y - burst.size/2}px, 0)`,
-              zIndex: 31, // Above main particles
-              opacity,
-              boxShadow: `0 0 ${glowSize}px ${burst.color}`, // Single glow for performance
-              willChange: "transform, opacity", // GPU optimization hint
-            }}
-          />
-        );
-      })}
-    </div>
-  );
-};
+  return <>{children(particles, burstParticles)}</>;
+}; 
