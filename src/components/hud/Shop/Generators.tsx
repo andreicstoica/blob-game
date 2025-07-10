@@ -1,8 +1,8 @@
 import React from 'react';
 import type { GameState } from '../../../game/types';
 import { NumberFormatter } from '../../../utils/numberFormat';
-import { LEVELS } from '../../../game/content/levels';
 import { getGeneratorValueInfo } from '../../../game/systems/generatorValue';
+import { isContentAvailable, calculateTotalCost } from '../../../game/systems/actions';
 
 interface GeneratorsProps {
   biomass: number;
@@ -10,6 +10,7 @@ interface GeneratorsProps {
   onBuyGenerator: (generatorId: string) => void;
   generatorFilter: 'current' | 'all';
   currentLevel: { name: string };
+  buyMultiplier: 1 | 10 | 100;
 }
 
 export const Generators: React.FC<GeneratorsProps> = ({ 
@@ -17,14 +18,9 @@ export const Generators: React.FC<GeneratorsProps> = ({
   gameState,
   onBuyGenerator,
   generatorFilter,
-  currentLevel
+  currentLevel,
+  buyMultiplier
 }) => {
-  const isContentAvailable = (unlockedAtLevel: string) => {
-    const levelIndex = LEVELS.findIndex(level => level.name === unlockedAtLevel);
-    const currentLevelIndex = LEVELS.findIndex(level => level.name === currentLevel.name);
-    return levelIndex <= currentLevelIndex;
-  };
-
   return (
     <>
       <h3 style={{ margin: '0 0 15px 0', fontSize: '16px' }}>Generators</h3>
@@ -35,7 +31,7 @@ export const Generators: React.FC<GeneratorsProps> = ({
             return generator.unlockedAtLevel === currentLevel.name;
           } else {
             // Show all unlocked generators
-            return isContentAvailable(generator.unlockedAtLevel);
+            return isContentAvailable(generator.unlockedAtLevel, currentLevel.name);
           }
         })
         .sort((a, b) => {
@@ -43,8 +39,9 @@ export const Generators: React.FC<GeneratorsProps> = ({
           return a.baseCost - b.baseCost;
         })
         .map(generator => {
-        const cost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
-        const canAfford = biomass >= cost;
+        const singleCost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
+        const totalCost = calculateTotalCost(generator, buyMultiplier);
+        const canAfford = biomass >= totalCost;
         const valueInfo = getGeneratorValueInfo(generator.id, gameState);
         
         return (
@@ -184,7 +181,9 @@ export const Generators: React.FC<GeneratorsProps> = ({
                   fontWeight: 'bold',
                   fontSize: '13px'
                 }}>
-                  Cost: <span style={{ fontSize: '15px' }}>{NumberFormatter.cost(cost, gameState)}</span>
+                  Cost: <span style={{ fontSize: '15px' }}>
+                    {NumberFormatter.cost(totalCost, gameState)}
+                  </span>
                 </div>
               </div>
           </div>

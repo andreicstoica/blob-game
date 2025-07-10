@@ -128,4 +128,22 @@ export function getCurrentLevel(state: GameState) {
   // Use the highest level reached, not current biomass
   const level = LEVELS.find(l => l.id === state.highestLevelReached) || LEVELS[0];
   return level;
+}
+
+// Check if content is available based on current level
+export function isContentAvailable(unlockedAtLevel: string, currentLevelName: string): boolean {
+  const levelIndex = LEVELS.findIndex(level => level.name === unlockedAtLevel);
+  const currentLevelIndex = LEVELS.findIndex(level => level.name === currentLevelName);
+  return levelIndex <= currentLevelIndex;
+}
+
+// Calculate total cost for buying multiple generators
+export function calculateTotalCost(generator: any, count: number): number {
+  let totalCost = 0;
+  for (let i = 0; i < count; i++) {
+    const currentLevel = generator.level + i;
+    const cost = generator.baseCost * Math.pow(generator.costMultiplier, currentLevel);
+    totalCost += cost;
+  }
+  return totalCost;
 } 
