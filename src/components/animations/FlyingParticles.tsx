@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import type { GameState } from "../../game/types";
-import type { Level, Particle, ParticleConfig } from '../../game/types';
+import type { Level, Particle, ParticleConfig } from "../../game/types";
 import { getNextLevel } from "../../game/content/levels";
 import brownBacteria from "/assets/images/bacteria/brown-bacteria.png";
 import greenBacteria from "/assets/images/bacteria/green-bacteria.png";
@@ -146,14 +146,18 @@ const spawnOffScreenParticle = (
   };
 };
 
-interface ParticleSystemProps {
+interface FlyingParticlesProps {
   gameState: GameState;
   currentLevel: Level;
+  zoomRate?: number;
+  currentZoom?: number;
 }
 
-export const ParticleSystem: React.FC<ParticleSystemProps> = ({
+export const FlyingParticles: React.FC<FlyingParticlesProps> = ({
   gameState,
   currentLevel,
+  zoomRate = 1,
+  currentZoom = 1,
 }) => {
   if (!currentLevel) return null;
 
@@ -276,7 +280,13 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({
   }, [particles.length, blobPosition, blobSize]);
 
   return (
-    <div className="particle-system">
+    <div
+      className="absolute inset-0 w-full h-full z-30"
+      style={{
+        transform: `scale(${zoomRate / currentZoom})`,
+        transformOrigin: "center center",
+      }}
+    >
       {/* Particles flying across screen */}
       {particles.map((particle) => (
         <div
