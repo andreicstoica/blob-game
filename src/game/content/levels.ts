@@ -1,5 +1,7 @@
 import type { Level } from '../types';
 
+export type { Level };
+
 export const LEVELS: Level[] = [
   {
     id: 0,

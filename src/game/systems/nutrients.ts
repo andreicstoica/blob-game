@@ -1,4 +1,4 @@
-import type { GameState } from './types';
+import type { GameState } from '../types';
 
 export function consumeNutrient(state: GameState, nutrientId: string): GameState {
     const nutrient = state.nutrients.find(n => n.id === nutrientId);

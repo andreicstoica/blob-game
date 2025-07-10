@@ -1,5 +1,5 @@
 import React from "react";
-import type { ScaleLevel } from "./scaleLevels";
+import type { ScaleLevel } from "../../../game/types";
 
 interface CurrentLevelProps {
   displayName: string;

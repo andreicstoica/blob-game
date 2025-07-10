@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import type { GameState } from '../../../engine/core/game';
-import { getCurrentLevel } from '../../../engine/core/game';
+import type { GameState } from '../../../game/types';
+import { getCurrentLevel } from '../../../game/systems/actions';
 import { Generators, Upgrades } from './index';
 
 interface ShopProps {

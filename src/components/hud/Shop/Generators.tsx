@@ -1,8 +1,8 @@
 import React from 'react';
-import type { GameState } from '../../../engine/core/game';
+import type { GameState } from '../../../game/types';
 import { NumberFormatter } from '../../../utils/numberFormat';
-import { LEVELS } from '../../../engine/content/levels';
-import { getGeneratorValueInfo } from './generatorValue';
+import { LEVELS } from '../../../game/content/levels';
+import { getGeneratorValueInfo } from '../../../game/systems/generatorValue';
 
 interface GeneratorsProps {
   biomass: number;

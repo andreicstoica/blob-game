@@ -1,4 +1,4 @@
-import type { NutrientState } from "../../engine/core/game";
+import type { NutrientState } from "../../game/types";
 
 // Import bacteria images
 import brownBacteria from "/assets/images/bacteria/brown-bacteria.png";

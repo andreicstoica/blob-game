@@ -1,10 +1,10 @@
 import React from 'react';
-import type { GameState } from '../../../engine/core/game';
-import { getCurrentLevel, getNextLevel, canEvolveToNextLevel } from '../../../engine/core/game';
+import type { GameState } from '../../../game/types';
+import { getCurrentLevel, getNextLevel, canEvolveToNextLevel } from '../../../game/systems/actions';
 import { CurrentLevel } from './CurrentLevel';
 import { NextEvolution } from './NextEvolution';
 import { EvolutionButton } from './EvolutionButton';
-import { getScaleLevel } from './scaleLevels';
+import { getScaleLevel } from '../../../game/systems/scaleLevels';
 
 interface EvolutionPanelProps {
   biomass: number;

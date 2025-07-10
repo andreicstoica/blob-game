@@ -1,6 +1,6 @@
 import { immer } from 'zustand/middleware/immer'
 import { create } from 'zustand'
-import type { Level, CellStatus, Cell, MapState } from '../types';
+import type { CellStatus, Cell, MapState } from '../types';
 import { getCurrentLevel, getNextLevel } from '../content/levels'
 
 export const useMap = create<MapState>()(

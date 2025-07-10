@@ -1,4 +1,4 @@
-import type { GeneratorState } from '../core/game';
+import type { GeneratorState } from '../types';
 
 export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   // Microscopic Level

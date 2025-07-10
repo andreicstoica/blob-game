@@ -1,5 +1,7 @@
-import { GENERATORS, UPGRADES, GAME_CONFIG } from '../content/content';
-import type { GameState, GeneratorState, UpgradeState, NutrientState } from './types';
+import { GENERATORS } from '../content/generators';
+import { UPGRADES } from '../content/upgrades';
+import { GAME_CONFIG } from '../content/config';
+import type { GameState, GeneratorState, UpgradeState, NutrientState } from '../types';
 
 export const initializeGenerators = () => {
     const generators: Record<string, GeneratorState> = {};

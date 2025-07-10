@@ -1,5 +1,5 @@
-import type { GameState, GeneratorState } from '../../../engine/core/game';
-import type { GeneratorValue } from '../../game/types';
+import type { GameState, GeneratorState } from '../types';
+import type { GeneratorValue } from '../types';
 
 // Calculate the value of purchasing the next level of a generator: Value = (increase in growth) / (cost of next generator)
 export function calculateGeneratorValue(

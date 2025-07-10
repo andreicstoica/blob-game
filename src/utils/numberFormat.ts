@@ -1,5 +1,5 @@
-import { getCurrentLevel } from '../engine/core/game';
-import type { GameState } from '../engine/core/game';
+import { getCurrentLevel } from '../game/systems/actions';
+import type { GameState } from '../game/types';
 import type { NumberType, FormatOptions } from '../game/types';
 
 // Centralized number formatting utility for the blob game

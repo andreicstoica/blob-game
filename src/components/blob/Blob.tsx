@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { GAME_CONFIG } from '../../engine/content/content';
+import { GAME_CONFIG } from '../../game/content/config';
 import type { BlobProps } from '../../game/types';
 
 const Blob = React.memo(

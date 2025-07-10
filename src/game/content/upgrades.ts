@@ -1,4 +1,4 @@
-import type { UpgradeState } from '../core/game';
+import type { UpgradeState } from '../types';
 
 export const UPGRADES: Record<string, Omit<UpgradeState, 'purchased'>> = {
   // Microscopic Level

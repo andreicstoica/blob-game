@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { FloatingNumber } from './FloatingNumber';
-import type { FloatingNumberAnimation, ParticleData } from '../game/types';
+import type { FloatingNumberAnimation, ParticleData } from '../../game/types';
 
 declare global {
   interface Window {

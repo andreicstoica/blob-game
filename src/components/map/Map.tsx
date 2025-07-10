@@ -1,4 +1,4 @@
-import { useMapSelector } from "../../engine/systems/mapState";
+import { useMapSelector } from "../../game/systems/mapState";
 
 interface MapProps {
   className?: string;

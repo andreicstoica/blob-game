@@ -1,7 +1,7 @@
 import React from 'react';
-import type { GameState } from '../../../engine/core/game';
+import type { GameState } from '../../../game/types';
 import { NumberFormatter } from '../../../utils/numberFormat';
-import { LEVELS } from '../../../engine/content/levels';
+import { LEVELS } from '../../../game/content/levels';
 
 interface UpgradesProps {
   biomass: number;

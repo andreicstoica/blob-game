@@ -27,5 +27,4 @@ export interface FormatOptions {
 }
 
 // Import types that are used in GameState
-import type { GeneratorState, UpgradeState } from './economy';
-import type { NutrientState } from './progression'; 
+import type { GeneratorState, UpgradeState, NutrientState } from './progression'; 

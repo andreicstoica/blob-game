@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
-import type { GameState } from "../engine/core/game";
-import type { Level, Particle, ParticleConfig } from '../game/types';
-import { getNextLevel } from "../engine/content/levels";
+import type { GameState } from "../../game/types";
+import type { Level, Particle, ParticleConfig } from '../../game/types';
+import { getNextLevel } from "../../game/content/levels";
 import brownBacteria from "/assets/images/bacteria/brown-bacteria.png";
 import greenBacteria from "/assets/images/bacteria/green-bacteria.png";
 import purpleBacteria from "/assets/images/bacteria/purple-bacteria.png";

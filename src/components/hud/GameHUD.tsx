@@ -1,5 +1,5 @@
 import React from "react";
-import type { GameState } from "../../engine/core/game";
+import type { GameState } from "../../game/types";
 import { GameStats } from "./GameStats";
 import { Shop } from "./Shop";
 import { EvolutionPanel } from "./Evolution";

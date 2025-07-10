@@ -1,4 +1,4 @@
-import type { GameState, GeneratorState } from './types';
+import type { GameState, GeneratorState } from '../types';
 
 export function getGeneratorCost(generator: GeneratorState): number {
     return Math.floor(generator.baseCost * Math.pow(generator.costMultiplier, generator.level));

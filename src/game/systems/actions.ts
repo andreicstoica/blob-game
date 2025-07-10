@@ -1,8 +1,14 @@
-import { GAME_CONFIG } from '../content/content';
+import { GAME_CONFIG } from '../content/config';
 import { getNextLevel as getNextLevelByCurrent, LEVELS } from '../content/levels';
-import type { GameState } from './types';
+import type { GameState } from '../types';
 import { getTotalGrowth } from './calculations';
-import { spawnMoreNutrients } from './nutrients';
+import { spawnMoreNutrients, consumeNutrient, getNearbyNutrients } from './nutrients';
+import { INITIAL_STATE } from './initialization';
+
+// Re-export commonly used functions and types
+export { INITIAL_STATE };
+export { consumeNutrient, getNearbyNutrients };
+export type { GameState };
 
 export function tick(state: GameState): GameState {
     const currentGrowth = getTotalGrowth(state);

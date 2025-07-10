@@ -1,4 +1,4 @@
-import type { ScaleLevel } from '../../game/types';
+import type { ScaleLevel } from '../types';
 
 export const getScaleLevel = (biomass: number): ScaleLevel => {
   if (biomass < 30) {

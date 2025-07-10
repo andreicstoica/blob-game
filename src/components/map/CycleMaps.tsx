@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useMapSelector } from "../../engine/systems/mapState";
-import { LEVELS } from "../../engine/content/levels";
+import { useMapSelector } from "../../game/systems/mapState";
+import { LEVELS } from "../../game/content/levels";
 import Map from "./Map";
 
 export default function CycleMaps() {

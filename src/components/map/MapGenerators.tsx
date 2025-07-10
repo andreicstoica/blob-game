@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect } from "react";
-import type { GameState } from "../../engine/core/game";
-import { GENERATORS } from "../../engine/content/content";
-import { getTotalGrowth } from "../../engine/core/game";
+import type { GameState } from "../../game/types";
+import { GENERATORS } from "../../game/content/generators";
+import { getTotalGrowth } from "../../game/systems/calculations";
 import type { GeneratorEmoji } from '../../game/types';
 
 interface GeneratorVisualizationProps {

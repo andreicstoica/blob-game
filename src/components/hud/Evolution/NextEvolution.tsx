@@ -1,6 +1,6 @@
 import React from "react";
 import { NumberFormatter } from "../../../utils/numberFormat";
-import type { GameState } from '../../../engine/core/game';
+import type { GameState } from '../../../game/types';
 
 interface NextEvolutionProps {
   nextLevel: any;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { NumberFormatter } from '../utils/numberFormat';
+import { NumberFormatter } from '../../utils/numberFormat';
 
 interface FloatingNumberProps {
   value: number;
