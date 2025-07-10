@@ -7,7 +7,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🦠 Microscopic Cloner',
     baseCost: 15,
     description: 'Clones basic slime cells',
-    baseEffect: 0.1,
+    baseEffect: 0.2,
     costMultiplier: 1.15,
     unlockedAtLevel: 'microscopic'
   },
@@ -16,16 +16,16 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🦠 Cell Divider',
     baseCost: 100,
     description: 'Divides cells rapidly',
-    baseEffect: 1,
+    baseEffect: 2.5,
     costMultiplier: 1.15,
     unlockedAtLevel: 'microscopic'
   },
   'nucleus-replicator': {
     id: 'nucleus-replicator',
     name: '🦠 Nucleus Replicator',
-    baseCost: 1500,
+    baseCost: 1200,
     description: 'Splits nuclei for advanced growth',
-    baseEffect: 10,
+    baseEffect: 15,
     costMultiplier: 1.15,
     unlockedAtLevel: 'microscopic'
   },
@@ -35,7 +35,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🔍 Colony Expansion',
     baseCost: 15000,
     description: 'Expands colonies for more biomass',
-    baseEffect: 50,
+    baseEffect: 75,
     costMultiplier: 1.15,
     unlockedAtLevel: 'petri-dish'
   },
@@ -89,27 +89,27 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   'backyard-colonizer': {
     id: 'backyard-colonizer',
     name: '🏘️ Backyard Colonizer',
-    baseCost: 1500000000,
+    baseCost: 8000000000,
     description: 'Colonizes suburban backyards',
-    baseEffect: 800000,
+    baseEffect: 250000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'neighborhood'
   },
   'garden-infester': {
     id: 'garden-infester',
     name: '🏘️ Garden Infester',
-    baseCost: 10000000000,
+    baseCost: 50000000000,
     description: 'Infests neighborhood gardens',
-    baseEffect: 4000000,
+    baseEffect: 1200000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'neighborhood'
   },
   'street-spreader': {
     id: 'street-spreader',
     name: '🏘️ Street Spreader',
-    baseCost: 65000000000,
+    baseCost: 300000000000,
     description: 'Spreads through neighborhood streets',
-    baseEffect: 20000000,
+    baseEffect: 6000000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'neighborhood'
   },
@@ -117,27 +117,27 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   'humanoid-slimes': {
     id: 'humanoid-slimes',
     name: '🏙️ Humanoid Slimes',
-    baseCost: 4500000000,
+    baseCost: 15000000000,
     description: 'Slimes disguised as humans',
-    baseEffect: 600000,
+    baseEffect: 800000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'city'
   },
   'sewer-colonies': {
     id: 'sewer-colonies',
     name: '🏙️ Sewer Colonies',
-    baseCost: 32000000000,
+    baseCost: 100000000000,
     description: 'Colonies thriving in the sewers',
-    baseEffect: 1200000,
+    baseEffect: 4000000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'city'
   },
   'subway-spreaders': {
     id: 'subway-spreaders',
     name: '🏙️ Subway Spreaders',
-    baseCost: 230000000000,
+    baseCost: 650000000000,
     description: 'Spread through the subway system',
-    baseEffect: 2440000,
+    baseEffect: 20000000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'city'
   },
@@ -145,27 +145,27 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   'cargo-ship-infestors': {
     id: 'cargo-ship-infestors',
     name: '🌍 Cargo Ship Infestors',
-    baseCost: 1600000000000,
+    baseCost: 50000000000000,
     description: 'Infest cargo ships for global spread',
-    baseEffect: 12200000,
+    baseEffect: 300000000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'earth'
   },
   'airplane-spore-units': {
     id: 'airplane-spore-units',
     name: '🌍 Airplane Spore Units',
-    baseCost: 11000000000000,
+    baseCost: 300000000000000,
     description: 'Spread spores via airplanes',
-    baseEffect: 61000000,
+    baseEffect: 1500000000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'earth'
   },
   'forest-hive-colonies': {
     id: 'forest-hive-colonies',
     name: '🌍 Forest Hive Colonies',
-    baseCost: 80000000000000,
+    baseCost: 1800000000000000,
     description: 'Massive hives in forests',
-    baseEffect: 305000000,
+    baseEffect: 7500000000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'earth'
   },
@@ -173,27 +173,27 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   'national-highway-system': {
     id: 'national-highway-system',
     name: '🗺️ National Highway System',
-    baseCost: 1200000000000,
+    baseCost: 8000000000000,
     description: 'Uses highway systems for rapid spread',
-    baseEffect: 100000000,
+    baseEffect: 50000000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'continent'
   },
   'railway-network': {
     id: 'railway-network',
     name: '🗺️ Railway Network',
-    baseCost: 8000000000000,
+    baseCost: 50000000000000,
     description: 'Hijacks railway networks',
-    baseEffect: 500000000,
+    baseEffect: 250000000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'continent'
   },
   'airport-hub': {
     id: 'airport-hub',
     name: '🗺️ Airport Hub',
-    baseCost: 52000000000000,
+    baseCost: 300000000000000,
     description: 'Establishes airport hubs',
-    baseEffect: 2500000000,
+    baseEffect: 1200000000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'continent'
   },

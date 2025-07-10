@@ -1,5 +1,3 @@
-
-
 interface NeighborhoodLevelProps {
   width: number;
   height: number;
