@@ -1,15 +1,17 @@
-import React from 'react';
+import React from "react";
 
 interface EvolutionButtonProps {
   canEvolve: boolean;
   hasNextLevel: boolean;
   onEvolve?: () => void;
+  currentLevelId?: number; // Add current level ID to determine button text
 }
 
-export const EvolutionButton: React.FC<EvolutionButtonProps> = ({ 
-  canEvolve, 
-  hasNextLevel, 
-  onEvolve 
+export const EvolutionButton: React.FC<EvolutionButtonProps> = ({
+  canEvolve,
+  hasNextLevel,
+  onEvolve,
+  currentLevelId = 0,
 }) => {
   if (!hasNextLevel) {
     return (
@@ -35,6 +37,11 @@ export const EvolutionButton: React.FC<EvolutionButtonProps> = ({
       </div>
     );
   }
+
+  // Determine button text based on current level
+  const isIntroLevel = currentLevelId === 0;
+  const buttonText = isIntroLevel ? "Start Game!" : "Evolve!";
+  const notReadyText = isIntroLevel ? "Not Ready" : "Not Ready";
 
   return (
     <button
@@ -64,7 +71,7 @@ export const EvolutionButton: React.FC<EvolutionButtonProps> = ({
         }
       }}
     >
-      {canEvolve ? "Evolve!" : "Not Ready"}
+      {canEvolve ? buttonText : notReadyText}
     </button>
   );
-}; 
+};

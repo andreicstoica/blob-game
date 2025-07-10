@@ -3,7 +3,7 @@ import type { GameState } from '../types';
 import { getTotalGrowth } from './calculations';
 import { spawnMoreNutrients, getNearbyNutrients, consumeNutrient } from './nutrients';
 import { INITIAL_STATE } from './initialization';
-
+import { playSound } from '../../utils/sound';
 
 // Re-export commonly used functions and types
 export { INITIAL_STATE };
@@ -14,7 +14,7 @@ export type { GameState };
 export function tick(state: GameState): GameState {
     const growth = getTotalGrowth(state);
     const newBiomass = state.biomass + growth;
-    
+
     const newState = {
         ...state,
         biomass: newBiomass,
@@ -30,7 +30,10 @@ export function tick(state: GameState): GameState {
 // Manual click function
 export function manualClick(state: GameState): GameState {
     const newBiomass = state.biomass + state.clickPower;
-    
+
+    // Play blob click sound
+    playSound('blobClick');
+
     return {
         ...state,
         biomass: newBiomass
@@ -40,10 +43,13 @@ export function manualClick(state: GameState): GameState {
 export function buyGenerator(state: GameState, generatorId: string): GameState {
     const generator = state.generators[generatorId];
     if (!generator) return state;
-    
+
     const cost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
-    
+
     if (state.biomass >= cost) {
+        // Play UI click sound for generator purchase
+        playSound('uiClick');
+
         return {
             ...state,
             biomass: state.biomass - cost,
@@ -56,15 +62,18 @@ export function buyGenerator(state: GameState, generatorId: string): GameState {
             }
         };
     }
-    
+
     return state;
 }
 
 export function buyUpgrade(state: GameState, upgradeId: string): GameState {
     const upgrade = state.upgrades[upgradeId];
     if (!upgrade) return state;
-    
+
     if (!upgrade.purchased && state.biomass >= upgrade.cost) {
+        // Play UI click sound for upgrade purchase
+        playSound('uiClick');
+
         return {
             ...state,
             biomass: state.biomass - upgrade.cost,
@@ -77,7 +86,7 @@ export function buyUpgrade(state: GameState, upgradeId: string): GameState {
             }
         };
     }
-    
+
     return state;
 }
 
@@ -95,10 +104,19 @@ export function canEvolveToNextLevel(state: GameState): boolean {
 
 export function evolveToNextLevel(state: GameState): GameState {
     const nextLevel = getNextLevel(state);
-    
+
     // Check if evolution is possible
     if (!nextLevel || state.biomass < nextLevel.biomassThreshold) {
         return state;
+    }
+
+    // Play appropriate sound based on current level
+    if (state.currentLevelId === 0) {
+        // Play game start sound for intro level
+        playSound('gameStart');
+    } else {
+        // Play evolve sound for all other levels
+        playSound('evolve');
     }
 
     // Create new state with evolution
