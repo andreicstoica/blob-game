@@ -1,6 +1,7 @@
 import React from 'react';
 import type { GameState } from '../../game/types';
 import { NumberFormatter } from '../../utils/numberFormat';
+import { GAME_CONFIG } from '../../game/content/config';
 
 interface GameStatsProps {
   biomass: number;
@@ -10,6 +11,13 @@ interface GameStatsProps {
 export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
   const formattedBiomass = NumberFormatter.biomass(biomass, gameState);
   const biomassLength = formattedBiomass.length;
+  
+  // Dynamic font size based on biomass length to ensure it fits
+  let fontSize = 72;
+  if (biomassLength > 8) fontSize = 54;
+  if (biomassLength > 12) fontSize = 42;
+  if (biomassLength > 16) fontSize = 36;
+  
   // Scale padding based on biomass number length: Base 20px, add 5px for each character beyond 3
   const horizontalPadding = Math.max(20, 20 + (biomassLength - 3) * 5);
 
@@ -22,6 +30,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
       justifyContent: 'center',
       width: 'fit-content',
       minWidth: '100px',
+      maxWidth: '100%',
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
       padding: `20px ${horizontalPadding}px`,
       borderRadius: '0 0 18px 18px',
@@ -41,12 +50,17 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
           BIOMASS
         </div>
         <div style={{ 
-          fontSize: '48px', 
+          fontSize: `${fontSize}px`, 
           fontWeight: 'bold', 
           color: '#4ade80',
           textShadow: '0 0 20px rgba(74, 222, 128, 0.5)',
           lineHeight: '1',
-          padding: '0 10px'
+          padding: '0 10px',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          minWidth: '0',
+          flexShrink: 1
         }}>
           {formattedBiomass}
         </div>
@@ -75,7 +89,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
               color: '#4ade80',
               marginBottom: '5px'
             }}>
-              {NumberFormatter.rate(gameState.growth, gameState)}
+              {NumberFormatter.rate(gameState.growth * (1000 / GAME_CONFIG.tickRate), gameState)}
             </div>
           </div>
           

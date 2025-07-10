@@ -1,0 +1,307 @@
+import React, { useMemo, useState, useEffect } from 'react';
+import type { GameState } from '../../../game/types';
+import { NumberFormatter } from '../../../utils/numberFormat';
+import { getGeneratorValueInfo } from '../../../game/systems/generatorValue';
+import { isContentAvailable, calculateTotalCost } from '../../../game/systems/actions';
+import { GAME_CONFIG } from '../../../game/content/config';
+
+interface ShopFloatingNumber {
+  id: string;
+  text: string;
+  x: number;
+  y: number;
+  color: string;
+}
+
+interface GeneratorsProps {
+  biomass: number;
+  gameState: GameState;
+  onBuyGenerator: (generatorId: string) => void;
+  generatorFilter: 'current' | 'all';
+  currentLevel: { name: string };
+  buyMultiplier: 1 | 10 | 100;
+}
+
+export const ShopGenerators: React.FC<GeneratorsProps> = ({ 
+  biomass,
+  gameState,
+  onBuyGenerator,
+  generatorFilter,
+  currentLevel,
+  buyMultiplier
+}) => {
+  const [floatingNumbers, setFloatingNumbers] = useState<ShopFloatingNumber[]>([]);
+
+  // Clean up floating numbers after animation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFloatingNumbers([]);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [floatingNumbers]);
+
+  const addFloatingNumber = (text: string, x: number, y: number, color: string) => {
+    const id = Math.random().toString(36).substr(2, 9);
+    setFloatingNumbers(prev => [...prev, { id, text, x, y, color }]);
+  };
+  // Sort generators by affordability and value
+  const sortedGenerators = useMemo(() => {
+    const filteredGenerators = Object.values(gameState.generators)
+      .filter(generator => {
+        if (generatorFilter === 'current') {
+          // Only show generators from current level
+          return generator.unlockedAtLevel === currentLevel.name;
+        } else {
+          // Show all unlocked generators
+          return isContentAvailable(generator.unlockedAtLevel, currentLevel.name);
+        }
+      });
+
+    return filteredGenerators.sort((a, b) => {
+      const costA = calculateTotalCost(a, buyMultiplier);
+      const costB = calculateTotalCost(b, buyMultiplier);
+      const canAffordA = biomass >= costA;
+      const canAffordB = biomass >= costB;
+
+      // First sort by affordability (affordable generators first)
+      if (canAffordA !== canAffordB) {
+        return canAffordA ? -1 : 1;
+      }
+
+      // Then sort by value (better value = lower cost/growth ratio)
+      const valueA = getGeneratorValueInfo(a.id, gameState);
+      const valueB = getGeneratorValueInfo(b.id, gameState);
+      
+      if (valueA && valueB) {
+        return valueA.value - valueB.value; // Lower value = better
+      }
+      
+      return 0;
+    });
+  }, [gameState.generators, generatorFilter, currentLevel.name, biomass, buyMultiplier, gameState]);
+
+  return (
+    <>
+      <h3 style={{ margin: '10px 0 10px 0', fontSize: '16px' }}>Generators</h3>
+      {sortedGenerators.map((generator) => {
+
+        const totalCost = calculateTotalCost(generator, buyMultiplier);
+        const canAfford = biomass >= totalCost;
+        
+        // Get level color for gradient
+        const getLevelColor = (levelName: string) => {
+          switch (levelName) {
+            case 'microscopic': return '#c0c0c0'; // Silver
+            case 'petri-dish': return '#3b82f6'; // Blue
+            case 'lab': return '#84cc16'; // Lime
+            case 'neighborhood': return '#f59e0b'; // Amber
+            case 'city': return '#8b5cf6'; // Purple
+            case 'continent': return '#06b6d4'; // Cyan
+            case 'earth': return '#10b981'; // Emerald
+            case 'solar-system': return '#f97316'; // Orange
+            default: return '#6b7280'; // Gray
+          }
+        };
+
+        const levelColor = getLevelColor(generator.unlockedAtLevel);
+        
+        return (
+          <div key={generator.id} 
+            className="generator-card"
+            style={{
+                          background: canAfford 
+              ? `linear-gradient(30deg, rgba(74, 222, 128, 0.2) 0%, rgba(74, 222, 128, 0.2) 65%, rgba(74, 222, 128, 0.18) 66%, rgba(74, 222, 128, 0.15) 66.5%, rgba(74, 222, 128, 0.12) 66.8%, rgba(74, 222, 128, 0.08) 67%, rgba(74, 222, 128, 0.05) 67.2%, ${levelColor}30 67%, ${levelColor}50 70%, ${levelColor}70 75%, ${levelColor}80 100%)`
+              : `linear-gradient(30deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 65%, rgba(255, 255, 255, 0.04) 66%, rgba(255, 255, 255, 0.03) 66.5%, rgba(255, 255, 255, 0.02) 66.8%, rgba(255, 255, 255, 0.01) 67%, rgba(255, 255, 255, 0.005) 67.2%, ${levelColor}20 67%, ${levelColor}30 70%, ${levelColor}40 75%, ${levelColor}50 100%)`,
+              border: `2px solid ${
+                canAfford 
+                  ? '#4ade80' 
+                  : '#666'
+              }`,
+              borderRadius: '8px',
+              padding: '12px',
+              marginBottom: '10px',
+              cursor: canAfford ? 'pointer' : 'default',
+              fontSize: '12px',
+              position: 'relative',
+              transition: 'all 0.3s ease-in-out',
+              transform: 'scale(1)',
+              boxShadow: canAfford 
+                ? '0 2px 8px rgba(74, 222, 128, 0.3)' 
+                : 'none'
+            }}
+          onClick={(e) => {
+            if (canAfford) {
+              onBuyGenerator(generator.id);
+              
+              // Add floating number animation
+              const rect = e.currentTarget.getBoundingClientRect();
+              addFloatingNumber(
+                `-${NumberFormatter.biomass(totalCost, gameState)}`,
+                rect.right - 20,
+                rect.top + rect.height / 2,
+                '#ef4444'
+              );
+            }
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.01)';
+            if (canAfford) {
+              e.currentTarget.style.backgroundColor = 'rgba(74, 222, 128, 0.3)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(74, 222, 128, 0.4)';
+            } else {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 255, 255, 0.1)';
+            }
+            // Show stats on hover
+            const statsElement = e.currentTarget.querySelector('.generator-stats') as HTMLElement;
+            if (statsElement) {
+              statsElement.style.opacity = '1';
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.backgroundColor = canAfford 
+              ? 'rgba(74, 222, 128, 0.2)' 
+              : 'rgba(255, 255, 255, 0.1)';
+            e.currentTarget.style.boxShadow = canAfford 
+              ? '0 2px 8px rgba(74, 222, 128, 0.3)' 
+              : 'none';
+            // Hide stats on leave
+            const statsElement = e.currentTarget.querySelector('.generator-stats') as HTMLElement;
+            if (statsElement) {
+              statsElement.style.opacity = '0';
+            }
+          }}
+          >
+            <div style={{ 
+              position: 'absolute', 
+              top: '8px', 
+              right: '8px',
+              textAlign: 'right',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              justifyContent: 'flex-end'
+            }}>
+              <div style={{ fontSize: '14px', opacity: 0.7 }}>Owned:</div>
+              <div style={{ 
+                fontSize: '24px', 
+                fontWeight: 'bold', 
+                color: generator.level === 0 ? '#6b7280' : '#ffffff' 
+              }}>
+                {NumberFormatter.owned(generator.level, gameState)}
+              </div>
+            </div>
+            
+
+            <div 
+              className="generator-stats"
+              style={{ 
+                position: 'absolute', 
+                bottom: '8px', 
+                right: '8px',
+                textAlign: 'right',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2px',
+                opacity: 0,
+                transition: 'opacity 0.2s ease'
+              }}
+            >
+              <div style={{ 
+                color: '#60a5fa',
+                fontSize: '13px',
+                fontWeight: 'normal'
+              }}>
+                Per: <span style={{ fontSize: '15px' }}>{NumberFormatter.rate(generator.baseEffect * (1000 / GAME_CONFIG.tickRate), gameState)}</span>
+              </div>
+              <div style={{ 
+                color: '#60a5fa',
+                fontSize: '13px',
+                fontWeight: 'bold'
+              }}>
+                Total: <span style={{ fontSize: '15px' }}>{NumberFormatter.rate(generator.baseEffect * generator.level * (1000 / GAME_CONFIG.tickRate), gameState)}</span>
+              </div>
+            </div>
+            
+            <div style={{ fontWeight: 'bold', marginBottom: '5px', fontSize: '15px' }}>
+              {generator.name}
+            </div>
+            <div style={{ opacity: 0.8, marginBottom: '5px', lineHeight: '1.3', fontSize: '13px' }}>
+              {generator.description}
+            </div>
+              <div style={{ 
+                marginTop: '5px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                {/* Value Indicator - Hidden for now */}
+                {/* {valueInfo && (
+                  <div style={{
+                    width: '12px',
+                    height: '12px',
+                    borderRadius: '50%',
+                    backgroundColor: valueInfo.color,
+                    border: '2px solid rgba(255, 255, 255, 0.3)',
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                    flexShrink: 0
+                  }}
+                    title={`Value Rank: ${valueInfo.rank}/${Object.keys(gameState.generators).length} (${(valueInfo.value * 1000).toFixed(1)} growth/1000 biomass)`}
+                  />
+                )} */}
+                <div style={{ 
+                  color: canAfford ? '#f59e0b' : '#ef4444',
+                  fontWeight: 'bold',
+                  fontSize: '13px'
+                }}>
+                  Cost: <span style={{ fontSize: '15px' }}>
+                    {NumberFormatter.biomass(totalCost, gameState)}
+                  </span>
+                </div>
+              </div>
+          </div>
+        );
+      })}
+      
+      {/* Floating Numbers */}
+      {floatingNumbers.map((floatingNumber) => (
+        <div
+          key={floatingNumber.id}
+          style={{
+            position: 'fixed',
+            left: floatingNumber.x,
+            top: floatingNumber.y,
+            color: floatingNumber.color,
+            fontWeight: 'bold',
+            fontSize: '14px',
+            pointerEvents: 'none',
+            zIndex: 9999,
+            opacity: 0,
+            transform: 'translate(-50%, -50%)',
+            animation: 'floatUp 1s ease-out forwards'
+          }}
+        >
+          {floatingNumber.text}
+        </div>
+      ))}
+      
+      <style>{`
+        @keyframes floatUp {
+          0% {
+            opacity: 0;
+            transform: translate(-50%, -50%) translateY(0);
+          }
+          20% {
+            opacity: 1;
+            transform: translate(-50%, -50%) translateY(-10px);
+          }
+          100% {
+            opacity: 0;
+            transform: translate(-50%, -50%) translateY(-40px);
+          }
+        }
+      `}</style>
+    </>
+  );
+}; 

@@ -77,7 +77,12 @@ export function initializeGeneratorMovement(
       count: generator.level,
       totalEffect: generator.baseEffect * generator.level,
       levelId: generator.unlockedAtLevel,
-      lastFloatingNumber: 0
+      lastFloatingNumber: Date.now(), // Initialize to current time to prevent immediate floating numbers
+      // Wave movement properties
+      waveOffset: Math.random() * Math.PI * 2, // Random offset for wave timing
+      waveFrequency: 1 + Math.random() * 2, // 1 to 3 Hz
+      waveAmplitude: 50 + Math.random() * 150, // 50 to 150 pixels
+      speedMultiplier: 0.5 + Math.random() * 1.5 // 0.5x to 2.5x speed
     });
   });
 
@@ -132,7 +137,12 @@ export function initializeStackedGeneratorMovement(
       count: totalCount,
       totalEffect,
       levelId,
-      lastFloatingNumber: 0
+      lastFloatingNumber: Date.now(), // Initialize to current time to prevent immediate floating numbers
+      // Wave movement properties
+      waveOffset: Math.random() * Math.PI * 2, // Random offset for wave timing
+      waveFrequency: 1 + Math.random() * 2, // 1 to 3 Hz
+      waveAmplitude: 50 + Math.random() * 150, // 50 to 150 pixels
+      speedMultiplier: 0.5 + Math.random() * 1.5 // 0.5x to 2.5x speed
     });
   });
 
@@ -140,7 +150,7 @@ export function initializeStackedGeneratorMovement(
 }
 
 /**
- * Update generator positions with boundary collision
+ * Update generator positions with boundary collision and sinusoidal wave movement
  */
 export function updateGeneratorPositions(
   generators: GeneratorVisualization[],
@@ -150,11 +160,20 @@ export function updateGeneratorPositions(
   const blobRadius = blobSize * 0.35;
   const padding = GAME_CONFIG.generatorVisualization.movement.padding;
   const maxDistance = blobRadius - padding;
+  const currentTime = Date.now() * 0.001; // Convert to seconds
 
   return generators.map((generator) => {
-    // Calculate new position
-    const newX = generator.position.x + generator.velocity.x * deltaTime;
-    const newY = generator.position.y + generator.velocity.y * deltaTime;
+    // Apply speed multiplier to base velocity
+    const adjustedSpeed = GAME_CONFIG.generatorVisualization.movement.speed * generator.speedMultiplier;
+    
+    // Calculate sinusoidal wave offset
+    const waveTime = currentTime * generator.waveFrequency + generator.waveOffset;
+    const waveX = Math.sin(waveTime) * generator.waveAmplitude;
+    const waveY = Math.cos(waveTime * 0.7) * generator.waveAmplitude * 0.8; // Different frequency for Y
+    
+    // Calculate new position with wave movement
+    const newX = generator.position.x + generator.velocity.x * deltaTime + waveX * deltaTime;
+    const newY = generator.position.y + generator.velocity.y * deltaTime + waveY * deltaTime;
     
     // Check boundary collision
     const distance = Math.sqrt(newX * newX + newY * newY);
@@ -162,15 +181,20 @@ export function updateGeneratorPositions(
     if (distance > maxDistance) {
       // Bounce: reverse velocity and normalize
       const angle = Math.atan2(newY, newX);
+      
+      // Add some randomness to the bounce to prevent getting stuck
+      const bounceAngle = angle + (Math.random() - 0.5) * 0.5; // ±0.25 radians
+      
       const velocity = {
-        x: -Math.cos(angle) * GAME_CONFIG.generatorVisualization.movement.speed,
-        y: -Math.sin(angle) * GAME_CONFIG.generatorVisualization.movement.speed
+        x: -Math.cos(bounceAngle) * adjustedSpeed,
+        y: -Math.sin(bounceAngle) * adjustedSpeed
       };
       
-      // Clamp position to boundary
+      // Clamp position to boundary with a small safety margin
+      const safeDistance = maxDistance * 0.95; // 95% of max distance for safety
       const position = {
-        x: Math.cos(angle) * maxDistance,
-        y: Math.sin(angle) * maxDistance
+        x: Math.cos(angle) * safeDistance,
+        y: Math.sin(angle) * safeDistance
       };
 
       return { ...generator, position, velocity };
@@ -195,14 +219,18 @@ export function calculateFloatingNumbers(
   const totalGrowth = getTotalGrowth(gameState);
 
   generators.forEach((generator) => {
-    // Check if it's time for a floating number (every 3 seconds)
-    if (currentTime - generator.lastFloatingNumber >= 3000) {
+    // Check if it's time for a floating number (every 0.5 seconds)
+    if (currentTime - generator.lastFloatingNumber >= 250) {
       const contributionRatio = generator.totalEffect / totalGrowth;
       
-      let color = colors.highContribution; // Default green
-      if (contributionRatio < contributionThresholds.low) {
-        color = colors.lowContribution; // Red for low contribution
-      } else if (contributionRatio < contributionThresholds.medium) {
+      let color = colors.lowContribution; // Default green (least)
+      if (contributionRatio >= contributionThresholds.veryHigh) {
+        color = colors.maxContribution; // Purple for max contribution
+      } else if (contributionRatio >= contributionThresholds.high) {
+        color = colors.veryHighContribution; // Red for very high contribution
+      } else if (contributionRatio >= contributionThresholds.medium) {
+        color = colors.highContribution; // Orange for high contribution
+      } else if (contributionRatio >= contributionThresholds.low) {
         color = colors.mediumContribution; // Yellow for medium contribution
       }
 
@@ -210,17 +238,33 @@ export function calculateFloatingNumbers(
       const x = blobPosition.x + generator.position.x;
       const y = blobPosition.y + generator.position.y;
 
+      // Show per-animation value
+      const perAnimationValue = generator.totalEffect / 4;
+
       floatingNumbers.push({
         x,
         y,
-        value: generator.totalEffect,
+        value: perAnimationValue,
         color
       });
-
-      // Update last floating number time
-      generator.lastFloatingNumber = currentTime;
     }
   });
 
   return floatingNumbers;
+}
+
+/**
+ * Update floating number timestamps for generators
+ */
+export function updateFloatingNumberTimestamps(
+  generators: GeneratorVisualization[],
+  currentTime: number
+): GeneratorVisualization[] {
+  return generators.map((generator) => {
+    // Update timestamp if it's time for a floating number (every 0.25 seconds)
+    if (currentTime - generator.lastFloatingNumber >= 250) {
+      return { ...generator, lastFloatingNumber: currentTime };
+    }
+    return generator;
+  });
 } 

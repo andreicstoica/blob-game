@@ -1,4 +1,4 @@
-import type { GeneratorState } from '../types';
+import type { GeneratorState } from '../../game/types';
 
 export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   // Microscopic Level
@@ -11,24 +11,24 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     costMultiplier: 1.15,
     unlockedAtLevel: 'microscopic'
   },
-  // 'cell-divider': {
-  //   id: 'cell-divider',
-  //   name: '🦠 Cell Divider',
-  //   baseCost: 100,
-  //   description: 'Divides cells rapidly',
-  //   baseEffect: 0.1,
-  //   costMultiplier: 1.15,
-  //   unlockedAtLevel: 'microscopic'
-  // },
-  // 'nucleus-replicator': {
-  //   id: 'nucleus-replicator',
-  //   name: '🦠 Nucleus Replicator',
-  //   baseCost: 1500,
-  //   description: 'Splits nuclei for advanced growth',
-  //   baseEffect: 1,
-  //   costMultiplier: 1.15,
-  //   unlockedAtLevel: 'microscopic'
-  // },
+  'cell-divider': {
+    id: 'cell-divider',
+    name: '🦠 Cell Divider',
+    baseCost: 100,
+    description: 'Divides cells rapidly',
+    baseEffect: 0.1,
+    costMultiplier: 1.15,
+    unlockedAtLevel: 'microscopic'
+  },
+  'nucleus-replicator': {
+    id: 'nucleus-replicator',
+    name: '🦠 Nucleus Replicator',
+    baseCost: 1500,
+    description: 'Splits nuclei for advanced growth',
+    baseEffect: 1,
+    costMultiplier: 1.15,
+    unlockedAtLevel: 'microscopic'
+  },
 
   // Petri Dish Level
   'colony-expander': {
@@ -40,24 +40,24 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     costMultiplier: 1.15,
     unlockedAtLevel: 'petri-dish'
   },
-  // 'spore-launcher': {
-  //   id: 'spore-launcher',
-  //   name: '🔍 Spore Launcher',
-  //   baseCost: 150000,
-  //   description: 'Launches spores to new environments',
-  //   baseEffect: 25,
-  //   costMultiplier: 1.15,
-  //   unlockedAtLevel: 'petri-dish'
-  // },
-  // 'contaminant-converter': {
-  //   id: 'contaminant-converter',
-  //   name: '🔍 Contaminant Converter',
-  //   baseCost: 1500000,
-  //   description: 'Converts contaminants into biomass',
-  //   baseEffect: 150,
-  //   costMultiplier: 1.15,
-  //   unlockedAtLevel: 'petri-dish'
-  // },
+  'spore-launcher': {
+    id: 'spore-launcher',
+    name: '🔍 Spore Launcher',
+    baseCost: 150000,
+    description: 'Launches spores to new environments',
+    baseEffect: 25,
+    costMultiplier: 1.15,
+    unlockedAtLevel: 'petri-dish'
+  },
+  'contaminant-converter': {
+    id: 'contaminant-converter',
+    name: '🔍 Contaminant Converter',
+    baseCost: 1500000,
+    description: 'Converts contaminants into biomass',
+    baseEffect: 150,
+    costMultiplier: 1.15,
+    unlockedAtLevel: 'petri-dish'
+  },
 
   // Lab Level
   'centrifuge-sorter': {
@@ -78,15 +78,15 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     costMultiplier: 1.15,
     unlockedAtLevel: 'lab'
   },
-  // 'autoclave-recycler': {
-  //   id: 'autoclave-recycler',
-  //   name: '🧪 Autoclave Recycler',
-  //   baseCost: 650000000,
-  //   description: 'Recycles waste into biomass',
-  //   baseEffect: 12000,
-  //   costMultiplier: 1.15,
-  //   unlockedAtLevel: 'lab'
-  // },
+  'autoclave-recycler': {
+    id: 'autoclave-recycler',
+    name: '🧪 Autoclave Recycler',
+    baseCost: 650000000,
+    description: 'Recycles waste into biomass',
+    baseEffect: 12000,
+    costMultiplier: 1.15,
+    unlockedAtLevel: 'lab'
+  },
 
   // Neighborhood Level
   'backyard-colonizer': {
@@ -107,15 +107,15 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     costMultiplier: 1.15,
     unlockedAtLevel: 'neighborhood'
   },
-  // 'street-spreader': {
-  //   id: 'street-spreader',
-  //   name: '🏘️ Street Spreader',
-  //   baseCost: 65000000000,
-  //   description: 'Spreads through neighborhood streets',
-  //   baseEffect: 2000000,
-  //   costMultiplier: 1.15,
-  //   unlockedAtLevel: 'neighborhood'
-  // },
+  'street-spreader': {
+    id: 'street-spreader',
+    name: '🏘️ Street Spreader',
+    baseCost: 65000000000,
+    description: 'Spreads through neighborhood streets',
+    baseEffect: 2000000,
+    costMultiplier: 1.15,
+    unlockedAtLevel: 'neighborhood'
+  },
 
   // City Level
   'humanoid-slimes': {
@@ -136,15 +136,15 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     costMultiplier: 1.15,
     unlockedAtLevel: 'city'
   },
-  // 'subway-spreaders': {
-  //   id: 'subway-spreaders',
-  //   name: '🏙️ Subway Spreaders',
-  //   baseCost: 230000000000,
-  //   description: 'Spread through the subway system',
-  //   baseEffect: 244000,
-  //   costMultiplier: 1.15,
-  //   unlockedAtLevel: 'city'
-  // },
+  'subway-spreaders': {
+    id: 'subway-spreaders',
+    name: '🏙️ Subway Spreaders',
+    baseCost: 230000000000,
+    description: 'Spread through the subway system',
+    baseEffect: 244000,
+    costMultiplier: 1.15,
+    unlockedAtLevel: 'city'
+  },
 
   // Earth Level
   'cargo-ship-infestors': {
@@ -165,15 +165,15 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     costMultiplier: 1.15,
     unlockedAtLevel: 'earth'
   },
-  // 'forest-hive-colonies': {
-  //   id: 'forest-hive-colonies',
-  //   name: '🌍 Forest Hive Colonies',
-  //   baseCost: 80000000000000,
-  //   description: 'Massive hives in forests',
-  //   baseEffect: 30500000,
-  //   costMultiplier: 1.15,
-  //   unlockedAtLevel: 'earth'
-  // },
+  'forest-hive-colonies': {
+    id: 'forest-hive-colonies',
+    name: '🌍 Forest Hive Colonies',
+    baseCost: 80000000000000,
+    description: 'Massive hives in forests',
+    baseEffect: 30500000,
+    costMultiplier: 1.15,
+    unlockedAtLevel: 'earth'
+  },
 
   // Continent Level
   'national-highway-system': {
@@ -194,15 +194,15 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     costMultiplier: 1.15,
     unlockedAtLevel: 'continent'
   },
-  // 'airport-hub': {
-  //   id: 'airport-hub',
-  //   name: '🗺️ Airport Hub',
-  //   baseCost: 52000000000000,
-  //   description: 'Establishes airport hubs',
-  //   baseEffect: 250000000,
-  //   costMultiplier: 1.15,
-  //   unlockedAtLevel: 'continent'
-  // },
+  'airport-hub': {
+    id: 'airport-hub',
+    name: '🗺️ Airport Hub',
+    baseCost: 52000000000000,
+    description: 'Establishes airport hubs',
+    baseEffect: 250000000,
+    costMultiplier: 1.15,
+    unlockedAtLevel: 'continent'
+  },
 
   // Solar System Level
   'terraforming-ooze': {

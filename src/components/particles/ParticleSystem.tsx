@@ -21,10 +21,11 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({
         currentLevel={currentLevel} 
         blobSize={blobSize}
       >
-        {(particles, burstParticles) => (
+        {(particles, burstParticles, trailParticles) => (
           <ParticleRenderer 
             particles={particles} 
-            burstParticles={burstParticles} 
+            burstParticles={burstParticles}
+            trailParticles={trailParticles}
           />
         )}
       </ParticleSpawner>

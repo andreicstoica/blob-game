@@ -7,6 +7,7 @@ import {
   initializeStackedGeneratorMovement,
   updateGeneratorPositions,
   calculateFloatingNumbers,
+  updateFloatingNumberTimestamps,
   type GeneratorVisualization,
 } from "../game/systems/generatorVisualization";
 import { calculateBlobPosition } from "../game/systems/calculations";
@@ -20,52 +21,98 @@ export const useGeneratorAnimation = (
   const [generators, setGenerators] = useState<GeneratorVisualization[]>([]);
   const [stackedGenerators, setStackedGenerators] = useState<GeneratorVisualization[]>([]);
   const lastUpdateRef = useRef<number>(Date.now());
+  const initializedRef = useRef<boolean>(false);
+  
+  // Use refs to track current state for animation loop
+  const generatorsRef = useRef<GeneratorVisualization[]>([]);
+  const stackedGeneratorsRef = useRef<GeneratorVisualization[]>([]);
+  const gameStateRef = useRef<GameState>(gameState);
+  const blobSizeRef = useRef<number>(blobSize);
 
-  // Initialize generators when game state changes
+  // Update refs when state changes
+  useEffect(() => {
+    generatorsRef.current = generators;
+  }, [generators]);
+
+  useEffect(() => {
+    stackedGeneratorsRef.current = stackedGenerators;
+  }, [stackedGenerators]);
+
+  useEffect(() => {
+    gameStateRef.current = gameState;
+  }, [gameState]);
+
+  useEffect(() => {
+    blobSizeRef.current = blobSize;
+  }, [blobSize]);
+
+  // Calculate generator groups with stable dependencies
   const generatorGroups = useMemo(() => {
     return calculateGeneratorGroups(gameState, currentLevel.name);
-  }, [gameState, currentLevel.name]);
+  }, [gameState.generators, currentLevel.name]);
 
-  // Initialize movement for current level generators
-  useEffect(() => {
-    const { currentLevel: currentLevelGenerators } = generatorGroups;
-    const newGenerators = initializeGeneratorMovement(
-      currentLevelGenerators,
-      blobSize
-    );
-    setGenerators(newGenerators);
-  }, [generatorGroups.currentLevel, blobSize]);
+  // Create stable keys for dependency tracking
+  const currentLevelKey = useMemo(() => {
+    return generatorGroups.currentLevel.map(g => `${g.id}-${g.level}`).join(',');
+  }, [generatorGroups.currentLevel]);
 
-  // Initialize movement for stacked generators
+  const previousLevelsKey = useMemo(() => {
+    return Object.entries(generatorGroups.previousLevels)
+      .map(([levelId, gens]) => `${levelId}:${gens.map(g => `${g.id}-${g.level}`).join(',')}`)
+      .join('|');
+  }, [generatorGroups.previousLevels]);
+
+  // Initialize movement for current level generators (only when data changes)
   useEffect(() => {
-    const { previousLevels } = generatorGroups;
-    const newStackedGenerators = initializeStackedGeneratorMovement(
-      previousLevels,
-      blobSize
-    );
-    setStackedGenerators(newStackedGenerators);
-  }, [generatorGroups.previousLevels, blobSize]);
+    if (!initializedRef.current || currentLevelKey !== '') {
+      const { currentLevel: currentLevelGenerators } = generatorGroups;
+      const newGenerators = initializeGeneratorMovement(
+        currentLevelGenerators,
+        blobSize
+      );
+      setGenerators(newGenerators);
+      initializedRef.current = true;
+    }
+  }, [currentLevelKey, blobSize]);
+
+  // Initialize movement for stacked generators (only when data changes)
+  useEffect(() => {
+    if (!initializedRef.current || previousLevelsKey !== '') {
+      const { previousLevels } = generatorGroups;
+      const newStackedGenerators = initializeStackedGeneratorMovement(
+        previousLevels,
+        blobSize
+      );
+      setStackedGenerators(newStackedGenerators);
+      initializedRef.current = true;
+    }
+  }, [previousLevelsKey, blobSize]);
 
   // Animation loop for movement and floating numbers
   useEffect(() => {
-    if (generators.length === 0 && stackedGenerators.length === 0) return;
-
     const animate = () => {
+      const currentGenerators = generatorsRef.current;
+      const currentStackedGenerators = stackedGeneratorsRef.current;
+      const currentGameState = gameStateRef.current;
+      const currentBlobSize = blobSizeRef.current;
+
+      if (currentGenerators.length === 0 && currentStackedGenerators.length === 0) return;
+
       const now = Date.now();
       const deltaTime = (now - lastUpdateRef.current) / 1000; // Convert to seconds
       lastUpdateRef.current = now;
 
       // Update generator positions
       const updatedGenerators = updateGeneratorPositions(
-        generators,
-        blobSize,
+        currentGenerators,
+        currentBlobSize,
         deltaTime
       );
 
       // Update stacked generator positions
       const updatedStackedGenerators = updateGeneratorPositions(
-        stackedGenerators,
-        blobSize,
+        currentStackedGenerators,
+        currentBlobSize,
         deltaTime
       );
 
@@ -75,7 +122,7 @@ export const useGeneratorAnimation = (
       const floatingNumbers = calculateFloatingNumbers(
         allGenerators,
         now,
-        gameState,
+        currentGameState,
         blobPosition
       );
 
@@ -84,14 +131,18 @@ export const useGeneratorAnimation = (
         addFloatingNumber({ x: data.x, y: data.y }, data.value, data.color);
       });
 
+      // Update floating number timestamps
+      const finalGenerators = updateFloatingNumberTimestamps(updatedGenerators, now);
+      const finalStackedGenerators = updateFloatingNumberTimestamps(updatedStackedGenerators, now);
+
       // Update generator state
-      setGenerators(updatedGenerators);
-      setStackedGenerators(updatedStackedGenerators);
+      setGenerators(finalGenerators);
+      setStackedGenerators(finalStackedGenerators);
     };
 
     const interval = setInterval(animate, 16); // ~60 FPS
     return () => clearInterval(interval);
-  }, [generators, stackedGenerators, gameState, blobSize, addFloatingNumber]);
+  }, [addFloatingNumber]); // Only depend on addFloatingNumber function
 
   return {
     generators,

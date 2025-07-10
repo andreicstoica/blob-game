@@ -31,6 +31,7 @@ export interface BlobProps {
   isActive?: boolean;
   clickPower?: number;
   addFloatingNumber?: (position: { x: number; y: number }, value: number, color?: string) => void;
+  onAnimationStateChange?: (animationState: { clickBoost: number; pressure: number }) => void;
 }
 
 export interface CameraState {
@@ -61,6 +62,11 @@ export interface GeneratorVisualization {
   totalEffect: number;
   levelId: string;
   lastFloatingNumber: number; // timestamp
+  // Wave movement properties
+  waveOffset: number; // Random offset for wave timing
+  waveFrequency: number; // How fast the wave oscillates
+  waveAmplitude: number; // How far the wave deviates
+  speedMultiplier: number; // Individual speed variation
 }
 
 export interface FloatingNumberData {
@@ -90,6 +96,31 @@ export interface Particle {
   useImage?: boolean;
   image?: string;
   direction: { x: number; y: number };
+  // Enhanced behavior properties
+  state?: 'approaching' | 'attracted' | 'spiraling';
+  spiralAngle?: number; // For spiral absorption
+  magneticForce?: number; // Strength of magnetic attraction
+  trailHistory?: { x: number; y: number; timestamp: number }[]; // For nutrient trails
+}
+
+// Trail particle for nutrient trails effect
+export interface TrailParticle {
+  id: string;
+  x: number;
+  y: number;
+  size: number;
+  color: string;
+  opacity: number;
+  life: number; // 0 to 1
+  maxLife: number;
+}
+
+// Combo system for enhanced feeding effects
+export interface ComboTracker {
+  count: number;
+  recentAbsorptions: number[]; // timestamps
+  multiplier: number;
+  isActive: boolean;
 }
 
 export interface FloatingNumberAnimation {

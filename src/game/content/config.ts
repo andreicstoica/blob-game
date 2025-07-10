@@ -16,8 +16,8 @@ export const GAME_CONFIG = {
     
     // New movement system settings
     movement: {
-      speed: 5, // pixels per second
-      padding: 10, // pixels from blob edge
+      speed: 75, // pixels per second
+      padding: 25, // pixels from blob edge
     },
     stacking: {
       maxIndividualGenerators: 100,
@@ -29,13 +29,17 @@ export const GAME_CONFIG = {
       countOverlaySize: 10, // font size for "x15"
     },
     contributionThresholds: {
-      low: 0.01, // red threshold
+      low: 0.01, // green threshold
       medium: 0.05, // yellow threshold
+      high: 0.15, // orange threshold
+      veryHigh: 0.3, // red threshold
     },
     colors: {
-      highContribution: "#4ade80", // green
+      lowContribution: "#16a34a", // darker green (least)
       mediumContribution: "#f59e0b", // yellow
-      lowContribution: "#ef4444", // red
+      highContribution: "#f97316", // orange
+      veryHighContribution: "#ef4444", // red
+      maxContribution: "#a855f7", // purple/magenta (most)
     }
   }
 }; 
