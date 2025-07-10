@@ -45,7 +45,7 @@ _Playable game start to finish_
 - game scaling:
   - headlines/achievements
 
-## Animation details
+### Animation details
 
 **Scene change** --> once you reach a certain size, you 'evolve' and map zooms out
 when blob is in a petri dish -- it fills up the petri dish and breaks out in a planned animation (breaks out and starts next phase)
@@ -60,10 +60,43 @@ when blob is in a petri dish -- it fills up the petri dish and breaks out in a p
 - enemies and associated upgrades (militaries or people eating?)
 - control zoom level
 
-## Out of scope
+### Out of scope
 
 - accounts/session management
 - splitting blobs
 - 3D
 - pausing
 - moving anything besides the blob/map
+
+
+
+## Plans for Thursday (Jul 10):
+
+### Main Focus
+
+- [ ] Clean up App.tsx
+- [ ] Generator visuals
+  - [ ] Only show gens from current level
+  - [ ] Fix floating number animations
+- [ ] Better intro / tutorial: 3-4 instruction bubbles
+- [ ] SFX for clicking blob, evolve
+- [ ] Clean up configuration files (bun, npm, ts.config)
+- [ ] Deploy
+
+- Playtesting
+
+### Stretch goals
+
+- Progression scaling/rebalancing - make the first 30 seconds delightful!
+- Improve shop UI/UX
+- Ambient music for main menu and/or levels
+- Better ending - set threshold, but can continue after cool animation
+- Game name (Bloblog, Slime Sovereign, Sublobination)
+- Codebase testing
+
+
+### Out of scope / Tomorrow's JUICING
+
+- Different music/SFX for each level
+- Make nutrients part of gameState
+- Save state persistence
