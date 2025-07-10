@@ -11,7 +11,9 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'decimal',
     background: 'intro-bg',
     foodTypes: [],
-    description: 'Welcome to the beginning of your journey'
+    description: 'Welcome to the beginning of your journey',
+    blobSizeStart: 50,
+    blobSizeEnd: 120
   },
   {
     id: 1,
@@ -21,7 +23,9 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'decimal',
     background: 'microscopic-bg',
     foodTypes: [],
-    description: 'Begin as a single cell in a drop of water.'
+    description: 'Begin as a single cell in a drop of water.',
+    blobSizeStart: 80,
+    blobSizeEnd: 1200
   },
   {
     id: 2,
@@ -31,7 +35,9 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'whole',
     background: 'petri-bg',
     foodTypes: [],
-    description: 'Grow into visible colonies in a petri dish.'
+    description: 'Grow into visible colonies in a petri dish.',
+    blobSizeStart: 120,
+    blobSizeEnd: 1200
   },
   {
     id: 3,
@@ -41,7 +47,9 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'whole',
     background: 'lab-bg',
     foodTypes: [],
-    description: 'Expand your experiments in a high-tech lab.'
+    description: 'Expand your experiments in a high-tech lab.',
+    blobSizeStart: 120,
+    blobSizeEnd: 1200
   },
   {
     id: 4,
@@ -51,7 +59,9 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'whole',
     background: 'neighborhood-bg',
     foodTypes: [],
-    description: 'Spread through suburban neighborhoods.'
+    description: 'Spread through suburban neighborhoods.',
+    blobSizeStart: 180,
+    blobSizeEnd: 1200
   },
   {
     id: 5,
@@ -61,7 +71,9 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'whole',
     background: 'city-bg',
     foodTypes: [],
-    description: 'Infiltrate and spread through a bustling city.'
+    description: 'Infiltrate and spread through a bustling city.',
+    blobSizeStart: 240,
+    blobSizeEnd: 1200
   },
   {
     id: 6,
@@ -71,7 +83,9 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'whole',
     background: 'continent-bg',
     foodTypes: [],
-    description: 'Expand across entire continents.'
+    description: 'Expand across entire continents.',
+    blobSizeStart: 260,
+    blobSizeEnd: 1200
   },
   {
     id: 7,
@@ -81,7 +95,9 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'whole',
     background: 'earth-bg',
     foodTypes: [],
-    description: 'Spread your biomass across the planet.'
+    description: 'Spread your biomass across the planet.',
+    blobSizeStart: 260,
+    blobSizeEnd: 1200
   },
   {
     id: 8,
@@ -91,7 +107,9 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'scientific',
     background: 'solar-system-bg',
     foodTypes: [],
-    description: 'Expand your reach to the entire solar system.'
+    description: 'Expand your reach to the entire solar system.',
+    blobSizeStart: 260,
+    blobSizeEnd: 1200
   }
 ];
 

@@ -9,13 +9,15 @@ export interface Level {
   background: string;
   foodTypes: string[];
   description: string;
+  blobSizeStart: number;
+  blobSizeEnd: number;
 }
 
 export interface NutrientState {
-    id: string
-    x: number
-    y: number
-    consumed: boolean
+  id: string
+  x: number
+  y: number
+  consumed: boolean
 }
 
 export type CellStatus = 'empty' | 'nutrient' | 'blob';
@@ -45,27 +47,27 @@ export interface ScaleLevel {
 
 
 export interface GeneratorState {
-    id: string
-    name: string
-    baseCost: number
-    description: string
-    baseEffect: number
-    level: number
-    costMultiplier: number
-    unlockedAtLevel: string
+  id: string
+  name: string
+  baseCost: number
+  description: string
+  baseEffect: number
+  level: number
+  costMultiplier: number
+  unlockedAtLevel: string
 }
 
 export interface UpgradeState {
-    id: string
-    name: string
-    cost: number
-    description: string
-    effect: number
-    type: 'growth' | 'split' | 'click' | 'blob'
-    purchased: boolean
-    unlockedAtLevel: string
-    targetLevel?: string // Which level's generators this affects
-} 
+  id: string
+  name: string
+  cost: number
+  description: string
+  effect: number
+  type: 'growth' | 'split' | 'click' | 'blob'
+  purchased: boolean
+  unlockedAtLevel: string
+  targetLevel?: string // Which level's generators this affects
+}
 
 export interface GeneratorValue {
   generatorId: string;
