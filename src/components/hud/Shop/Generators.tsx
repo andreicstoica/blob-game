@@ -34,10 +34,6 @@ export const Generators: React.FC<GeneratorsProps> = ({
             return isContentAvailable(generator.unlockedAtLevel, currentLevel.name);
           }
         })
-        .sort((a, b) => {
-          // Sort by cost
-          return a.baseCost - b.baseCost;
-        })
         .map(generator => {
         const singleCost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
         const totalCost = calculateTotalCost(generator, buyMultiplier);

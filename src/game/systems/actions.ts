@@ -146,4 +146,12 @@ export function calculateTotalCost(generator: any, count: number): number {
     totalCost += cost;
   }
   return totalCost;
+}
+
+// Get all generators unlocked through the current level
+export function getUnlockedGenerators(gameState: GameState): any[] {
+  const currentLevel = getCurrentLevel(gameState);
+  return Object.values(gameState.generators).filter(generator => 
+    isContentAvailable(generator.unlockedAtLevel, currentLevel.name)
+  );
 } 

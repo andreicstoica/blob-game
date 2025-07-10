@@ -37,6 +37,12 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          color: 'white',
+          padding: '20px',
+          borderRadius: '10px',
+          fontFamily: 'Arial, sans-serif',
+          fontSize: '14px',
+          minWidth: '200px'
         }}
       >
         <GameStats biomass={biomass} gameState={gameState} />

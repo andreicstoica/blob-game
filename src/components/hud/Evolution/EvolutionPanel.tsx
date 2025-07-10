@@ -38,7 +38,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
         right: 0,
         width: "300px",
         height: "100vh",
-        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
         color: "white",
         fontFamily: "Arial, sans-serif",
         padding: "20px",

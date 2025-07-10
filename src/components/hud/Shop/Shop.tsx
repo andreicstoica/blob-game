@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { GameState } from '../../../game/types';
-import { getCurrentLevel } from '../../../game/systems/actions';
+import { getCurrentLevel, getUnlockedGenerators } from '../../../game/systems/actions';
 import { Generators, Upgrades, FilterToggle, BuyMultiplierToggle, ValueScale } from './index';
 import { calculateAllGeneratorValues } from '../../../game/systems/generatorValue';
 
@@ -28,34 +28,40 @@ export const Shop: React.FC<ShopProps> = ({
 
   // Calculate value thresholds for the scale - use useMemo to recalculate when gameState changes
   const valueThresholds = useMemo(() => {
-    const allValues = calculateAllGeneratorValues(gameState);
+    // Get all unlocked generators through current level
+    const unlockedGenerators = getUnlockedGenerators(gameState);
     
-    if (allValues.length === 0) {
+    if (unlockedGenerators.length === 0) {
       return { highThreshold: 0, lowThreshold: 0 };
     }
     
-    // Get all valid values
-    const validValues = allValues.map(v => v.value).filter(v => v > 0);
+    // Calculate values for unlocked generators only
+    const unlockedValues = unlockedGenerators.map(generator => {
+      const nextCost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
+      const growthIncrease = generator.baseEffect;
+      return growthIncrease > 0 ? nextCost / growthIncrease : 0;
+    }).filter(value => value > 0);
     
-    if (validValues.length === 0) {
+    if (unlockedValues.length === 0) {
       return { highThreshold: 0, lowThreshold: 0 };
     }
     
-    // Find min and max values
-    const minValue = Math.min(...validValues);
-    const maxValue = Math.max(...validValues);
+    // Find min and max values for unlocked generators
+    const minValue = Math.min(...unlockedValues);
+    const maxValue = Math.max(...unlockedValues);
     const valueRange = maxValue - minValue;
     
     if (valueRange === 0) {
       return { highThreshold: minValue, lowThreshold: minValue };
     }
     
-    // Calculate thresholds based on value ranges
+    // Calculate thresholds based on value ranges for unlocked generators
+    // Lower values = better deals (green), higher values = worse deals (red)
     const lowThreshold = minValue + (valueRange * 0.33); // 33% from min (green/yellow boundary)
     const highThreshold = minValue + (valueRange * 0.66); // 66% from min (yellow/red boundary)
     
     return { highThreshold, lowThreshold };
-  }, [gameState]);
+  }, [gameState, currentLevel.name]);
 
   const handleBuyGenerator = (generatorId: string) => {
     // Buy multiple generators based on multiplier
@@ -71,66 +77,79 @@ export const Shop: React.FC<ShopProps> = ({
   return (
     <div style={{ 
       userSelect: 'none',
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
       color: 'white',
       fontFamily: 'Arial, sans-serif',
-      padding: '20px',
       height: '100vh',
-      overflowY: 'auto'
+      display: 'flex',
+      flexDirection: 'column'
     }}>
-      <h2 style={{
-        margin: '0 0 20px 0',
-        fontSize: '24px',
-        color: '#93c5fd',
-        textAlign: 'center',
-        userSelect: 'none'
-      }}>
-        Shop
-      </h2>
-      
-      {/* Filter and Buy Multiplier Row */}
+      {/* Fixed Header */}
       <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginBottom: '15px',
-        gap: '10px'
+        padding: '20px 20px 15px 20px',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
       }}>
-        <FilterToggle 
-          filter={generatorFilter} 
-          onFilterChange={setGeneratorFilter} 
-        />
-        <BuyMultiplierToggle 
-          multiplier={buyMultiplier} 
-          onMultiplierChange={setBuyMultiplier} 
+        <h2 style={{
+          margin: '0 0 20px 0',
+          fontSize: '24px',
+          color: '#93c5fd',
+          textAlign: 'center',
+          userSelect: 'none'
+        }}>
+          Shop
+        </h2>
+        
+        {/* Filter and Buy Multiplier Row */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          marginBottom: '15px',
+          gap: '10px'
+        }}>
+          <FilterToggle 
+            filter={generatorFilter} 
+            onFilterChange={setGeneratorFilter} 
+          />
+          <BuyMultiplierToggle 
+            multiplier={buyMultiplier} 
+            onMultiplierChange={setBuyMultiplier} 
+          />
+        </div>
+
+        {/* Value Scale Display */}
+        <ValueScale 
+          gameState={gameState}
+          highThreshold={valueThresholds.highThreshold}
+          lowThreshold={valueThresholds.lowThreshold}
         />
       </div>
 
-      {/* Value Scale Display */}
-      <ValueScale 
-        gameState={gameState}
-        highThreshold={valueThresholds.highThreshold}
-        lowThreshold={valueThresholds.lowThreshold}
-      />
+      {/* Scrollable Content */}
+      <div style={{ 
+        flex: 1,
+        overflowY: 'auto',
+        padding: '0 20px 20px 20px'
+      }}>
+        {/* Generators Component */}
+        <Generators
+          biomass={biomass}
+          gameState={gameState}
+          onBuyGenerator={handleBuyGenerator}
+          generatorFilter={generatorFilter}
+          currentLevel={currentLevel}
+          buyMultiplier={buyMultiplier}
+        />
 
-      {/* Generators Component */}
-      <Generators
-        biomass={biomass}
-        gameState={gameState}
-        onBuyGenerator={handleBuyGenerator}
-        generatorFilter={generatorFilter}
-        currentLevel={currentLevel}
-        buyMultiplier={buyMultiplier}
-      />
-
-      {/* Upgrades Component */}
-      <Upgrades
-        biomass={biomass}
-        gameState={gameState}
-        onBuyUpgrade={handleBuyUpgrade}
-        generatorFilter={generatorFilter}
-        currentLevel={currentLevel}
-      />
+        {/* Upgrades Component */}
+        <Upgrades
+          biomass={biomass}
+          gameState={gameState}
+          onBuyUpgrade={handleBuyUpgrade}
+          generatorFilter={generatorFilter}
+          currentLevel={currentLevel}
+        />
+      </div>
 
       <style>{`
         @keyframes purchasePulse {

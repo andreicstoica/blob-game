@@ -22,7 +22,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
       justifyContent: 'center',
       width: 'fit-content',
       minWidth: '100px',
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
       padding: `20px ${horizontalPadding}px`,
       borderRadius: '0 0 18px 18px',
       color: 'white',
