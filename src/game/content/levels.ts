@@ -95,16 +95,6 @@ export const LEVELS: Level[] = [
   }
 ];
 
-export function getCurrentLevel(biomass: number): Level {
-  // Find the highest level where biomass >= threshold
-  for (let i = LEVELS.length - 1; i >= 0; i--) {
-    if (biomass >= LEVELS[i].biomassThreshold) {
-      return LEVELS[i];
-    }
-  }
-  return LEVELS[0]; // Default to intro level
-}
-
 export function getNextLevel(currentLevel: Level): Level | null {
   const currentIndex = LEVELS.findIndex(level => level.id === currentLevel.id);
   if (currentIndex >= LEVELS.length - 1) {
@@ -114,9 +104,10 @@ export function getNextLevel(currentLevel: Level): Level | null {
 }
 
 export function canEvolve(biomass: number): boolean {
-  const currentLevel = getCurrentLevel(biomass);
-  const nextLevel = getNextLevel(currentLevel);
-  return nextLevel !== null && biomass >= nextLevel.biomassThreshold;
+  // This function should be removed or updated to take gameState instead
+  // For now, we'll keep it but it should use evolution-based logic
+  // The UI should use canEvolveToNextLevel(gameState) instead
+  return false; // Disable biomass-based evolution
 }
 
 

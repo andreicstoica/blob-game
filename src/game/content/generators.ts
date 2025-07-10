@@ -7,7 +7,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🦠 Microscopic Cloner',
     baseCost: 15,
     description: 'Clones basic slime cells',
-    baseEffect: 0.1,
+    baseEffect: 100, // 0.1
     costMultiplier: 1.15,
     unlockedAtLevel: 'microscopic'
   },
@@ -33,9 +33,9 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
   'colony-expander': {
     id: 'colony-expander',
     name: '🔍 Colony Expansion',
-    baseCost: 15000,
+    baseCost: 15, // 15000
     description: 'Expands colonies for more biomass',
-    baseEffect: 50,
+    baseEffect: 500000, // 50
     costMultiplier: 1.15,
     unlockedAtLevel: 'petri-dish'
   },

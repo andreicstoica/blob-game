@@ -1,7 +1,7 @@
 import { immer } from 'zustand/middleware/immer'
 import { create } from 'zustand'
 import type { CellStatus, Cell, MapState } from '../types';
-import { getCurrentLevel, getNextLevel } from '../content/levels'
+import { getNextLevel, LEVELS } from '../content/levels'
 
 export const useMap = create<MapState>()(
     immer(set => {
@@ -17,7 +17,7 @@ export const useMap = create<MapState>()(
             cells[Math.floor(Math.random() * cells.length)].status = 'nutrient'
 
         return {
-            currentLevel: getCurrentLevel(0), // Start at intro level
+            currentLevel: LEVELS[0], // Start at intro level
             size,
             cells,
             get: (x, y) => cells[y * size + x].status,

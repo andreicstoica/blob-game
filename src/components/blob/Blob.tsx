@@ -7,8 +7,8 @@ import {
   handleBlobClick,
   generateAmoebePath,
   createBlobAnimationValues,
-  type BlobAnimationValues,
 } from '../../game/systems/blobSystem';
+import type { BlobAnimationValues } from '../../game/types/ui';
 
 const Blob = React.memo(
   ({

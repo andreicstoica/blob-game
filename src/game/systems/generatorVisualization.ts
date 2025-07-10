@@ -1,119 +1,169 @@
-import type { GameState, GeneratorEmoji } from '../types';
+import type { GameState, GeneratorState } from '../types';
+import type { GeneratorVisualization, FloatingNumberData } from '../types/ui';
 import { GENERATORS } from '../content/generators';
 import { GAME_CONFIG } from '../content/config';
 import { getTotalGrowth } from './calculations';
 
-export interface ScreenLayout {
-  centerX: number;
-  centerY: number;
-  playableWidth: number;
-}
-
-export interface FloatingNumberData {
-  x: number;
-  y: number;
-  value: number;
-  color: string;
-}
+// Re-export types for convenience
+export type { GeneratorVisualization, FloatingNumberData };
 
 /**
- * Calculate screen layout dimensions
+ * Calculate which generators should be stacked vs individual
  */
-export function calculateScreenLayout(): ScreenLayout {
-  const { hudWidth, rightHudWidth } = GAME_CONFIG.generatorVisualization;
-  const playableWidth = window.innerWidth - hudWidth - rightHudWidth;
-  const centerX = hudWidth + playableWidth / 2;
-  const centerY = window.innerHeight / 2;
-  
-  return { centerX, centerY, playableWidth };
-}
+export function calculateGeneratorGroups(gameState: GameState, currentLevelId: string): {
+  currentLevel: GeneratorState[];
+  previousLevels: Record<string, GeneratorState[]>;
+} {
+  const currentLevelGenerators: GeneratorState[] = [];
+  const previousLevels: Record<string, GeneratorState[]> = {};
 
-/**
- * Calculate generator emoji positions and data
- */
-export function calculateGeneratorEmojis(gameState: GameState): GeneratorEmoji[] {
-  const emojis: GeneratorEmoji[] = [];
-
-  // Get all generators with count > 0
   Object.values(gameState.generators).forEach((generator) => {
     if (generator.level > 0) {
-      const generatorData = GENERATORS[generator.id];
-      if (generatorData) {
-        // Extract emoji from generator name
-        const emoji = generatorData.name.split(" ")[0] || "⚪";
-
-        // Create one emoji for each generator purchased
-        for (let i = 0; i < generator.level; i++) {
-          emojis.push({
-            generatorId: generator.id,
-            emoji,
-            angle: 0, // Will be calculated below
-            count: generator.level,
-            name: generatorData.name,
-          });
+      if (generator.unlockedAtLevel === currentLevelId) {
+        currentLevelGenerators.push(generator);
+      } else {
+        // Previous level generator
+        if (!previousLevels[generator.unlockedAtLevel]) {
+          previousLevels[generator.unlockedAtLevel] = [];
         }
+        previousLevels[generator.unlockedAtLevel].push(generator);
       }
     }
   });
 
-  // Calculate angles for positioning
-  emojis.forEach((emoji, index) => {
-    emoji.angle = (index / emojis.length) * 2 * Math.PI;
+  return { currentLevel: currentLevelGenerators, previousLevels };
+}
+
+/**
+ * Initialize movement for generators
+ */
+export function initializeGeneratorMovement(
+  generators: GeneratorState[],
+  blobSize: number
+): GeneratorVisualization[] {
+  const visualizations: GeneratorVisualization[] = [];
+  const blobRadius = blobSize * 0.35;
+  const padding = GAME_CONFIG.generatorVisualization.movement.padding;
+  const availableRadius = blobRadius - padding;
+
+  generators.forEach((generator) => {
+    const generatorData = GENERATORS[generator.id];
+    if (!generatorData) return;
+
+    const emoji = generatorData.name.split(" ")[0] || "⚪";
+    
+    // Random position within available area
+    const angle = Math.random() * 2 * Math.PI;
+    const distance = Math.random() * availableRadius;
+    
+    const position = {
+      x: Math.cos(angle) * distance,
+      y: Math.sin(angle) * distance
+    };
+
+    // Random velocity (5px/second)
+    const velocityAngle = Math.random() * 2 * Math.PI;
+    const velocity = {
+      x: Math.cos(velocityAngle) * GAME_CONFIG.generatorVisualization.movement.speed,
+      y: Math.sin(velocityAngle) * GAME_CONFIG.generatorVisualization.movement.speed
+    };
+
+    visualizations.push({
+      id: generator.id,
+      type: 'individual',
+      emoji,
+      position,
+      velocity,
+      count: generator.level,
+      totalEffect: generator.baseEffect * generator.level,
+      levelId: generator.unlockedAtLevel,
+      lastFloatingNumber: 0
+    });
   });
 
-  return emojis;
+  return visualizations;
 }
 
 /**
- * Calculate floating number data for a generator emoji
+ * Update generator positions with boundary collision
  */
-export function calculateFloatingNumberData(
-  emoji: GeneratorEmoji,
+export function updateGeneratorPositions(
+  generators: GeneratorVisualization[],
+  blobSize: number,
+  deltaTime: number
+): GeneratorVisualization[] {
+  const blobRadius = blobSize * 0.35;
+  const padding = GAME_CONFIG.generatorVisualization.movement.padding;
+  const maxDistance = blobRadius - padding;
+
+  return generators.map((generator) => {
+    // Calculate new position
+    const newX = generator.position.x + generator.velocity.x * deltaTime;
+    const newY = generator.position.y + generator.velocity.y * deltaTime;
+    
+    // Check boundary collision
+    const distance = Math.sqrt(newX * newX + newY * newY);
+    
+    if (distance > maxDistance) {
+      // Bounce: reverse velocity and normalize
+      const angle = Math.atan2(newY, newX);
+      const velocity = {
+        x: -Math.cos(angle) * GAME_CONFIG.generatorVisualization.movement.speed,
+        y: -Math.sin(angle) * GAME_CONFIG.generatorVisualization.movement.speed
+      };
+      
+      // Clamp position to boundary
+      const position = {
+        x: Math.cos(angle) * maxDistance,
+        y: Math.sin(angle) * maxDistance
+      };
+
+      return { ...generator, position, velocity };
+    } else {
+      const position = { x: newX, y: newY };
+      return { ...generator, position };
+    }
+  });
+}
+
+/**
+ * Calculate floating number data for generators
+ */
+export function calculateFloatingNumbers(
+  generators: GeneratorVisualization[],
+  currentTime: number,
   gameState: GameState,
-  screenLayout: ScreenLayout
-): FloatingNumberData | null {
-  const generator = gameState.generators[emoji.generatorId];
-  if (!generator || generator.baseEffect <= 0) {
-    return null;
-  }
-
-  const { ringRadius, contributionThresholds, colors } = GAME_CONFIG.generatorVisualization;
-  
-  // Calculate position for floating numbers
-  const x = screenLayout.centerX + Math.cos(emoji.angle) * ringRadius;
-  const y = screenLayout.centerY + Math.sin(emoji.angle) * ringRadius;
-
-  const individualGrowth = generator.baseEffect;
-
-  // Determine color based on contribution
-  const totalGrowth = getTotalGrowth(gameState);
-  const contributionRatio = individualGrowth / totalGrowth;
-  
-  let color = colors.highContribution; // Default green
-
-  if (contributionRatio < contributionThresholds.low) {
-    color = colors.lowContribution; // Red for low contribution
-  } else if (contributionRatio < contributionThresholds.medium) {
-    color = colors.mediumContribution; // Yellow for medium contribution
-  }
-
-  return { x, y, value: individualGrowth, color };
-}
-
-/**
- * Calculate all floating number data for current generators
- */
-export function calculateAllFloatingNumberData(
-  generatorEmojis: GeneratorEmoji[],
-  gameState: GameState
+  blobPosition: { x: number; y: number }
 ): FloatingNumberData[] {
-  const screenLayout = calculateScreenLayout();
   const floatingNumbers: FloatingNumberData[] = [];
+  const { contributionThresholds, colors } = GAME_CONFIG.generatorVisualization;
+  const totalGrowth = getTotalGrowth(gameState);
 
-  generatorEmojis.forEach((emoji) => {
-    const data = calculateFloatingNumberData(emoji, gameState, screenLayout);
-    if (data) {
-      floatingNumbers.push(data);
+  generators.forEach((generator) => {
+    // Check if it's time for a floating number (every 1 second)
+    if (currentTime - generator.lastFloatingNumber >= 1000) {
+      const contributionRatio = generator.totalEffect / totalGrowth;
+      
+      let color = colors.highContribution; // Default green
+      if (contributionRatio < contributionThresholds.low) {
+        color = colors.lowContribution; // Red for low contribution
+      } else if (contributionRatio < contributionThresholds.medium) {
+        color = colors.mediumContribution; // Yellow for medium contribution
+      }
+
+      // Calculate screen position
+      const x = blobPosition.x + generator.position.x;
+      const y = blobPosition.y + generator.position.y;
+
+      floatingNumbers.push({
+        x,
+        y,
+        value: generator.totalEffect,
+        color
+      });
+
+      // Update last floating number time
+      generator.lastFloatingNumber = currentTime;
     }
   });
 
