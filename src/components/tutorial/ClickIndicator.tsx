@@ -9,15 +9,20 @@ export const ClickIndicator: React.FC<ClickIndicatorProps> = ({
   position,
   isVisible,
 }) => {
-  if (!isVisible) return null;
+  if (!isVisible) {
+    return null;
+  }
 
   const indicatorStyle: React.CSSProperties = {
-    position: 'absolute',
+    position: 'fixed',
     left: position.x,
     top: position.y,
     transform: 'translate(-50%, -50%)',
     zIndex: 1000,
+    pointerEvents: 'none',
   };
+
+
 
   return (
     <>

@@ -80,15 +80,18 @@ export const GameHUD: React.FC<GameHUDProps> = ({
       />
 
       {/* Tutorial System - Highest z-index */}
-      {tutorialState && (
-        <TutorialManager
-          tutorialState={tutorialState}
-          blobPosition={{
-            x: window.innerWidth / 2,
-            y: window.innerHeight / 2
-          }}
-        />
-      )}
+      {tutorialState && (() => {
+        console.log('GameHUD rendering TutorialManager with state:', tutorialState);
+        return (
+          <TutorialManager
+            tutorialState={tutorialState}
+            blobPosition={{
+              x: window.innerWidth / 2,
+              y: window.innerHeight / 2
+            }}
+          />
+        );
+      })()}
     </>
   );
 };
