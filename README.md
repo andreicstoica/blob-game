@@ -53,6 +53,7 @@ when blob is in a petri dish -- it fills up the petri dish and breaks out in a p
 ### Stretch goals
 
 **Juice (at end)**
+
 - blob - nutrient interactions
 - temporary power-ups show up on screen (double growth, cheaper shop, etc.) - this essentially replaces the idea of different types of slimes
 - animations for level changes (breakout of petri dish, etc.)
@@ -67,8 +68,6 @@ when blob is in a petri dish -- it fills up the petri dish and breaks out in a p
 - 3D
 - pausing
 - moving anything besides the blob/map
-
-
 
 ## Plans for Thursday (Jul 10):
 
@@ -94,9 +93,9 @@ when blob is in a petri dish -- it fills up the petri dish and breaks out in a p
 - Game name (Bloblog, Slime Sovereign, Sublobination)
 - Codebase testing
 
-
 ### Out of scope / Tomorrow's JUICING
 
+- enemies and associated upgrades (militaries or people eating?)
 - Different music/SFX for each level
 - Make nutrients part of gameState
 - Save state persistence

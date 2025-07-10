@@ -1,140 +1,173 @@
-import { GAME_CONFIG } from '../content/config';
-import { getNextLevel as getNextLevelByCurrent, LEVELS } from '../content/levels';
+import { LEVELS } from '../content/levels';
 import type { GameState } from '../types';
 import { getTotalGrowth } from './calculations';
-import { spawnMoreNutrients, consumeNutrient, getNearbyNutrients } from './nutrients';
+import { spawnMoreNutrients, getNearbyNutrients, consumeNutrient } from './nutrients';
 import { INITIAL_STATE } from './initialization';
+import { updateTutorial, completeTutorialStep } from './tutorial';
 
 // Re-export commonly used functions and types
 export { INITIAL_STATE };
-export { consumeNutrient, getNearbyNutrients };
+export { getNearbyNutrients, consumeNutrient };
 export type { GameState };
 
+// Tick function - runs every game loop iteration
 export function tick(state: GameState): GameState {
-    const currentGrowth = getTotalGrowth(state);
-    const growthPerTick = currentGrowth * (GAME_CONFIG.tickRate / 1000);
+    const growth = getTotalGrowth(state);
+    const newBiomass = state.biomass + growth;
+    
     const newState = {
         ...state,
-        biomass: state.biomass + growthPerTick,
-        growth: currentGrowth, // Keep the growth field updated for UI consistency
+        biomass: newBiomass,
+        growth,
     };
 
     // Spawn more nutrients if needed
-    return spawnMoreNutrients(newState);
+    const stateWithNutrients = spawnMoreNutrients(newState);
+
+    // Update tutorial system  
+    const finalState = {
+        ...stateWithNutrients,
+        tutorial: updateTutorial(stateWithNutrients)
+    };
+
+    return finalState;
 }
 
+// Manual click function
 export function manualClick(state: GameState): GameState {
-    return {
+    const newBiomass = state.biomass + state.clickPower;
+    
+    const newState = {
         ...state,
-        biomass: state.biomass + state.clickPower,
+        biomass: newBiomass
+    };
+
+    // Complete blob click tutorial step if active
+    if (newState.tutorial.currentStep?.type === 'click-blob') {
+        return {
+            ...newState,
+            tutorial: completeTutorialStep(newState.tutorial, 'click-blob')
+        };
     }
+
+    return newState;
 }
 
 export function buyGenerator(state: GameState, generatorId: string): GameState {
     const generator = state.generators[generatorId];
     if (!generator) return state;
+    
+    const cost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
+    
+    if (state.biomass >= cost) {
+        const newState = {
+            ...state,
+            biomass: state.biomass - cost,
+            generators: {
+                ...state.generators,
+                [generatorId]: {
+                    ...generator,
+                    level: generator.level + 1
+                }
+            }
+        };
 
-    const currentCost = Math.floor(generator.baseCost * Math.pow(generator.costMultiplier, generator.level));
+        // Complete generator purchase tutorial step if active
+        if (newState.tutorial.currentStep?.type === 'buy-generator') {
+            return {
+                ...newState,
+                tutorial: completeTutorialStep(newState.tutorial, 'buy-first-generator')
+            };
+        }
 
-    if (state.biomass < currentCost) return state;
-
-    const newGenerators = { ...state.generators };
-    newGenerators[generatorId] = {
-        ...generator,
-        level: generator.level + 1
-    };
-
-    // Calculate total growth with new generator and all upgrades
-    const newGrowth = getTotalGrowth({
-        ...state,
-        generators: newGenerators
-    });
-
-    return {
-        ...state,
-        biomass: state.biomass - currentCost,
-        growth: newGrowth,
-        generators: newGenerators
-    };
+        return newState;
+    }
+    
+    return state;
 }
 
 export function buyUpgrade(state: GameState, upgradeId: string): GameState {
     const upgrade = state.upgrades[upgradeId];
-    if (!upgrade || upgrade.purchased || state.biomass < upgrade.cost) {
-        return state;
+    if (!upgrade) return state;
+    
+    if (!upgrade.purchased && state.biomass >= upgrade.cost) {
+        return {
+            ...state,
+            biomass: state.biomass - upgrade.cost,
+            upgrades: {
+                ...state.upgrades,
+                [upgradeId]: {
+                    ...upgrade,
+                    purchased: true
+                }
+            }
+        };
     }
-
-    const newUpgrades = { ...state.upgrades };
-    newUpgrades[upgradeId] = {
-        ...upgrade,
-        purchased: true
-    };
-
-    let newClickPower = state.clickPower;
-
-    // Apply upgrade effects
-    if (upgrade.type === 'click') {
-        newClickPower *= upgrade.effect;
-    }
-
-    // Recalculate total growth with all upgrades
-    const newGrowth = getTotalGrowth({
-        ...state,
-        upgrades: newUpgrades
-    });
-
-    return {
-        ...state,
-        biomass: state.biomass - upgrade.cost,
-        clickPower: newClickPower,
-        growth: newGrowth,
-        upgrades: newUpgrades
-    };
+    
+    return state;
 }
 
-// Helper function to get level by ID
-function getLevelById(levelId: number) {
-    return LEVELS.find(level => level.id === levelId) || LEVELS[0];
-}
-
-// Evolution system functions
-export function canEvolveToNextLevel(state: GameState): boolean {
-    // Check if player has enough biomass for the next level
-    const currentLevel = getLevelById(state.highestLevelReached);
-    const nextLevel = getNextLevelByCurrent(currentLevel);
-    return nextLevel !== null && state.biomass >= nextLevel.biomassThreshold;
-}
-
+// Get the next level if it exists
 export function getNextLevel(state: GameState) {
-    const currentLevel = getLevelById(state.highestLevelReached);
-    return getNextLevelByCurrent(currentLevel);
+    const currentLevel = getCurrentLevel(state);
+    return LEVELS.find(level => level.id === currentLevel.id + 1) || null;
+}
+
+// Check if can evolve to next level
+export function canEvolveToNextLevel(state: GameState): boolean {
+    const nextLevel = getNextLevel(state);
+    return nextLevel ? state.biomass >= nextLevel.biomassThreshold : false;
 }
 
 export function evolveToNextLevel(state: GameState): GameState {
     const nextLevel = getNextLevel(state);
-    if (!nextLevel) return state; // Already at max level
+    
+    // Check if evolution is possible
+    if (!nextLevel || state.biomass < nextLevel.biomassThreshold) {
+        return state;
+    }
 
-    return {
+    // Create new state with evolution
+    const newState = {
         ...state,
         currentLevelId: nextLevel.id,
         highestLevelReached: nextLevel.id
         // Biomass carries over, generators and upgrades are preserved
         // Zoom reset is handled by useCameraZoom hook when currentLevelId changes
     };
+
+    // Complete evolution tutorial step if active
+    if (newState.tutorial.currentStep?.type === 'evolve') {
+        return {
+            ...newState,
+            tutorial: completeTutorialStep(newState.tutorial, 'first-evolution')
+        };
+    }
+
+    return newState;
 }
 
-// Canonical selector for current level from game state
-export function getCurrentLevel(state: GameState) {
-  // Use the highest level reached, not current biomass
-  const level = LEVELS.find(l => l.id === state.highestLevelReached) || LEVELS[0];
-  return level;
+// Helper function to get level by ID (keep existing for compatibility)
+function getLevelById(levelId: number) {
+    return LEVELS.find(level => level.id === levelId) || LEVELS[0];
 }
 
-// Check if content is available based on current level
+// Get current level from game state (original version for our tutorial system)
+export function getCurrentLevel(gameState: GameState) {
+    return getLevelById(gameState.currentLevelId);
+}
+
+// Alternative level selector using highest reached (from incoming branch)
+export function getCurrentLevelByProgress(state: GameState) {
+    const level = LEVELS.find(l => l.id === state.highestLevelReached) || LEVELS[0];
+    return level;
+}
+
+// Check if content is available based on current level (from incoming branch)
 export function isContentAvailable(unlockedAtLevel: string, currentLevelName: string): boolean {
-  const levelIndex = LEVELS.findIndex(level => level.name === unlockedAtLevel);
-  const currentLevelIndex = LEVELS.findIndex(level => level.name === currentLevelName);
-  return levelIndex <= currentLevelIndex;
+    const levelIndex = LEVELS.findIndex(level => level.name === unlockedAtLevel);
+    const currentLevelIndex = LEVELS.findIndex(level => level.name === currentLevelName);
+    return levelIndex <= currentLevelIndex;
 }
 
 // Calculate total cost for buying multiple generators (from incoming branch)
@@ -146,7 +179,6 @@ export function calculateTotalCost(generator: { baseCost: number; costMultiplier
         totalCost += cost;
     }
     return totalCost;
-}
 
 // Get all generators unlocked through the current level
 export function getUnlockedGenerators(gameState: GameState): any[] {
