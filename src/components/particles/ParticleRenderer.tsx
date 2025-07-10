@@ -1,5 +1,5 @@
 import React from "react";
-import type { Particle } from "../../game/types";
+import type { Particle, TrailParticle } from "../../game/types";
 
 // Interface for burst particles (must match ParticleSpawner)
 interface BurstParticle {
@@ -17,14 +17,37 @@ interface BurstParticle {
 interface ParticleRendererProps {
   particles: Particle[];
   burstParticles: BurstParticle[];
+  trailParticles: TrailParticle[];
 }
 
 export const ParticleRenderer: React.FC<ParticleRendererProps> = ({ 
   particles, 
-  burstParticles 
+  burstParticles,
+  trailParticles 
 }) => {
   return (
     <>
+      {/* Render trail particles (behind main particles) */}
+      {trailParticles.map((trail) => (
+        <div
+          key={trail.id}
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: trail.size,
+            height: trail.size,
+            backgroundColor: trail.color,
+            borderRadius: "50%",
+            transform: `translate3d(${trail.x - trail.size/2}px, ${trail.y - trail.size/2}px, 0)`,
+            zIndex: 29, // Behind main particles
+            opacity: trail.opacity,
+            boxShadow: `0 0 ${trail.size * 1.5}px ${trail.color}`,
+            willChange: "transform, opacity",
+          }}
+        />
+      ))}
+
       {/* Render main particles */}
       {particles.map((particle) => (
         <div

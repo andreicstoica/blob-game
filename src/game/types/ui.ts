@@ -90,6 +90,31 @@ export interface Particle {
   useImage?: boolean;
   image?: string;
   direction: { x: number; y: number };
+  // Enhanced behavior properties
+  state?: 'approaching' | 'attracted' | 'spiraling';
+  spiralAngle?: number; // For spiral absorption
+  magneticForce?: number; // Strength of magnetic attraction
+  trailHistory?: { x: number; y: number; timestamp: number }[]; // For nutrient trails
+}
+
+// Trail particle for nutrient trails effect
+export interface TrailParticle {
+  id: string;
+  x: number;
+  y: number;
+  size: number;
+  color: string;
+  opacity: number;
+  life: number; // 0 to 1
+  maxLife: number;
+}
+
+// Combo system for enhanced feeding effects
+export interface ComboTracker {
+  count: number;
+  recentAbsorptions: number[]; // timestamps
+  multiplier: number;
+  isActive: boolean;
 }
 
 export interface ParticleConfig {
