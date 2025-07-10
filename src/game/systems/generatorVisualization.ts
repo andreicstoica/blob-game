@@ -85,6 +85,61 @@ export function initializeGeneratorMovement(
 }
 
 /**
+ * Initialize movement for stacked generators (previous levels)
+ */
+export function initializeStackedGeneratorMovement(
+  previousLevels: Record<string, GeneratorState[]>,
+  blobSize: number
+): GeneratorVisualization[] {
+  const visualizations: GeneratorVisualization[] = [];
+  const blobRadius = blobSize * 0.35;
+  const padding = GAME_CONFIG.generatorVisualization.movement.padding;
+  const availableRadius = blobRadius - padding;
+
+  Object.entries(previousLevels).forEach(([levelId, levelGenerators]) => {
+    if (levelGenerators.length === 0) return;
+
+    // Calculate total count and effect for this level
+    const totalCount = levelGenerators.reduce((sum, gen) => sum + gen.level, 0);
+    const totalEffect = levelGenerators.reduce((sum, gen) => sum + gen.baseEffect * gen.level, 0);
+    
+    // Get emoji from first generator in the level
+    const firstGenerator = GENERATORS[levelGenerators[0].id];
+    const emoji = firstGenerator?.name.split(" ")[0] || "⚪";
+    
+    // Random position within available area
+    const angle = Math.random() * 2 * Math.PI;
+    const distance = Math.random() * availableRadius;
+    
+    const position = {
+      x: Math.cos(angle) * distance,
+      y: Math.sin(angle) * distance
+    };
+
+    // Random velocity (5px/second)
+    const velocityAngle = Math.random() * 2 * Math.PI;
+    const velocity = {
+      x: Math.cos(velocityAngle) * GAME_CONFIG.generatorVisualization.movement.speed,
+      y: Math.sin(velocityAngle) * GAME_CONFIG.generatorVisualization.movement.speed
+    };
+
+    visualizations.push({
+      id: `stacked-${levelId}`,
+      type: 'stacked',
+      emoji,
+      position,
+      velocity,
+      count: totalCount,
+      totalEffect,
+      levelId,
+      lastFloatingNumber: 0
+    });
+  });
+
+  return visualizations;
+}
+
+/**
  * Update generator positions with boundary collision
  */
 export function updateGeneratorPositions(
