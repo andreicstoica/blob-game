@@ -2,6 +2,7 @@ import { GENERATORS } from '../content/generators';
 import { UPGRADES } from '../content/upgrades';
 import { GAME_CONFIG } from '../content/config';
 import type { GameState, GeneratorState, UpgradeState, NutrientState } from '../types';
+import { createTutorialState } from './tutorial';
 
 export const initializeGenerators = () => {
     const generators: Record<string, GeneratorState> = {};
@@ -66,5 +67,6 @@ export const INITIAL_STATE: GameState = {
     upgrades: initializeUpgrades(),
     nutrients: initializeNutrients(),
     currentLevelId: 0, // Start at intro level
-    highestLevelReached: 0
+    highestLevelReached: 0,
+    tutorial: createTutorialState(),
 }; 

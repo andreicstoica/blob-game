@@ -4,6 +4,20 @@ export interface BlobState {
     size: number
 }
 
+// Tutorial system types
+export interface TutorialStep {
+  id: string
+  type: 'click-blob' | 'buy-generator' | 'evolve'
+  target?: { x: number, y: number }
+  completed: boolean
+}
+
+export interface TutorialState {
+  currentStep: TutorialStep | null
+  completedSteps: Set<string>
+  isActive: boolean
+}
+
 export interface GameState {
     blobs: BlobState[]
     biomass: number
@@ -14,6 +28,7 @@ export interface GameState {
     nutrients: NutrientState[]
     currentLevelId: number
     highestLevelReached: number
+    tutorial: TutorialState
 }
 
 export type NumberType = 'biomass' | 'cost' | 'rate' | 'power' | 'threshold' | 'owned';
