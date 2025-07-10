@@ -136,8 +136,14 @@ export function evolveToNextLevel(state: GameState): GameState {
         return state;
     }
 
-    // Play evolve sound
-    playSound('evolve');
+    // Play appropriate sound based on current level
+    if (state.currentLevelId === 0) {
+        // Play game start sound for intro level
+        playSound('gameStart');
+    } else {
+        // Play evolve sound for all other levels
+        playSound('evolve');
+    }
 
     // Create new state with evolution
     const newState = {

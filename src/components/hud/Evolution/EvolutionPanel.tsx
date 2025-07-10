@@ -1,10 +1,14 @@
-import React from 'react';
-import type { GameState } from '../../../game/types';
-import { getNextLevel, canEvolveToNextLevel, getCurrentLevel } from '../../../game/systems/actions';
-import { CurrentLevel } from './CurrentLevel';
-import { NextEvolution } from './NextEvolution';
-import { EvolutionButton } from './EvolutionButton';
-import { getScaleLevel } from '../../../game/systems/scaleLevels';
+import React from "react";
+import type { GameState } from "../../../game/types";
+import {
+  getNextLevel,
+  canEvolveToNextLevel,
+  getCurrentLevel,
+} from "../../../game/systems/actions";
+import { CurrentLevel } from "./CurrentLevel";
+import { NextEvolution } from "./NextEvolution";
+import { EvolutionButton } from "./EvolutionButton";
+import { getScaleLevel } from "../../../game/systems/scaleLevels";
 
 interface EvolutionPanelProps {
   biomass: number;
@@ -72,10 +76,11 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
           gameState={gameState}
         />
       )}
-      <EvolutionButton 
-        canEvolve={canEvolve} 
-        hasNextLevel={!!nextLevel} 
-        onEvolve={onEvolve} 
+      <EvolutionButton
+        canEvolve={canEvolve}
+        hasNextLevel={!!nextLevel}
+        onEvolve={onEvolve}
+        currentLevelId={currentLevel.id}
       />
 
       {/* Debug Information */}
