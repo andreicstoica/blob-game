@@ -1,16 +1,6 @@
-import { getCurrentLevel } from '../engine/core/game';
-import type { GameState } from '../engine/core/game';
-
-export type NumberType = 'biomass' | 'cost' | 'rate' | 'power' | 'threshold' | 'owned';
-
-export interface FormatOptions {
-  type: NumberType;
-  gameState?: GameState;
-  forceFormat?: 'standard' | 'scientific' | 'decimal' | 'whole';
-  maxDecimals?: number;
-  showPlus?: boolean;
-  compact?: boolean;
-}
+import { getCurrentLevel } from '../game/systems/actions';
+import type { GameState } from '../game/types';
+import type { NumberType, FormatOptions } from '../game/types';
 
 // Centralized number formatting utility for the blob game
 // Handles different number types with appropriate formatting based on game context
