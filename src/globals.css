@@ -3,3 +3,15 @@
 @tailwind utilities;
 
 @import './styles/theme.css';
+
+/* Prevent double-tap zoom while allowing pinch-to-zoom */
+* {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+button, input, textarea, select {
+  -webkit-user-select: auto;
+  user-select: auto;
+}
