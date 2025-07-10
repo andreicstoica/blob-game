@@ -19,7 +19,7 @@ export const initSounds = () => {
     }
 };
 
-export const playSound = (soundKey: keyof typeof SOUNDS, volume = 1.0) => {
+export const playSound = (soundKey: keyof typeof SOUNDS, volume = 0.5) => {
     const audio = audioCache[soundKey];
     if (audio) {
         audio.volume = volume;
