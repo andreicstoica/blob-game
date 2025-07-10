@@ -38,6 +38,8 @@ export const GameScene: React.FC<GameSceneProps> = ({
     }]);
   }, []);
 
+
+
   const removeFloatingNumber = useCallback((id: string) => {
     setFloatingNumbers(prev => prev.filter(anim => anim.id !== id));
   }, []);

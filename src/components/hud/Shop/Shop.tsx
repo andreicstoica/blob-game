@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { GameState } from '../../../game/types';
 import { getCurrentLevel, getUnlockedGenerators } from '../../../game/systems/actions';
-import { Generators, Upgrades, FilterToggle, BuyMultiplierToggle, ValueScale } from './index';
+import { ShopGenerators, ShopUpgrades, FilterToggle, BuyMultiplierToggle, ValueScale } from './index';
 
 
 interface ShopProps {
@@ -117,12 +117,12 @@ export const Shop: React.FC<ShopProps> = ({
           />
         </div>
 
-        {/* Value Scale Display */}
-        <ValueScale 
+        {/* Value Scale Display - Hidden for now */}
+        {/* <ValueScale 
           gameState={gameState}
           highThreshold={valueThresholds.highThreshold}
           lowThreshold={valueThresholds.lowThreshold}
-        />
+        /> */}
       </div>
 
       {/* Scrollable Content */}
@@ -132,7 +132,7 @@ export const Shop: React.FC<ShopProps> = ({
         padding: '0 20px 20px 20px'
       }}>
         {/* Generators Component */}
-        <Generators
+        <ShopGenerators
           biomass={biomass}
           gameState={gameState}
           onBuyGenerator={handleBuyGenerator}
@@ -142,7 +142,7 @@ export const Shop: React.FC<ShopProps> = ({
         />
 
         {/* Upgrades Component */}
-        <Upgrades
+        <ShopUpgrades
           biomass={biomass}
           gameState={gameState}
           onBuyUpgrade={handleBuyUpgrade}
@@ -169,6 +169,15 @@ export const Shop: React.FC<ShopProps> = ({
         
         .generator-card:hover .generator-stats {
           opacity: 1 !important;
+        }
+        
+        .generator-card, .upgrade-card {
+          transition: all 0.3s ease-in-out, transform 0.2s ease-out !important;
+        }
+        
+        /* Smooth position transitions for re-sorting */
+        .generator-card, .upgrade-card {
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
       `}</style>
     </div>

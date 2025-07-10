@@ -44,34 +44,58 @@ export const EvolutionButton: React.FC<EvolutionButtonProps> = ({
   const notReadyText = isIntroLevel ? "Not Ready" : "Not Ready";
 
   return (
-    <button
-      onClick={onEvolve}
-      disabled={!canEvolve}
-      style={{
-        width: "100%",
-        padding: "15px",
-        fontSize: "16px",
-        fontWeight: "bold",
-        backgroundColor: canEvolve ? "#4ade80" : "#374151",
-        color: "white",
-        border: "none",
-        borderRadius: "8px",
-        cursor: canEvolve ? "pointer" : "not-allowed",
-        opacity: canEvolve ? 1 : 0.5,
-        transition: "all 0.2s ease",
-      }}
-      onMouseEnter={(e) => {
-        if (canEvolve) {
-          e.currentTarget.style.backgroundColor = "#22c55e";
+    <>
+      <button
+        onClick={onEvolve}
+        disabled={!canEvolve}
+        style={{
+          width: "100%",
+          padding: "15px",
+          fontSize: "16px",
+          fontWeight: "bold",
+          backgroundColor: canEvolve ? "#4ade80" : "#374151",
+          color: "white",
+          border: "none",
+          borderRadius: "8px",
+          cursor: canEvolve ? "pointer" : "not-allowed",
+          opacity: canEvolve ? 1 : 0.5,
+          transition: "all 0.2s ease",
+          animation: canEvolve ? "evolvePulse 1.2s ease-in-out infinite" : "none",
+          boxShadow: canEvolve ? "0 0 20px rgba(74, 222, 128, 0.5)" : "none",
+        }}
+        onMouseEnter={(e) => {
+          if (canEvolve) {
+            e.currentTarget.style.backgroundColor = "#22c55e";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (canEvolve) {
+            e.currentTarget.style.backgroundColor = "#4ade80";
+          }
+        }}
+      >
+        {canEvolve ? buttonText : notReadyText}
+      </button>
+      
+      <style>{`
+              @keyframes evolvePulse {
+        0% {
+          background-color: #4ade80;
+          box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+          transform: scale(1);
         }
-      }}
-      onMouseLeave={(e) => {
-        if (canEvolve) {
-          e.currentTarget.style.backgroundColor = "#4ade80";
+        50% {
+          background-color: #16a34a;
+          box-shadow: 0 0 30px rgba(22, 163, 74, 0.8);
+          transform: scale(1.05);
         }
-      }}
-    >
-      {canEvolve ? buttonText : notReadyText}
-    </button>
+        100% {
+          background-color: #4ade80;
+          box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+          transform: scale(1);
+        }
+      }
+      `}</style>
+    </>
   );
 };

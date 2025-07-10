@@ -94,10 +94,10 @@ function formatNumberByType(
 function formatDecimal(value: number, maxDecimals: number, numberType: NumberType): string {
   switch (numberType) {
     case 'biomass':
-      // 1 decimal place until 1000, then integer until 10B, then large number format
+      // 1 decimal place until 1000, then integer until 1B, then large number format
       if (value < 1000) {
         return value.toFixed(1);
-      } else if (value < 10_000_000_000) {
+      } else if (value < 1_000_000_000) {
         return Math.floor(value).toLocaleString();
       } else {
         return formatLargeNumber(value, 2);
@@ -122,8 +122,8 @@ function formatWhole(value: number, numberType: NumberType): string {
   const intValue = Math.floor(value);
   switch (numberType) {
     case 'cost':
-      // Integer until 10B, then large number format with 1 decimal
-      if (intValue < 10_000_000_000) {
+      // Integer until 1B, then large number format with 1 decimal
+      if (intValue < 1_000_000_000) {
         return intValue.toLocaleString();
       } else {
         return formatLargeNumber(intValue, 1);
@@ -139,15 +139,15 @@ function formatWhole(value: number, numberType: NumberType): string {
         return formatLargeNumber(intValue, 2);
       }
     case 'biomass':
-      // Integer until 10B, then large number format with 2 decimals
-      if (intValue < 10_000_000_000) {
+      // Integer until 1B, then large number format with 2 decimals
+      if (intValue < 1_000_000_000) {
         return intValue.toLocaleString();
       } else {
         return formatLargeNumber(intValue, 2);
       }
     case 'threshold':
-      // Integer until 10B, then large number format with 2 decimals
-      if (intValue < 10_000_000_000) {
+      // Integer until 1B, then large number format with 2 decimals
+      if (intValue < 1_000_000_000) {
         return intValue.toLocaleString();
       } else {
         return formatLargeNumber(intValue, 2);
@@ -162,10 +162,10 @@ function formatStandard(value: number, numberType: NumberType): string {
   switch (numberType) {
     case 'biomass':
     case 'threshold':
-      // 1 decimal place until 1000, then integer until 10B, then large number format
+      // 1 decimal place until 1000, then integer until 1B, then large number format
       if (value < 1000) {
         return value.toFixed(1);
-      } else if (value < 10_000_000_000) {
+      } else if (value < 1_000_000_000) {
         return Math.floor(value).toLocaleString();
       } else {
         return formatLargeNumber(value, 2);
@@ -181,9 +181,9 @@ function formatStandard(value: number, numberType: NumberType): string {
         return formatLargeNumber(value, 2);
       }
     case 'cost':
-      // Integer until 10B, then large number format with 1 decimal
+      // Integer until 1B, then large number format with 1 decimal
       const intValue = Math.floor(value);
-      if (intValue < 10_000_000_000) {
+      if (intValue < 1_000_000_000) {
         return intValue.toLocaleString();
       } else {
         return formatLargeNumber(intValue, 1);
