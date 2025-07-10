@@ -9,16 +9,21 @@ export const TutorialArrow: React.FC<TutorialArrowProps> = ({
   targetPosition,
   isVisible,
 }) => {
-  if (!isVisible) return null;
+  if (!isVisible) {
+    return null;
+  }
 
   const arrowStyle: React.CSSProperties = {
-    position: 'absolute',
-    left: targetPosition.x, // Center at blob's x-midpoint
-    top: targetPosition.y + 40, // Position with 40px gap from blob
+    position: 'fixed',
+    left: targetPosition.x,
+    top: targetPosition.y + 40,
     transform: 'translateX(-50%)',
     animation: 'tutorialBounce 2s ease-in-out infinite',
     zIndex: 1000,
+    pointerEvents: 'none',
   };
+
+
 
   return (
     <>
