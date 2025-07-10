@@ -22,7 +22,15 @@ function App() {
 
   return (
     <div className="w-screen h-screen relative overflow-hidden">
-      {/* HUD Layer - Outside zoom container */}
+      {/* Game Scene - All game visuals */}
+      <GameScene 
+        gameState={gameState}
+        blobSize={blobSize}
+        onBlobClick={handleBlobClick}
+        zoom={currentZoom}
+      />
+
+      {/* HUD Layer - UI overlays */}
       <GameHUD
         biomass={gameState.biomass}
         gameState={gameState}
@@ -31,14 +39,6 @@ function App() {
         onBuyUpgrade={handleBuyUpgrade}
         onEvolve={handleEvolve}
         blobSize={blobSize}
-      />
-
-      {/* Game Scene Layer - Contains everything that zooms and the game world */}
-      <GameScene
-        gameState={gameState}
-        blobSize={blobSize}
-        onBlobClick={handleBlobClick}
-        zoom={currentZoom}
       />
     </div>
   );
