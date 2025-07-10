@@ -98,7 +98,30 @@ function App() {
           </div>
         )}
 
-        {/* Blob Layer - z-index: 70 (above generators) */}
+
+      </div>
+
+      {/* HUD Layer - Outside zoom container */}
+      <GameHUD
+        biomass={gameState.biomass}
+        gameState={gameState}
+        onBuyGenerator={handleBuyGenerator}
+        onBuyUpgrade={handleBuyUpgrade}
+        onEvolve={handleEvolve}
+        blobSize={blobSize}
+        zoom={currentZoom}
+      />
+
+      {/* Animation Layer with MapGenerators - Outside zoom container */}
+      <AnimationLayer>
+        {(addFloatingNumber) => (
+          <>
+            <MapGenerators 
+              gameState={gameState} 
+              blobPosition={blobPosition} 
+              addFloatingNumber={addFloatingNumber}
+            />
+            {/* Blob Layer - Outside zoom container but inside AnimationLayer */}
         <div
           className="absolute cursor-pointer select-none"
           style={{
@@ -117,26 +140,12 @@ function App() {
             position={{ x: 0, y: 0 }}
             onBlobClick={handleBlobClick}
             clickPower={gameState.clickPower}
+                addFloatingNumber={addFloatingNumber}
           />
         </div>
-      </div>
-
-      {/* HUD Layer - Outside zoom container */}
-      <GameHUD
-        biomass={gameState.biomass}
-        gameState={gameState}
-        onBuyGenerator={handleBuyGenerator}
-        onBuyUpgrade={handleBuyUpgrade}
-        onEvolve={handleEvolve}
-        blobSize={blobSize}
-        zoom={currentZoom}
-      />
-
-      {/* Generators Layer - Outside zoom container */}
-      <MapGenerators gameState={gameState} blobPosition={blobPosition} />
-
-      {/* Animation Layer - Outside zoom container */}
-      <AnimationLayer />
+          </>
+        )}
+      </AnimationLayer>
     </div>
   );
 }

@@ -16,6 +16,7 @@ export interface BlobProps {
   isDisabled?: boolean;
   isActive?: boolean;
   clickPower?: number;
+  addFloatingNumber?: (position: { x: number; y: number }, value: number, color?: string) => void;
 }
 
 export interface CameraState {
