@@ -306,7 +306,7 @@ sequenceDiagram
     participant GameState
     participant MapState
     participant useCameraZoom
-    participant Map
+    participant GameScene
 
     User->>EvolutionButton: Click evolve
     EvolutionButton->>EvolutionPanel: onEvolve()
@@ -316,10 +316,10 @@ sequenceDiagram
     alt Can evolve
         useGame->>GameState: Update currentLevelId
         useGame->>MapState: evolveToNextLevel()
-        useGame->>useCameraZoom: Reset zoom to 1.0
-        useCameraZoom->>Map: Apply zoom reset
-        MapState->>Map: Update current level
-        Map->>User: Show new level background
+        useGame->>useCameraZoom: Reset zoom to level start
+        useCameraZoom->>GameScene: Apply zoom reset
+        MapState->>GameScene: Update current level
+        GameScene->>User: Show new level background
         EvolutionPanel->>User: Show evolution complete
     else Cannot evolve
         useGame->>EvolutionPanel: No change

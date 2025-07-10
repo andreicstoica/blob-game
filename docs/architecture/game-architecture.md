@@ -141,9 +141,9 @@ graph TB
     end
 
     subgraph "🎮 GameScene (Game World)"
-        GameScene --> Map[Map (background, zoom)]
+        GameScene --> Map[Map background zoom]
         GameScene --> Blob[BlobContainer]
-        GameScene --> Generators[GeneratorSystem]
+        GameScene --> GeneratorSystem[GeneratorSystem]
         GameScene --> Particles[ParticleSystem]
         GameScene --> Floating[FloatingNumber Animations]
     end
@@ -154,7 +154,7 @@ graph TB
         HUD --> Evolution[EvolutionPanel]
 
         subgraph "🏪 Shop"
-            Shop --> Generators[Generators]
+            Shop --> ShopGenerators[Generators]
             Shop --> Upgrades[Upgrades]
         end
 
