@@ -4,6 +4,19 @@ import { calculateParticleConfig } from "../../game/systems/particles";
 import brownBacteria from "/assets/images/particles/bacteria/brown-bacteria.png";
 import greenBacteria from "/assets/images/particles/bacteria/green-bacteria.png";
 import purpleBacteria from "/assets/images/particles/bacteria/purple-bacteria.png";
+import galaxy1 from "/assets/images/particles/galaxies/galaxy-1.png";
+import galaxy2 from "/assets/images/particles/galaxies/galaxy-2.webp";
+import mouse1 from "/assets/images/particles/mice/mouse-1.png";
+import mouse2 from "/assets/images/particles/mice/mouse-2.png";
+import mouse3 from "/assets/images/particles/mice/mouse-3.png";
+import spaceship1 from "/assets/images/particles/spaceships/spaceship-1.png";
+import spaceship2 from "/assets/images/particles/spaceships/spaceship-2.png";
+import spaceship3 from "/assets/images/particles/spaceships/spaceship-3.png";
+import tank1 from "/assets/images/particles/tanks/tank-1.png";
+import tank2 from "/assets/images/particles/tanks/tank-2.png";
+import tank3 from "/assets/images/particles/tanks/tank-3.png";
+import person1 from "/assets/images/particles/people/person-1.png";
+import person2 from "/assets/images/particles/people/person-2.png";
 
 // Interface for burst particles (firework effect)
 interface BurstParticle {
@@ -19,13 +32,14 @@ interface BurstParticle {
 }
 
 
-
 // Visual assets for different particle types
 const VISUAL_ASSETS = {
   bacteria: [brownBacteria, greenBacteria, purpleBacteria],
-  energy: [], // Use color circles
-  matter: [], // Use color circles
-  cosmic: [], // Use color circles
+  mice: [mouse1, mouse2, mouse3],
+  spaceships: [spaceship1, spaceship2, spaceship3],
+  tanks: [tank1, tank2, tank3],
+  galaxies: [galaxy1, galaxy2],
+  people: [person1, person2],
 };
 
 interface ParticleSpawnerProps {
@@ -33,6 +47,7 @@ interface ParticleSpawnerProps {
   currentLevel: Level;
   blobSize: number; // Need blob size for proper scaling
   children: (particles: Particle[], burstParticles: BurstParticle[], trailParticles: TrailParticle[]) => React.ReactNode;
+
 }
 
 export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
@@ -106,11 +121,11 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
       const angle = (i / burstCount) * Math.PI * 2; // Spread evenly in circle
       const speed = 80 + Math.random() * 40; // Speed: 80-120
       const maxLife = 0.4 + Math.random() * 0.2; // Shorter lifetime: 0.4-0.6 seconds
-      
+
       // Scale burst size with blob size for proportional appearance
       const baseBurstSize = Math.max(3, blobSize * 0.02); // 2% of blob size, minimum 3px
       const burstSize = baseBurstSize + Math.random() * (baseBurstSize * 0.5); // +0-50% variation
-      
+
       newBursts.push({
         id: Math.random().toString(36),
         x,
@@ -123,11 +138,107 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
         size: burstSize,
       });
     }
-    
-    setBurstParticles(prev => [...prev, ...newBursts]);
+
+    setBurstParticles((prev) => [...prev, ...newBursts]);
   };
 
+    // Calculate direction toward center
+    const dx = targetX - x;
+    const dy = targetY - y;
+    const magnitude = Math.sqrt(dx * dx + dy * dy);
+    const directionX = dx / magnitude;
+    const directionY = dy / magnitude;
 
+    // Determine visual type and image based on current level
+    let visualType:
+      | "bacteria"
+      | "mice"
+      | "spaceships"
+      | "tanks"
+      | "galaxies"
+      | "people";
+    let useImage = true;
+    let image: string;
+
+    // Map level to specific visual types
+    switch (currentLevel.name) {
+      case "microscopic":
+        visualType = "bacteria";
+        image =
+          VISUAL_ASSETS.bacteria[
+            Math.floor(Math.random() * VISUAL_ASSETS.bacteria.length)
+          ];
+        break;
+      case "petri-dish":
+        visualType = "bacteria";
+        image =
+          VISUAL_ASSETS.bacteria[
+            Math.floor(Math.random() * VISUAL_ASSETS.bacteria.length)
+          ];
+        break;
+      case "lab":
+        visualType = "mice";
+        image =
+          VISUAL_ASSETS.mice[
+            Math.floor(Math.random() * VISUAL_ASSETS.mice.length)
+          ];
+        break;
+      case "neighborhood":
+        visualType = "people";
+        image =
+          VISUAL_ASSETS.people[
+            Math.floor(Math.random() * VISUAL_ASSETS.people.length)
+          ];
+        break;
+      case "city":
+        visualType = "tanks";
+        image =
+          VISUAL_ASSETS.tanks[
+            Math.floor(Math.random() * VISUAL_ASSETS.tanks.length)
+          ];
+        break;
+      case "continent":
+        visualType = "spaceships";
+        image =
+          VISUAL_ASSETS.spaceships[
+            Math.floor(Math.random() * VISUAL_ASSETS.spaceships.length)
+          ];
+        break;
+      case "earth":
+        visualType = "spaceships";
+        image =
+          VISUAL_ASSETS.spaceships[
+            Math.floor(Math.random() * VISUAL_ASSETS.spaceships.length)
+          ];
+        break;
+      case "solar-system":
+        visualType = "galaxies";
+        image =
+          VISUAL_ASSETS.galaxies[
+            Math.floor(Math.random() * VISUAL_ASSETS.galaxies.length)
+          ];
+        break;
+      default:
+        // Fallback to bacteria for any unhandled levels
+        visualType = "bacteria";
+        image =
+          VISUAL_ASSETS.bacteria[
+            Math.floor(Math.random() * VISUAL_ASSETS.bacteria.length)
+          ];
+        break;
+    }
+
+    const particle = {
+      id: Math.random().toString(36),
+      x,
+      y,
+      speed: particleConfig.speed,
+      size: particleConfig.size * particleConfig.sizeVariation,
+      color: particleConfig.color,
+      type: visualType,
+      useImage,
+      image,
+      direction: { x: directionX, y: directionY },
 
 // Spawn particle from screen edge toward blob
 const spawnOffScreenParticle = (
@@ -203,11 +314,17 @@ const spawnOffScreenParticle = (
   useEffect(() => {
     if (!currentLevel) return;
 
+    // Intro level has no particles
+    if (currentLevel.name === "intro") return;
+
     const spawnInterval = setInterval(() => {
       const shouldSpawn = Math.random() < (particleConfig.spawnRate * 0.4) / 60; // 60fps, reduced to 40% of original
 
       if (shouldSpawn) {
-        const newParticle = spawnOffScreenParticle(blobPosition, particleConfig);
+        const newParticle = spawnOffScreenParticle(
+          blobPosition,
+          particleConfig
+        );
         setParticles((prev) => [...prev, newParticle]);
       }
     }, 16); // 60fps
@@ -218,7 +335,11 @@ const spawnOffScreenParticle = (
   // Combined animation loop for particles and bursts (Performance optimization)
    
   useEffect(() => {
-    if (!currentLevel || (particles.length === 0 && burstParticles.length === 0)) return;
+    if (
+      !currentLevel ||
+      (particles.length === 0 && burstParticles.length === 0)
+    )
+      return;
 
     let animationId: number;
 
@@ -235,6 +356,29 @@ const spawnOffScreenParticle = (
               const dx = blobPosition.x - particle.x;
               const dy = blobPosition.y - particle.y;
               const distanceToBlob = Math.sqrt(dx * dx + dy * dy);
+
+
+              // Define absorption zones
+              const absorptionZone = blobRadius + 30; // 30px fade zone around blob
+
+              // Remove particle if it's in the collision zone
+              if (distanceToBlob <= collisionZone) {
+                // Calculate burst position at blob edge instead of absorption point
+                const directionX = dx / distanceToBlob; // Normalized direction from blob center to particle
+                const directionY = dy / distanceToBlob;
+                // Scale edge offset with blob size (larger blob = larger offset for visibility)
+                const edgeOffset = Math.max(5, blobRadius * 0.15); // 15% of blob radius, minimum 5px
+                const burstX =
+                  blobPosition.x + directionX * (blobRadius + edgeOffset);
+                const burstY =
+                  blobPosition.y + directionY * (blobRadius + edgeOffset);
+
+                // Particle absorbed - create burst effect
+                createBurstEffect(burstX, burstY);
+                return null; // Remove particle
+              }
+
+
               const normalizedDx = dx / distanceToBlob;
               const normalizedDy = dy / distanceToBlob;
               
@@ -317,9 +461,9 @@ const spawnOffScreenParticle = (
                 opacity = Math.max(0.1, distanceToBlob / absorptionZone);
               }
 
-              return { 
-                ...particle, 
-                x: newX, 
+              return {
+                ...particle,
+                x: newX,
                 y: newY,
                 direction: newDirection,
                 state: newState,
@@ -357,26 +501,27 @@ const spawnOffScreenParticle = (
       setTrailParticles(currentTrails);
 
       // Update burst particles in the same loop
-      setBurstParticles(prev => 
-        prev
-          .map(burst => {
-            const deltaTime = 0.016; // 60fps
-            const newLife = burst.life - deltaTime;
-            
-            if (newLife <= 0) {
-              return null; // Remove expired burst particle
-            }
+      setBurstParticles(
+        (prev) =>
+          prev
+            .map((burst) => {
+              const deltaTime = 0.016; // 60fps
+              const newLife = burst.life - deltaTime;
 
-            return {
-              ...burst,
-              x: burst.x + burst.vx * deltaTime,
-              y: burst.y + burst.vy * deltaTime,
-              vx: burst.vx * 0.95, // Slight deceleration
-              vy: burst.vy * 0.95,
-              life: newLife,
-            };
-          })
-          .filter(Boolean) as BurstParticle[]
+              if (newLife <= 0) {
+                return null; // Remove expired burst particle
+              }
+
+              return {
+                ...burst,
+                x: burst.x + burst.vx * deltaTime,
+                y: burst.y + burst.vy * deltaTime,
+                vx: burst.vx * 0.95, // Slight deceleration
+                vy: burst.vy * 0.95,
+                life: newLife,
+              };
+            })
+            .filter(Boolean) as BurstParticle[]
       );
 
 
@@ -395,5 +540,7 @@ const spawnOffScreenParticle = (
   // Early return after all hooks
   if (!currentLevel) return null;
 
+
   return <>{children(particles, burstParticles, trailParticles)}</>;
 }; 
+

@@ -20,8 +20,8 @@ export interface BlobProps {
   size?: number;
   biomass?: number;
   onBlobClick?:
-    | ((blobId: string, clickPosition: { x: number; y: number }) => void)
-    | (() => void);
+  | ((blobId: string, clickPosition: { x: number; y: number }) => void)
+  | (() => void);
   onBlobPress?: (blobId: string) => void;
   onBlobRelease?: (blobId: string) => void;
   color?: string;
@@ -92,7 +92,7 @@ export interface Particle {
   speed: number;
   size: number;
   color: string;
-  type: 'nutrient' | 'energy' | 'matter' | 'cosmic';
+  type: 'bacteria' | 'mice' | 'spaceships' | 'tanks' | 'galaxies' | 'people';
   useImage?: boolean;
   image?: string;
   direction: { x: number; y: number };
@@ -121,17 +121,6 @@ export interface ComboTracker {
   recentAbsorptions: number[]; // timestamps
   multiplier: number;
   isActive: boolean;
-}
-
-export interface ParticleConfig {
-  type: 'nutrient' | 'energy' | 'matter' | 'cosmic';
-  spawnRate: number; // particles per second
-  speed: number; // pixels per second
-  size: number;
-  color: string;
-  level: number;
-  useImage: boolean;
-  images?: string[];
 }
 
 export interface FloatingNumberAnimation {
