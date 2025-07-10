@@ -1,12 +1,15 @@
 import React from "react";
 import type { GameState } from "../../game/types";
+import type { TutorialState } from "../../game/types/ui";
 import { GameStats } from "./GameStats";
 import { Shop } from "./Shop";
 import { EvolutionPanel } from "./Evolution";
+import { TutorialManager } from "../tutorial/TutorialManager";
 
 interface GameHUDProps {
   biomass: number;
   gameState?: GameState;
+  tutorialState?: TutorialState;
   onBuyGenerator?: (generatorId: string) => void;
   onBuyUpgrade?: (upgradeId: string) => void;
   onEvolve?: () => void;
@@ -17,6 +20,7 @@ interface GameHUDProps {
 export const GameHUD: React.FC<GameHUDProps> = ({
   biomass,
   gameState,
+  tutorialState,
   onBuyGenerator,
   onBuyUpgrade,
   onEvolve,
@@ -74,6 +78,17 @@ export const GameHUD: React.FC<GameHUDProps> = ({
         onEvolve={onEvolve}
         zoom={zoom}
       />
+
+      {/* Tutorial System - Highest z-index */}
+      {tutorialState && (
+        <TutorialManager
+          tutorialState={tutorialState}
+          blobPosition={{
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2
+          }}
+        />
+      )}
     </>
   );
 };

@@ -14,7 +14,7 @@ export interface GameState {
     nutrients: NutrientState[]
     currentLevelId: number
     highestLevelReached: number
-    tutorial: TutorialState
+    gameMode: 'tutorial' | 'main' | 'endless'
 }
 
 export type NumberType = 'biomass' | 'cost' | 'rate' | 'power' | 'threshold' | 'owned';
@@ -28,5 +28,4 @@ export interface FormatOptions {
 }
 
 // Import types that are used in GameState
-import type { GeneratorState, UpgradeState, NutrientState } from './progression';
-import type { TutorialState } from './ui'; 
+import type { GeneratorState, UpgradeState, NutrientState } from './progression'; 

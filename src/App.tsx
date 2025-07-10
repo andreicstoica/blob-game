@@ -6,7 +6,6 @@ import { BlobContainer } from "./components/blob/BlobContainer";
 import { GameHUD } from "./components/hud/GameHUD";
 import { MapGenerators } from "./components/map/MapGenerators";
 import { GameWorld } from "./components/GameWorld";
-import { TutorialManager } from "./components/tutorial/TutorialManager";
 import { useGame } from "./hooks/useGame";
 import { useCameraZoom } from "./hooks/useCameraZoom";
 import { useBlobSize } from "./hooks/useBlobSize";
@@ -16,6 +15,7 @@ import { getCurrentLevel } from "./game/systems/actions";
 function App() {
   const {
     gameState,
+    tutorialState,
     handleBlobClick,
     handleBuyGenerator,
     handleBuyUpgrade,
@@ -41,6 +41,7 @@ function App() {
       <GameHUD
         biomass={gameState.biomass}
         gameState={gameState}
+        tutorialState={tutorialState}
         onBuyGenerator={handleBuyGenerator}
         onBuyUpgrade={handleBuyUpgrade}
         onEvolve={handleEvolve}
@@ -65,15 +66,6 @@ function App() {
               gameState={gameState}
               blobSize={blobSize}
               addFloatingNumber={addFloatingNumber}
-            />
-
-            {/* Tutorial System - Highest z-index */}
-            <TutorialManager
-              gameState={gameState}
-              blobPosition={{
-                x: window.innerWidth / 2,
-                y: window.innerHeight / 2
-              }}
             />
           </>
         )}
