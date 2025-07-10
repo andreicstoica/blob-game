@@ -26,9 +26,9 @@ export const createTutorialState = (): TutorialState => ({
 });
 
 // Check if tutorial should be active based on game state
-export const shouldActivateTutorial = (gameState: GameState): boolean => {
+export const shouldActivateTutorial = (tutorialState: TutorialState, gameState: GameState): boolean => {
   // Activate tutorial when in intro level and no steps completed yet
-  return gameState.currentLevelId === 0 && gameState.tutorial.completedSteps.size === 0;
+  return gameState.currentLevelId === 0 && tutorialState.completedSteps.size === 0;
 };
 
 // Start the tutorial system
@@ -81,11 +81,11 @@ export const getCurrentTutorialStep = (tutorialState: TutorialState): TutorialSt
 };
 
 // Update tutorial based on game state changes
-export const updateTutorial = (gameState: GameState): TutorialState => {
-  let newTutorialState = { ...gameState.tutorial };
+export const updateTutorial = (tutorialState: TutorialState, gameState: GameState): TutorialState => {
+  let newTutorialState = { ...tutorialState };
 
   // Start tutorial if conditions are met
-  if (shouldActivateTutorial(gameState)) {
+  if (shouldActivateTutorial(newTutorialState, gameState)) {
     newTutorialState = startTutorial(newTutorialState);
   }
 
@@ -100,3 +100,33 @@ export const updateTutorial = (gameState: GameState): TutorialState => {
 
   return newTutorialState;
 }; 
+
+// Progress tutorial based on a game event
+export function progressTutorial(
+  tutorialState: TutorialState,
+  event: 'manualClick' | 'buyGenerator' | 'evolve'
+): TutorialState {
+  if (!tutorialState.isActive || !tutorialState.currentStep) return tutorialState;
+
+  // Progression logic for each step
+  switch (tutorialState.currentStep.type) {
+    case 'click-blob':
+      if (event === 'manualClick') {
+        return completeTutorialStep(tutorialState, 'click-blob');
+      }
+      break;
+    case 'buy-generator':
+      if (event === 'buyGenerator') {
+        return completeTutorialStep(tutorialState, 'buy-first-generator');
+      }
+      break;
+    case 'evolve':
+      if (event === 'evolve') {
+        return completeTutorialStep(tutorialState, 'first-evolution');
+      }
+      break;
+    default:
+      break;
+  }
+  return tutorialState;
+} 

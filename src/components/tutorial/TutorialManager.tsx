@@ -1,19 +1,19 @@
 import React from 'react';
-import type { GameState } from '../../game/types';
+import type { TutorialState } from '../../game/types/ui';
 import { TutorialArrow } from './TutorialArrow';
 import { ClickIndicator } from './ClickIndicator';
 import { getCurrentTutorialStep } from '../../game/systems/tutorial';
 
 interface TutorialManagerProps {
-  gameState: GameState;
+  tutorialState: TutorialState;
   blobPosition: { x: number; y: number };
 }
 
 export const TutorialManager: React.FC<TutorialManagerProps> = ({
-  gameState,
+  tutorialState,
   blobPosition,
 }) => {
-  const currentStep = getCurrentTutorialStep(gameState.tutorial);
+  const currentStep = getCurrentTutorialStep(tutorialState);
 
   // Only show tutorial for click-blob step
   if (!currentStep || currentStep.type !== 'click-blob') {

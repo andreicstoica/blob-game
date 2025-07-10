@@ -12,27 +12,33 @@ import {
 } from '../game/systems/actions';
 import { GAME_CONFIG } from '../game/content/config';
 import { useMap } from '../game/systems/mapState';
+import { createTutorialState, progressTutorial, updateTutorial } from '../game/systems/tutorial';
+import type { TutorialState } from '../game/types/ui';
 
 export const useGame = () => {
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
+  const [tutorialState, setTutorialState] = useState<TutorialState>(createTutorialState());
   const mapEvolveToNextLevel = useMap(state => state.evolveToNextLevel);
 
   // Game loop
   useEffect(() => {
     const interval = setInterval(() => {
       setGameState(prevState => tick(prevState));
+      setTutorialState((prevTutorialState: TutorialState) => updateTutorial(prevTutorialState, gameState));
     }, GAME_CONFIG.tickRate);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [gameState]);
 
   const handleBlobClick = useCallback(() => {
     setGameState(prevState => manualClick(prevState));
-  }, []);
+    setTutorialState((prevTutorialState: TutorialState) => progressTutorial(prevTutorialState, 'manualClick'));
+  }, [gameState]);
 
   const handleBuyGenerator = useCallback((generatorId: string) => {
     setGameState(prevState => buyGenerator(prevState, generatorId));
-  }, []);
+    setTutorialState((prevTutorialState: TutorialState) => progressTutorial(prevTutorialState, 'buyGenerator'));
+  }, [gameState]);
 
   const handleBuyUpgrade = useCallback((upgradeId: string) => {
     setGameState(prevState => buyUpgrade(prevState, upgradeId));
@@ -49,7 +55,8 @@ export const useGame = () => {
       mapEvolveToNextLevel(newState.biomass);
       return newState;
     });
-  }, [mapEvolveToNextLevel]);
+    setTutorialState((prevTutorialState: TutorialState) => progressTutorial(prevTutorialState, 'evolve'));
+  }, [mapEvolveToNextLevel, gameState]);
 
   const getNearbyNutrientsForBlob = useCallback((blobPosition: { x: number; y: number }) => {
     return getNearbyNutrients(gameState, blobPosition);
@@ -57,6 +64,7 @@ export const useGame = () => {
 
   return {
     gameState,
+    tutorialState,
     handleBlobClick,
     handleBuyGenerator,
     handleBuyUpgrade,

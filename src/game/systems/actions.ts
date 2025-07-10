@@ -3,8 +3,8 @@ import type { GameState } from '../types';
 import { getTotalGrowth } from './calculations';
 import { spawnMoreNutrients, getNearbyNutrients, consumeNutrient } from './nutrients';
 import { INITIAL_STATE } from './initialization';
-import { updateTutorial, completeTutorialStep } from './tutorial';
 import { playSound } from '../../utils/sound';
+
 // Re-export commonly used functions and types
 export { INITIAL_STATE };
 export { getNearbyNutrients, consumeNutrient };
@@ -24,13 +24,7 @@ export function tick(state: GameState): GameState {
     // Spawn more nutrients if needed
     const stateWithNutrients = spawnMoreNutrients(newState);
 
-    // Update tutorial system  
-    const finalState = {
-        ...stateWithNutrients,
-        tutorial: updateTutorial(stateWithNutrients)
-    };
-
-    return finalState;
+    return stateWithNutrients;
 }
 
 // Manual click function
@@ -40,20 +34,10 @@ export function manualClick(state: GameState): GameState {
     // Play blob click sound
     playSound('blobClick');
 
-    const newState = {
+    return {
         ...state,
         biomass: newBiomass
     };
-
-    // Complete blob click tutorial step if active
-    if (newState.tutorial.currentStep?.type === 'click-blob') {
-        return {
-            ...newState,
-            tutorial: completeTutorialStep(newState.tutorial, 'click-blob')
-        };
-    }
-
-    return newState;
 }
 
 export function buyGenerator(state: GameState, generatorId: string): GameState {
@@ -66,7 +50,7 @@ export function buyGenerator(state: GameState, generatorId: string): GameState {
         // Play UI click sound for generator purchase
         playSound('uiClick');
 
-        const newState = {
+        return {
             ...state,
             biomass: state.biomass - cost,
             generators: {
@@ -77,16 +61,6 @@ export function buyGenerator(state: GameState, generatorId: string): GameState {
                 }
             }
         };
-
-        // Complete generator purchase tutorial step if active
-        if (newState.tutorial.currentStep?.type === 'buy-generator') {
-            return {
-                ...newState,
-                tutorial: completeTutorialStep(newState.tutorial, 'buy-first-generator')
-            };
-        }
-
-        return newState;
     }
 
     return state;
@@ -146,23 +120,13 @@ export function evolveToNextLevel(state: GameState): GameState {
     }
 
     // Create new state with evolution
-    const newState = {
+    return {
         ...state,
         currentLevelId: nextLevel.id,
         highestLevelReached: nextLevel.id
         // Biomass carries over, generators and upgrades are preserved
         // Zoom reset is handled by useCameraZoom hook when currentLevelId changes
     };
-
-    // Complete evolution tutorial step if active
-    if (newState.tutorial.currentStep?.type === 'evolve') {
-        return {
-            ...newState,
-            tutorial: completeTutorialStep(newState.tutorial, 'first-evolution')
-        };
-    }
-
-    return newState;
 }
 
 // Helper function to get level by ID (keep existing for compatibility)
