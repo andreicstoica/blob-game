@@ -48,7 +48,7 @@ export const GameScene: React.FC<GameSceneProps> = ({
       <Map className="z-0" zoom={zoom} />
 
       {/* Environment Effects Layer - z-index: 30 (outside zoom) */}
-      <ParticleSystem gameState={gameState} currentLevel={currentLevel} />
+      <ParticleSystem gameState={gameState} currentLevel={currentLevel} blobSize={blobSize} />
 
       {/* Player Layer - z-index: 70+ (outside zoom) */}
       {/* Blob Layer - z-index: 70 */}
