@@ -7,7 +7,6 @@ export interface ParticleSystemConfig {
     speed: number; // pixels per second  
     size: number; // base size in pixels
     sizeVariation: number; // size multiplier based on progress (2.5 at start -> 0.3 at end)
-    visualType: 'bacteria' | 'energy' | 'matter' | 'cosmic';
     color: string;
 }
 
@@ -17,63 +16,54 @@ const BASE_PARTICLE_CONFIGS = {
         spawnRate: 2,
         speed: 100,
         size: 8,
-        visualType: 'energy' as const,
         color: '#4ade80',
     },
     microscopic: {
         spawnRate: 3,
         speed: 80,
         size: 60,
-        visualType: 'bacteria' as const,
         color: '#22c55e',
     },
     'petri-dish': {
         spawnRate: 6,
         speed: 120,
         size: 10,
-        visualType: 'energy' as const,
         color: '#eab308',
     },
     lab: {
         spawnRate: 8,
         speed: 140,
-        size: 12,
-        visualType: 'matter' as const,
+        size: 140,
         color: '#3b82f6',
     },
     neighborhood: {
         spawnRate: 10,
         speed: 160,
-        size: 14,
-        visualType: 'matter' as const,
+        size: 140,
         color: '#06b6d4',
     },
     city: {
         spawnRate: 12,
         speed: 180,
-        size: 16,
-        visualType: 'matter' as const,
+        size: 80,
         color: '#8b5cf6',
     },
     continent: {
         spawnRate: 15,
         speed: 200,
-        size: 18,
-        visualType: 'cosmic' as const,
+        size: 64,
         color: '#a855f7',
     },
     earth: {
         spawnRate: 18,
         speed: 220,
         size: 20,
-        visualType: 'cosmic' as const,
         color: '#ec4899',
     },
     'solar-system': {
         spawnRate: 25,
         speed: 250,
         size: 24,
-        visualType: 'cosmic' as const,
         color: '#f59e0b',
     },
 };
@@ -106,7 +96,6 @@ export function calculateParticleConfig(gameState: GameState): ParticleSystemCon
         speed: baseConfig.speed,
         size: baseConfig.size,
         sizeVariation,
-        visualType: baseConfig.visualType,
         color: baseConfig.color,
     };
 }

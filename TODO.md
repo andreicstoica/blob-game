@@ -69,8 +69,9 @@ when blob is in a petri dish -- it fills up the petri dish and breaks out in a p
 ### Friday goals
 
 - [ ] Progression scaling/rebalancing - make the first 30 seconds delightful!
+- [ ] achievement notifications (ai gen?) + sfx
 - [ ] Improve shop UI/UX
-- [ ]enemies and associated upgrades (militaries or people eating?)
+- [ ] enemies and associated upgrades (militaries or people eating?)
 - [ ] Ambient music for main menu and/or levels
 - [ ] Better ending - set threshold, but can continue after cool animation
 - [ ] Game name (Bloblog, Slime Sovereign, Sublobination)
