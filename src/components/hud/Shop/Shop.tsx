@@ -21,7 +21,7 @@ export const Shop: React.FC<ShopProps> = ({
   onBuyGenerator, 
   onBuyUpgrade 
 }) => {
-  const [generatorFilter, setGeneratorFilter] = useState<'current' | 'all'>('current');
+  const [generatorFilter, setGeneratorFilter] = useState<'current' | 'all'>('all');
   const [buyMultiplier, setBuyMultiplier] = useState<1 | 10 | 100>(1);
 
   if (!gameState || !onBuyGenerator || !onBuyUpgrade) {
@@ -98,7 +98,7 @@ export const Shop: React.FC<ShopProps> = ({
         <h2 style={{
           margin: '0 0 20px 0',
           fontSize: '24px',
-          color: Colors.shop.light,
+          color: Colors.shop.primary,
           textAlign: 'center',
           userSelect: 'none',
           textTransform: 'uppercase',
