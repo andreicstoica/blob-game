@@ -29,18 +29,7 @@ export const GeneratorFloatingNumbers: React.FC<GeneratorFloatingNumbersProps> =
 
   // Debug: Log component mount and props
   useEffect(() => {
-    // Add a test floating number to verify the component is working
-    const testFloatingNumber: FloatingNumber = {
-      id: 'test-floating-number',
-      generatorId: 'test',
-      value: 100,
-      x: blobPosition.x,
-      y: blobPosition.y - 100,
-      color: '#ff0000', // Bright red
-      emoji: '🧪',
-      createdAt: Date.now()
-    };
-    setFloatingNumbers([testFloatingNumber]);
+    // Component mounted successfully
   }, []);
 
   // Get all generators with their individual instances
@@ -121,11 +110,14 @@ export const GeneratorFloatingNumbers: React.FC<GeneratorFloatingNumbersProps> =
       const now = Date.now();
       const instances = getAllGeneratorInstances();
       
+      console.log('Animation tick - instances:', instances.length, 'instances:', instances.map(i => ({ id: i.generator.id, level: i.generator.level })));
+      
       instances.forEach(({ generator, instanceId }) => {
         const lastUpdate = generatorTimersRef.current[instanceId] || 0;
         
         // Trigger floating number every 1 second per generator instance
         if (now - lastUpdate >= 1000) {
+          console.log('Adding floating number for:', generator.id, 'instance:', instanceId);
           addFloatingNumber(generator, instanceId);
           generatorTimersRef.current[instanceId] = now;
         }
@@ -152,6 +144,26 @@ export const GeneratorFloatingNumbers: React.FC<GeneratorFloatingNumbersProps> =
 
   return (
     <>
+      {/* Test floating number - always visible */}
+      <div
+        style={{
+          position: 'fixed',
+          left: blobPosition.x,
+          top: blobPosition.y - 50,
+          transform: 'translate(-50%, -50%)',
+          color: '#ff0000',
+          fontSize: '20px',
+          fontWeight: 'bold',
+          pointerEvents: 'none',
+          zIndex: 10000,
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: '4px 8px',
+          borderRadius: '4px',
+        }}
+      >
+        TEST FLOAT
+      </div>
+      
       {floatingNumbers.map((floatingNumber) => {
         const age = Date.now() - floatingNumber.createdAt;
         const progress = age / 2000; // 2 second lifetime

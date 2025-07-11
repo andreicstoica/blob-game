@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import type { GameState } from "../../game/types";
 import { NumberFormatter } from "../../utils/numberFormat";
 import { GAME_CONFIG } from "../../game/content/config";
@@ -11,6 +11,17 @@ interface GameStatsProps {
 }
 
 export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
+  const [gameTime, setGameTime] = useState(0);
+  
+  // Track game time
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setGameTime(prev => prev + 1);
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
   const formattedBiomass = NumberFormatter.biomass(biomass, gameState);
   const biomassLength = formattedBiomass.length;
 
@@ -18,6 +29,13 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
   const cpm = gameState
     ? calculateCPM(gameState.notifications.recentClicks)
     : 0;
+
+  // Format time as MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   // Dynamic font size based on biomass length to ensure it fits
   let fontSize = 72;
@@ -47,6 +65,71 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
         userSelect: "none",
       }}
     >
+      {/* Timer and Click Count Row */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-around",
+          alignItems: "center",
+          gap: "15px",
+          marginBottom: "15px",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              fontSize: "12px",
+              opacity: 0.7,
+              marginBottom: "3px",
+              fontWeight: "bold",
+            }}
+          >
+            TIME
+          </div>
+          <div
+            style={{
+              fontSize: "16px",
+              fontWeight: "bold",
+              color: Colors.evolution.primary,
+              marginBottom: "5px",
+            }}
+          >
+            {formatTime(gameTime)}
+          </div>
+        </div>
+
+        <div
+          style={{
+            width: "1px",
+            height: "30px",
+            backgroundColor: "rgba(255, 255, 255, 0.2)",
+          }}
+        />
+
+        <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              fontSize: "12px",
+              opacity: 0.7,
+              marginBottom: "3px",
+              fontWeight: "bold",
+            }}
+          >
+            CLICKS
+          </div>
+          <div
+            style={{
+              fontSize: "16px",
+              fontWeight: "bold",
+              color: Colors.evolution.primary,
+              marginBottom: "5px",
+            }}
+          >
+            {gameState?.notifications.totalClicks || 0}
+          </div>
+        </div>
+      </div>
+
       {/* Main Biomass Display */}
       <div style={{ marginBottom: "15px" }}>
         <div
@@ -165,7 +248,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
                 fontWeight: "bold",
               }}
             >
-              CLICKS / SEC
+              CLICKS / MIN
             </div>
             <div
               style={{
@@ -175,7 +258,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
                 marginBottom: "5px",
               }}
             >
-              {cpm}
+              {gameTime < 30 ? "-" : cpm}
             </div>
           </div>
         </div>

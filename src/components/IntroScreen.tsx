@@ -41,12 +41,12 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
   
   // Track which words should be visible
   const showThe = elapsed >= 0;
-  const showBlob = elapsed >= 150; // 150ms after THE
-  const showMust = elapsed >= 1000; // 1 second after start
-  const showGrow = elapsed >= 2000; // 2 seconds after start
+  const showBlob = elapsed >= 100; // Reduced from 150ms to 100ms
+  const showMust = elapsed >= 600; // Reduced from 1000ms to 600ms
+  const showGrow = elapsed >= 1200; // Reduced from 2000ms to 1200ms
 
-  // Auto-complete after 4.5 seconds
-  if (elapsed >= 4500 && !isTransitioning) {
+  // Auto-complete after 3 seconds (reduced from 4.5 seconds)
+  if (elapsed >= 3000 && !isTransitioning) {
     handleTransition();
   }
 
@@ -156,7 +156,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
   // MUST - dramatic slam entrance
   const mustWordStyle = {
     ...baseWordStyle,
-    fontSize: '6.6rem', // 20% bigger (was 5.5rem)
+    fontSize: '5.5rem', // Reduced from 6.6rem to 5.5rem
     color: 'white',
     animation: 'slam 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
   };
@@ -164,9 +164,9 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
   // GROW - actually grows in size
   const growWordStyle = {
     ...baseWordStyle,
-    fontSize: '7rem', // Smaller base size
+    fontSize: '6rem', // Reduced from 7rem to 6rem
     color: '#fb923c', // Keep the old orange color
-    animation: 'grow 3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+    animation: 'grow 2s cubic-bezier(0.34, 1.56, 0.64, 1)' // Reduced from 3s to 2s
   };
 
   return (

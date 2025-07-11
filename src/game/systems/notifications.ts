@@ -129,13 +129,20 @@ export function checkClickMilestones(state: GameState): { state: GameState; noti
     return { state };
 }
 
-// Calculate clicks per second from recent clicks (1 second window)
+// Calculate predictive clicks per minute based on current rate
 export function calculateCPM(recentClicks: number[]): number {
+    if (recentClicks.length === 0) return 0;
+    
     const now = Date.now();
-    const oneSecondAgo = now - 1000; // Back to 1 second
-
-    // Count clicks in the last 1 second (no scaling needed for CPS)
-    return recentClicks.filter(timestamp => timestamp > oneSecondAgo).length;
+    const firstClick = Math.min(...recentClicks);
+    const timeElapsed = now - firstClick;
+    
+    if (timeElapsed <= 0) return 0;
+    
+    // Calculate predictive CPM: (total clicks / time elapsed) * 60000
+    const clicksPerMinute = (recentClicks.length / timeElapsed) * 60000;
+    
+    return Math.round(clicksPerMinute);
 }
 
 // Update max CPM if current CPM is higher
@@ -157,13 +164,13 @@ export function updateMaxCPM(state: GameState): GameState {
 
 export function incrementClickCount(state: GameState): GameState {
     const now = Date.now();
-    const oneSecondAgo = now - 1000; // Back to 1 second
+    const twoMinutesAgo = now - 120000; // Keep 2 minutes of click history for rolling window
 
     // Add current click timestamp
     const updatedRecentClicks = [...state.notifications.recentClicks, now];
 
-    // Remove clicks older than 1 second
-    const filteredRecentClicks = updatedRecentClicks.filter(timestamp => timestamp > oneSecondAgo);
+    // Remove clicks older than 2 minutes
+    const filteredRecentClicks = updatedRecentClicks.filter(timestamp => timestamp > twoMinutesAgo);
 
     const updatedState = {
         ...state,
