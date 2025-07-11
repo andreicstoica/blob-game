@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type { TutorialState } from '../../game/types/ui';
 import { TutorialArrow } from './TutorialArrow';
 import { ClickIndicator } from './ClickIndicator';
 import { TutorialPopup } from './TutorialPopup';
 import { getCurrentTutorialStep } from '../../game/systems/tutorial';
+import { Colors } from '../../styles/colors';
 
 interface TutorialManagerProps {
   tutorialState: TutorialState;
@@ -17,6 +18,17 @@ export const TutorialManager: React.FC<TutorialManagerProps> = ({
   onTutorialStepComplete,
 }) => {
   const currentStep = getCurrentTutorialStep(tutorialState);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  // Track mouse position
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      setMousePosition({ x: event.clientX, y: event.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   // Only show tutorial if it's active
   if (!tutorialState.isActive || !currentStep) {
@@ -34,17 +46,41 @@ export const TutorialManager: React.FC<TutorialManagerProps> = ({
       {/* Click blob tutorial */}
       {currentStep.type === 'click-blob' && (
         <>
-      <TutorialArrow
-        targetPosition={blobPosition}
-        isVisible={true}
-      />
-      <ClickIndicator
-        position={{
-          x: blobPosition.x,
+          <TutorialArrow
+            targetPosition={blobPosition}
+            isVisible={true}
+          />
+          <ClickIndicator
+            position={{
+              x: blobPosition.x,
               y: blobPosition.y + 130
-        }}
-        isVisible={true}
-      />
+            }}
+            isVisible={true}
+          />
+          {/* Tutorial text under mouse cursor */}
+          <div
+            style={{
+              position: 'fixed',
+              left: mousePosition.x,
+              top: mousePosition.y + 20,
+              transform: 'translateX(-50%)',
+              fontSize: '18px',
+              color: Colors.biomass.dark,
+              textAlign: 'center',
+              textTransform: 'uppercase',
+              textShadow: '0 0 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.8), 0 0 24px rgba(22, 163, 74, 0.6)',
+              fontFamily: 'Arial, sans-serif',
+              fontWeight: 'bold',
+              pointerEvents: 'none',
+              zIndex: 10000,
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              padding: '4px 12px',
+              borderRadius: '6px',
+              border: `2px solid ${Colors.biomass.dark}`,
+            }}
+          >
+            TUTORIAL
+          </div>
         </>
       )}
 

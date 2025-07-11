@@ -4,6 +4,7 @@ import { GameStats } from "./GameStats";
 import { Shop } from "./Shop";
 import { EvolutionPanel } from "./Evolution/EvolutionPanel";
 import { TutorialManager } from "../tutorial/TutorialManager";
+import { SlimeTrail } from "../particles/SlimeTrail";
 import { calculateBlobPosition } from "../../game/systems/calculations";
 
 export const GameHUD: React.FC<GameHUDProps> = ({
@@ -16,7 +17,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   onTutorialStepComplete,
 }) => {
   const blobPosition = calculateBlobPosition();
-  const shopWidth = 300;
+  const shopWidth = 350;
   const evolutionWidth = 300;
 
   return (
@@ -68,6 +69,9 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           width={evolutionWidth}
         />
       )}
+
+      {/* Slime Trail - Only active when tutorial is not active */}
+      <SlimeTrail isActive={!tutorialState?.isActive} />
 
       {/* Tutorial System - Highest z-index */}
       {tutorialState &&

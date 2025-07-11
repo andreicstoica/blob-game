@@ -240,19 +240,17 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "scale(1.01)";
               if (isTutorialPurchased) {
-                e.currentTarget.style.backgroundColor = `${Colors.generators.light}40`;
+                e.currentTarget.style.borderColor = Colors.generators.light;
                 e.currentTarget.style.boxShadow = `0 4px 12px ${Colors.generators.light}60`;
               } else if (
                 canAfford &&
                 (generator.id !== "tutorial-generator" || isTutorialEnabled)
               ) {
-                e.currentTarget.style.backgroundColor = `${Colors.generators.primary}40`;
+                e.currentTarget.style.borderColor = Colors.generators.primary;
                 e.currentTarget.style.boxShadow = `0 4px 12px ${Colors.generators.primary}60`;
               } else {
-                e.currentTarget.style.backgroundColor =
-                  "rgba(255, 255, 255, 0.15)";
-                e.currentTarget.style.boxShadow =
-                  "0 4px 12px rgba(255, 255, 255, 0.1)";
+                e.currentTarget.style.borderColor = "#999";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(255, 255, 255, 0.1)";
               }
               // Show stats on hover
               const statsElement = e.currentTarget.querySelector(
@@ -265,15 +263,15 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "scale(1)";
               if (isTutorialPurchased) {
-                e.currentTarget.style.backgroundColor = `${Colors.generators.light}30`;
+                e.currentTarget.style.borderColor = Colors.generators.light;
                 e.currentTarget.style.boxShadow = `0 2px 8px ${Colors.generators.light}40`;
               } else {
-                e.currentTarget.style.backgroundColor =
+                e.currentTarget.style.borderColor =
                   generator.id === "tutorial-generator" && !isTutorialEnabled
-                    ? "rgba(128, 128, 128, 0.3)"
+                    ? "#666"
                     : canAfford
-                    ? `${Colors.generators.primary}30`
-                    : "rgba(255, 255, 255, 0.1)";
+                    ? Colors.generators.primary
+                    : "#666";
                 e.currentTarget.style.boxShadow =
                   generator.id === "tutorial-generator" && !isTutorialEnabled
                     ? "none"
@@ -407,7 +405,7 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
                 style={{
                   color: canAfford
                     ? Colors.biomass.primary
-                    : Colors.headlines.primary,
+                    : Colors.headlines.medium,
                   fontWeight: "bold",
                   fontSize: "13px",
                 }}
