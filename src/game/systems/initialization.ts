@@ -7,7 +7,7 @@ import type { GameState, GeneratorState, UpgradeState } from '../types';
 
 export const initializeGenerators = (): Record<string, GeneratorState> => {
     const generators: Record<string, GeneratorState> = {};
-    
+
     Object.entries(GENERATORS).forEach(([id, generator]) => {
         generators[id] = {
             ...generator,
@@ -20,14 +20,14 @@ export const initializeGenerators = (): Record<string, GeneratorState> => {
         ...TUTORIAL_GENERATOR,
         level: 0
     };
-    
+
     return generators;
 };
 
 export const initializeUpgrades = () => {
     const upgrades: Record<string, UpgradeState> = {};
     Object.entries(UPGRADES).forEach(([id, upgrade]) => {
-        upgrades[id] = { 
+        upgrades[id] = {
             id,
             name: upgrade.name,
             cost: upgrade.cost,
@@ -59,4 +59,8 @@ export const INITIAL_STATE: GameState = {
     currentLevelId: 0, // Start at intro level
     highestLevelReached: 0,
     gameMode: 'tutorial',
+    notifications: {
+        shownMilestones: new Set<string>(),
+        totalClicks: 0,
+    },
 }; 

@@ -3,6 +3,14 @@ import type { GameState } from '../types';
 import { getTotalGrowth, calculateClickPower } from './calculations';
 import { INITIAL_STATE } from './initialization';
 import { playSound } from '../../utils/sound';
+import {
+    checkSizeMilestones,
+    checkFirstGenerator,
+    checkFirstUpgrade,
+    checkClickMilestones,
+    incrementClickCount,
+    displayNotification
+} from './notifications';
 
 // Re-export commonly used functions and types
 export { INITIAL_STATE };
@@ -32,11 +40,28 @@ export function manualClick(state: GameState): GameState {
     // Play blob click sound
     playSound('blobClick');
 
-    return {
+    const updatedState = {
         ...state,
         biomass: newBiomass,
         clickPower,
     };
+
+    // Increment click count first, then check relevant notifications
+    const stateWithClickCount = incrementClickCount(updatedState);
+
+    // Check click milestones
+    const clickResult = checkClickMilestones(stateWithClickCount);
+    if (clickResult.notification) {
+        displayNotification(clickResult.notification.message, clickResult.notification.id);
+    }
+
+    // Check size milestones
+    const sizeResult = checkSizeMilestones(clickResult.state);
+    if (sizeResult.notification) {
+        displayNotification(sizeResult.notification.message, sizeResult.notification.id);
+    }
+
+    return sizeResult.state;
 }
 
 export function buyGenerator(state: GameState, generatorId: string): GameState {
@@ -69,7 +94,7 @@ export function buyGenerator(state: GameState, generatorId: string): GameState {
         const newBiomass = state.biomass - cost;
         const clickPower = calculateClickPower({ ...state, biomass: newBiomass });
 
-        return {
+        const updatedState = {
             ...state,
             biomass: newBiomass,
             clickPower,
@@ -81,6 +106,13 @@ export function buyGenerator(state: GameState, generatorId: string): GameState {
                 }
             }
         };
+
+        const result = checkFirstGenerator(updatedState);
+        if (result.notification) {
+            displayNotification(result.notification.message, result.notification.id);
+        }
+
+        return result.state;
     }
 
     return state;
@@ -117,7 +149,7 @@ export function buyUpgrade(state: GameState, upgradeId: string): GameState {
         const newBiomass = state.biomass - upgrade.cost;
         const clickPower = calculateClickPower({ ...state, biomass: newBiomass });
 
-        return {
+        const updatedState = {
             ...state,
             biomass: newBiomass,
             clickPower,
@@ -129,6 +161,13 @@ export function buyUpgrade(state: GameState, upgradeId: string): GameState {
                 }
             }
         };
+
+        const result = checkFirstUpgrade(updatedState);
+        if (result.notification) {
+            displayNotification(result.notification.message, result.notification.id);
+        }
+
+        return result.state;
     }
 
     return state;
@@ -205,8 +244,8 @@ export function calculateTotalCost(generator: { baseCost: number; costMultiplier
 
 // Get all generators unlocked through the current level
 export function getUnlockedGenerators(gameState: GameState): any[] {
-  const currentLevel = getCurrentLevel(gameState);
-  return Object.values(gameState.generators).filter(generator => 
-    isContentAvailable(generator.unlockedAtLevel, currentLevel.name)
-  );
+    const currentLevel = getCurrentLevel(gameState);
+    return Object.values(gameState.generators).filter(generator =>
+        isContentAvailable(generator.unlockedAtLevel, currentLevel.name)
+    );
 } 

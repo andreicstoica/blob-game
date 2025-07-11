@@ -3,7 +3,6 @@ import type {
   GameState,
   Level,
   Particle,
-  TrailParticle,
   ComboTracker,
 } from "../../game/types";
 import { calculateParticleConfig } from "../../game/systems/particles";
@@ -28,8 +27,7 @@ interface ParticleSpawnerProps {
   blobSize: number; // Need blob size for proper scaling
   children: (
     particles: Particle[],
-    burstParticles: BurstParticle[],
-    trailParticles: TrailParticle[]
+    burstParticles: BurstParticle[]
   ) => React.ReactNode;
 }
 
@@ -41,7 +39,6 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
 }) => {
   const [particles, setParticles] = useState<Particle[]>([]);
   const [burstParticles, setBurstParticles] = useState<BurstParticle[]>([]);
-  const [trailParticles, setTrailParticles] = useState<TrailParticle[]>([]);
   const [comboTracker, setComboTracker] = useState<ComboTracker>({
     count: 0,
     recentAbsorptions: [],
@@ -71,7 +68,6 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
   useEffect(() => {
     setParticles([]);
     setBurstParticles([]);
-    setTrailParticles([]);
     setComboTracker({
       count: 0,
       recentAbsorptions: [],
@@ -80,21 +76,18 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
     });
   }, [currentLevel.id]);
 
-  // Update combo tracker when particle is absorbed
+  // Update combo tracker
   const updateComboTracker = () => {
     const now = Date.now();
-    const comboWindow = 2000; // 2 seconds combo window
-
     setComboTracker((prev) => {
-      // Filter out old absorptions outside combo window
       const recentAbsorptions = prev.recentAbsorptions.filter(
-        (time) => now - time < comboWindow
+        (time) => now - time < 2000
       );
       recentAbsorptions.push(now);
 
       const count = recentAbsorptions.length;
-      const multiplier = Math.min(3, 1 + count * 0.2); // Up to 3x multiplier
-      const isActive = count >= 2; // Combo starts at 2+ particles
+      const isActive = count >= 3;
+      const multiplier = isActive ? Math.min(5, 1 + Math.floor(count / 3)) : 1;
 
       return {
         count,
@@ -105,41 +98,31 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
     });
   };
 
-  // Create burst effect when particle is absorbed
+  // Create burst effect at absorption point
   const createBurstEffect = (
     x: number,
     y: number,
     isCombo: boolean = false
   ) => {
-    const baseCount = 4 + Math.floor(Math.random() * 3); // 4-6 burst particles (reduced)
-    const burstCount = isCombo
-      ? Math.floor(baseCount * comboTracker.multiplier)
-      : baseCount;
+    const burstCount = isCombo ? 12 : 6;
     const newBursts: BurstParticle[] = [];
 
-    // Use blob glow color for all bursts (consistent with blob)
-    const blobGlowColor = "#cfffb1"; // Default blob glow color (yellow-green)
-
-    // Create burst particles at absorption point
     for (let i = 0; i < burstCount; i++) {
-      const angle = (i / burstCount) * Math.PI * 2; // Spread evenly in circle
-      const speed = 80 + Math.random() * 40; // Speed: 80-120
-      const maxLife = 0.4 + Math.random() * 0.2; // Shorter lifetime: 0.4-0.6 seconds
-
-      // Scale burst size with blob size for proportional appearance
-      const baseBurstSize = Math.max(3, blobSize * 0.02); // 2% of blob size, minimum 3px
-      const burstSize = baseBurstSize + Math.random() * (baseBurstSize * 0.5); // +0-50% variation
+      const angle = (i / burstCount) * Math.PI * 2;
+      const velocity = 100 + Math.random() * 50; // Reduced from 150-250 to 100-150 for smaller radius
+      const size = 6 + Math.random() * 4; // Use combo size for all bursts (was 3-6, now 6-10)
+      const life = 0.3 + Math.random() * 0.4;
 
       newBursts.push({
         id: Math.random().toString(36),
         x,
         y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        color: blobGlowColor,
-        life: maxLife,
-        maxLife,
-        size: burstSize,
+        vx: Math.cos(angle) * velocity,
+        vy: Math.sin(angle) * velocity,
+        color: "#b8f2e6", // Always pale green
+        life,
+        maxLife: life,
+        size,
       });
     }
 
@@ -199,79 +182,56 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
       | "tanks"
       | "galaxies"
       | "people";
-    let useImage = true;
-    let image: string;
+    let useImage = false; // Default to false - use colors
+    let image: string = "";
 
-    // Map level to specific visual types
     switch (currentLevel.name) {
       case "intro":
+        // Intro level: use green colored circles, not bacteria images
         visualType = "circle";
         useImage = false;
         image = "";
         break;
       case "microscopic":
-        visualType = "bacteria";
-        image =
-          VISUAL_ASSETS.bacteria[
-            Math.floor(Math.random() * VISUAL_ASSETS.bacteria.length)
-          ];
-        break;
       case "petri-dish":
+      case "lab":
         visualType = "bacteria";
+        useImage = true;
         image =
           VISUAL_ASSETS.bacteria[
             Math.floor(Math.random() * VISUAL_ASSETS.bacteria.length)
-          ];
-        break;
-      case "lab":
-        visualType = "mice";
-        image =
-          VISUAL_ASSETS.mice[
-            Math.floor(Math.random() * VISUAL_ASSETS.mice.length)
           ];
         break;
       case "neighborhood":
         visualType = "people";
-        image =
-          VISUAL_ASSETS.people[
-            Math.floor(Math.random() * VISUAL_ASSETS.people.length)
-          ];
+        useImage = false;
+        image = "";
         break;
       case "city":
-        visualType = "tanks";
-        image =
-          VISUAL_ASSETS.tanks[
-            Math.floor(Math.random() * VISUAL_ASSETS.tanks.length)
-          ];
+        visualType = "people";
+        useImage = false;
+        image = "";
         break;
       case "continent":
-        visualType = "spaceships";
-        image =
-          VISUAL_ASSETS.spaceships[
-            Math.floor(Math.random() * VISUAL_ASSETS.spaceships.length)
-          ];
+        visualType = "people";
+        useImage = false;
+        image = "";
         break;
       case "earth":
-        visualType = "spaceships";
-        image =
-          VISUAL_ASSETS.spaceships[
-            Math.floor(Math.random() * VISUAL_ASSETS.spaceships.length)
-          ];
+        visualType = "people";
+        useImage = false;
+        image = "";
         break;
       case "solar-system":
         visualType = "galaxies";
-        image =
-          VISUAL_ASSETS.galaxies[
-            Math.floor(Math.random() * VISUAL_ASSETS.galaxies.length)
-          ];
+        useImage = true;
+        image = VISUAL_ASSETS.galaxies[0];
         break;
       default:
-        // Fallback to bacteria for any unhandled levels
-        visualType = "bacteria";
-        image =
-          VISUAL_ASSETS.bacteria[
-            Math.floor(Math.random() * VISUAL_ASSETS.bacteria.length)
-          ];
+        // Fallback to colored circles
+        visualType = "circle";
+        useImage = false;
+        image = "";
         break;
     }
 
@@ -290,7 +250,6 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
       state: "approaching" as const,
       spiralAngle: 0,
       magneticForce: 0.5 + Math.random() * 0.5, // Random magnetic strength 0.5-1.0
-      trailHistory: [],
     };
 
     return particle;
@@ -410,7 +369,7 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
                   blobPosition.y + directionY * (blobRadius + edgeOffset);
 
                 // Create enhanced burst effect for combos (external)
-                createBurstEffect(burstX, burstY, comboTracker.isActive);
+                createBurstEffect(burstX, burstY, false); // Always use pale green, never yellow combo color
 
                 // Emit event for ripple system with particle direction
                 window.dispatchEvent(
@@ -427,20 +386,6 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
                 return null; // Remove particle
               }
 
-              // NUTRIENT TRAILS: Add current position to trail history (only for small particles)
-              let trailHistory = particle.trailHistory || [];
-              const shouldShowTrails = particle.size <= 20; // Only show trails for particles 20px or smaller
-
-              if (shouldShowTrails) {
-                const now = Date.now();
-                trailHistory = [
-                  ...trailHistory,
-                  { x: particle.x, y: particle.y, timestamp: now },
-                ]
-                  .filter((point) => now - point.timestamp < 500) // Keep 500ms of trail
-                  .slice(-8); // Max 8 trail points
-              }
-
               // Calculate opacity based on distance (dissolving effect)
               const absorptionZone = blobRadius + 30;
               let opacity = 1.0;
@@ -454,38 +399,11 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
                 y: newY,
                 direction: newDirection,
                 state: newState,
-                trailHistory,
                 opacity,
               } as Particle & { opacity: number };
             })
             .filter(Boolean) as Particle[]
       );
-
-      // Generate trail particles from particle trail histories
-      const currentTrails: TrailParticle[] = [];
-      particles.forEach((particle) => {
-        if (particle.trailHistory && particle.trailHistory.length > 1) {
-          particle.trailHistory.forEach((trailPoint, index) => {
-            const age = (Date.now() - trailPoint.timestamp) / 500; // 0-1 over 500ms
-            const life = 1 - age;
-
-            if (life > 0) {
-              currentTrails.push({
-                id: `${particle.id}-trail-${index}`,
-                x: trailPoint.x,
-                y: trailPoint.y,
-                size: particle.size * (0.3 + life * 0.3), // Trail gets smaller over time
-                color: particle.color,
-                opacity: life * 0.6, // Trail is semi-transparent
-                life,
-                maxLife: 1,
-              });
-            }
-          });
-        }
-      });
-
-      setTrailParticles(currentTrails);
 
       // Update burst particles in the same loop
       setBurstParticles(
@@ -531,5 +449,5 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
   // Early return after all hooks
   if (!currentLevel) return null;
 
-  return <>{children(particles, burstParticles, trailParticles)}</>;
+  return <>{children(particles, burstParticles)}</>;
 };
