@@ -10,7 +10,6 @@ import {
   createBlobAnimationValues,
 } from "../../game/systems/blobSystem";
 import type { BlobAnimationValues } from "../../game/types/ui";
-import { calculateCPM } from "../../game/systems/notifications";
 
 const Blob = React.memo(
   ({
@@ -42,6 +41,7 @@ const Blob = React.memo(
     const [scale, setScale] = useState(1);
     const [isPressed, setIsPressed] = useState(false);
     const [rotation, setRotation] = useState(0); // Add rotation state
+    const [isSpacePressed, setIsSpacePressed] = useState(false); // Add spacebar tracking
 
     const animationValuesRef = useRef<BlobAnimationValues>(
       createBlobAnimationValues()
@@ -50,23 +50,18 @@ const Blob = React.memo(
     const [, forceRender] = useState({});
     const lastRenderTime = useRef(0);
 
-    // Function to get color based on CPM
-    const getCPMColor = useCallback((cpm: number): string => {
-      if (cpm < 10) {
-        // Slow clicking - cool blues
-        return "#3b82f6"; // Blue
-      } else if (cpm < 30) {
-        // Moderate clicking - greens
-        return "#22c55e"; // Green
-      } else if (cpm < 60) {
-        // Fast clicking - yellows
-        return "#fbbf24"; // Yellow
-      } else if (cpm < 100) {
-        // Very fast clicking - oranges
-        return "#f97316"; // Orange
+    // Function to get color based on blob heat for floating numbers
+    const getFloatingNumberColor = useCallback((heat: number): string => {
+      if (heat < 0.2) {
+        return "#3b82f6"; // Blue - cool/slow
+      } else if (heat < 0.4) {
+        return "#22c55e"; // Green - warming up
+      } else if (heat < 0.6) {
+        return "#fbbf24"; // Yellow - hot
+      } else if (heat < 0.8) {
+        return "#f97316"; // Orange - very hot
       } else {
-        // Insane clicking - reds
-        return "#ef4444"; // Red
+        return "#ef4444"; // Red - blazing hot
       }
     }, []);
 
@@ -95,12 +90,9 @@ const Blob = React.memo(
 
       // Trigger floating number animation
       if (addFloatingNumber && clickPower > 0) {
-        // Get CPM-based color
-        const cpm = gameState ? calculateCPM(gameState.notifications.recentClicks) : 0;
-        const cpmColor = getCPMColor(cpm);
-
-        // Use the same formatting as generator floating numbers (raw value)
-        addFloatingNumber({ x: worldX, y: worldY }, clickPower, cpmColor);
+        const currentHeat = animationValuesRef.current.clickHeat;
+        const heatColor = getFloatingNumberColor(currentHeat);
+        addFloatingNumber({ x: worldX, y: worldY }, clickPower, heatColor);
       }
 
       if (onBlobClick) {
@@ -125,23 +117,22 @@ const Blob = React.memo(
       if (isPressed) setIsPressed(false);
     };
 
-    // Handle keyboard events for spacebar clicking
+    // Handle keyboard events for spacebar clicking - FIXED VERSION
     useEffect(() => {
       const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.code === 'Space' && !isDisabled && isActive) {
+        if (e.code === 'Space' && !isDisabled && isActive && !isSpacePressed) {
           e.preventDefault(); // Prevent page scrolling
+          setIsSpacePressed(true); // Mark spacebar as pressed
           
           // Simulate a click at the blob's center
-          // Since the blob is centered on screen, use the viewport center
           const worldX = window.innerWidth / 2;
           const worldY = window.innerHeight / 2;
           
           // Trigger floating number animation
           if (addFloatingNumber && clickPower > 0) {
-            // Get CPM-based color
-            const cpm = gameState ? calculateCPM(gameState.notifications.recentClicks) : 0;
-            const cpmColor = getCPMColor(cpm);
-            addFloatingNumber({ x: worldX, y: worldY }, clickPower, cpmColor);
+            const currentHeat = animationValuesRef.current.clickHeat;
+            const heatColor = getFloatingNumberColor(currentHeat);
+            addFloatingNumber({ x: worldX, y: worldY }, clickPower, heatColor);
           }
 
           if (onBlobClick) {
@@ -160,9 +151,19 @@ const Blob = React.memo(
         }
       };
 
+      const handleKeyUp = (e: KeyboardEvent) => {
+        if (e.code === 'Space') {
+          setIsSpacePressed(false); // Reset spacebar tracking
+        }
+      };
+
       document.addEventListener('keydown', handleKeyDown);
-      return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [id, isDisabled, isActive, clickPower, addFloatingNumber, onBlobClick, position.x, position.y, gameState, getCPMColor]);
+      document.addEventListener('keyup', handleKeyUp);
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+        document.removeEventListener('keyup', handleKeyUp);
+      };
+    }, [id, isDisabled, isActive, clickPower, addFloatingNumber, onBlobClick, gameState, getFloatingNumberColor, isSpacePressed]);
 
     useEffect(() => {
       let animationId: number;

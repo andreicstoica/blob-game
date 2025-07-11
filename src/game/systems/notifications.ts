@@ -129,26 +129,46 @@ export function checkClickMilestones(state: GameState): { state: GameState; noti
     return { state };
 }
 
-// Calculate clicks per minute from recent clicks
+// Calculate clicks per minute from recent clicks (5 second window)
 export function calculateCPM(recentClicks: number[]): number {
     const now = Date.now();
-    const oneMinuteAgo = now - 60000;
+    const fiveSecondsAgo = now - 5000; // Changed back from 1000 to 5000
 
-    // Count clicks in the last minute
-    return recentClicks.filter(timestamp => timestamp > oneMinuteAgo).length;
+    // Count clicks in the last 5 seconds
+    const clicksInFiveSeconds = recentClicks.filter(timestamp => timestamp > fiveSecondsAgo).length;
+    
+    // Scale to clicks per minute (5 seconds * 12 = 60 seconds)
+    return clicksInFiveSeconds * 12; // Changed back from * 60 to * 12
+}
+
+// Update max CPM if current CPM is higher
+export function updateMaxCPM(state: GameState): GameState {
+    const currentCPM = calculateCPM(state.notifications.recentClicks);
+    
+    if (currentCPM > (state.notifications.maxCPM || 0)) {
+        return {
+            ...state,
+            notifications: {
+                ...state.notifications,
+                maxCPM: currentCPM,
+            },
+        };
+    }
+    
+    return state;
 }
 
 export function incrementClickCount(state: GameState): GameState {
     const now = Date.now();
-    const oneMinuteAgo = now - 60000; // 60 seconds ago
+    const fiveSecondsAgo = now - 5000; // Changed back from 1000 to 5000
 
     // Add current click timestamp
     const updatedRecentClicks = [...state.notifications.recentClicks, now];
 
-    // Remove clicks older than 1 minute
-    const filteredRecentClicks = updatedRecentClicks.filter(timestamp => timestamp > oneMinuteAgo);
+    // Remove clicks older than 5 seconds
+    const filteredRecentClicks = updatedRecentClicks.filter(timestamp => timestamp > fiveSecondsAgo);
 
-    return {
+    const updatedState = {
         ...state,
         notifications: {
             ...state.notifications,
@@ -156,4 +176,7 @@ export function incrementClickCount(state: GameState): GameState {
             recentClicks: filteredRecentClicks,
         },
     };
+
+    // Update max CPM after adding the click
+    return updateMaxCPM(updatedState);
 } 
