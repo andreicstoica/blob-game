@@ -16,7 +16,6 @@ interface SlimeTrailProps {
 
 export const SlimeTrail: React.FC<SlimeTrailProps> = ({ isActive }) => {
   const [slimeDrops, setSlimeDrops] = useState<SlimeDrop[]>([]);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const lastDropTime = useRef(0);
   const dropInterval = 25; // Drop every 25ms (50% more frequent)
 
@@ -26,7 +25,6 @@ export const SlimeTrail: React.FC<SlimeTrailProps> = ({ isActive }) => {
 
     const handleMouseMove = (event: MouseEvent) => {
       const newPosition = { x: event.clientX, y: event.clientY };
-      setMousePosition(newPosition);
 
       // Create new slime drop at intervals
       const now = Date.now();
