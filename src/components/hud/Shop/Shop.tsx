@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import type { GameState } from '../../../game/types';
 import type { TutorialState } from '../../../game/types/ui';
 import { getCurrentLevel, getUnlockedGenerators } from '../../../game/systems/actions';
-import { ShopGenerators, ShopUpgrades, FilterToggle, BuyMultiplierToggle, ValueScale } from './index';
+import { ShopGenerators, ShopUpgrades, FilterToggle, BuyMultiplierToggle } from './index';
 import { Colors } from '../../../styles/colors';
 
 
@@ -67,8 +67,6 @@ export const Shop: React.FC<ShopProps> = ({
     return { highThreshold, lowThreshold };
   }, [gameState, currentLevel.name]);
 
-  
-
   const handleBuyGenerator = (generatorId: string) => {
     // Buy multiple generators based on multiplier
     for (let i = 0; i < buyMultiplier; i++) {
@@ -102,7 +100,7 @@ export const Shop: React.FC<ShopProps> = ({
           textAlign: 'center',
           userSelect: 'none',
           textTransform: 'uppercase',
-          textShadow: '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)'
+          textShadow: '0 0 8px rgba(200, 200, 200, 0.25), 0 0 16px rgba(200, 200, 200, 0.2)'
         }}>
           SHOP
         </h2>
@@ -125,12 +123,7 @@ export const Shop: React.FC<ShopProps> = ({
           />
         </div>
 
-        {/* Value Scale Display */}
-        <ValueScale 
-          gameState={gameState}
-          highThreshold={valueThresholds.highThreshold}
-          lowThreshold={valueThresholds.lowThreshold}
-        />
+
       </div>
 
       {/* Scrollable Content */}

@@ -164,7 +164,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
   // GROW - actually grows in size
   const growWordStyle = {
     ...baseWordStyle,
-    fontSize: '8rem', // Much bigger base size
+    fontSize: '7rem', // Smaller base size
     color: '#fb923c', // Keep the old orange color
     animation: 'grow 3s cubic-bezier(0.34, 1.56, 0.64, 1)'
   };
@@ -208,11 +208,11 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
             position: 'absolute',
             top: '8vh',
             left: '50%',
-            transform: 'translateX(-50%)',
+            transform: 'translateX(-60%)',
             display: 'flex', 
             justifyContent: 'center', 
             alignItems: 'center',
-            gap: '30px',
+            gap: '50px',
             minHeight: '120px'
           }}>
             <div style={{ width: '200px', textAlign: 'center' }}>
@@ -222,7 +222,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
                 </span>
               )}
             </div>
-            <div style={{ width: '200px', textAlign: 'center', transform: 'translateX(-20%)' }}>
+            <div style={{ width: '200px', textAlign: 'center' }}>
               {showBlob && (
                 <span style={blobWordStyle}>
                   BLOB
@@ -234,7 +234,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
           {/* Second row: MUST - fixed position */}
           <div style={{ 
             position: 'absolute',
-            top: 'calc(8vh + 140px)',
+            top: 'calc(8vh + 160px)',
             left: '50%',
             transform: 'translateX(-50%)',
             display: 'flex', 
@@ -252,7 +252,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
           {/* Third row: GROW - fixed position */}
           <div style={{ 
             position: 'absolute',
-            top: 'calc(8vh + 280px)',
+            top: 'calc(8vh + 320px)',
             left: '50%',
             transform: 'translateX(-50%)',
             display: 'flex', 

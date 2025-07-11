@@ -30,8 +30,8 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
       flexDirection: 'column',
       justifyContent: 'center',
       width: 'fit-content',
-      minWidth: '100px',
-      maxWidth: '100%',
+      minWidth: '200px',
+      maxWidth: 'none',
       backgroundColor: 'rgba(0, 0, 0, 0.4)',
       padding: `20px ${horizontalPadding}px`,
       borderRadius: '0 0 18px 18px',
@@ -58,8 +58,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
           lineHeight: '1',
           padding: '0 10px',
           whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
+          overflow: 'visible',
           minWidth: '0',
           flexShrink: 1
         }}>

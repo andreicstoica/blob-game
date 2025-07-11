@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Colors } from '../../styles/colors';
 
 interface TutorialPopupProps {
@@ -14,6 +14,14 @@ export const TutorialPopup: React.FC<TutorialPopupProps> = ({
   isVisible,
   onClose
 }) => {
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    if (isVisible) {
+      setIsAnimating(true);
+    }
+  }, [isVisible]);
+
   if (!isVisible) return null;
 
   // Position the popup based on the target area
@@ -31,8 +39,8 @@ export const TutorialPopup: React.FC<TutorialPopupProps> = ({
 
       cursor: onClose ? 'pointer' : 'default',
       transition: 'all 0.3s ease-in-out',
-      transform: 'scale(1)',
-      fontFamily: 'Arial, sans-serif'
+      fontFamily: 'Arial, sans-serif',
+      animation: isAnimating ? 'popupExpand 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)' : 'none'
     };
 
     if (position === 'shop') {
@@ -88,7 +96,7 @@ export const TutorialPopup: React.FC<TutorialPopupProps> = ({
                   
                   if (cleanWord === 'Generators') {
                     return (
-                      <span key={wordIndex} style={{ fontWeight: 'bold', color: Colors.generators.light }}>
+                      <span key={wordIndex} style={{ fontWeight: 'bold', color: Colors.generators.primary }}>
                         {word}{' '}
                       </span>
                     );

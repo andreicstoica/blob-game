@@ -55,7 +55,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
           color: Colors.evolution.primary,
           textAlign: "center",
           textTransform: "uppercase",
-          textShadow: "0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)"
+          textShadow: "0 0 8px rgba(200, 200, 200, 0.25), 0 0 16px rgba(200, 200, 200, 0.25)"
         }}
       >
         EVOLUTION

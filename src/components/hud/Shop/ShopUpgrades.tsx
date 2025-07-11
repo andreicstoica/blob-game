@@ -56,8 +56,8 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
       <h3 style={{ 
         margin: '30px 0 15px 0', 
         fontSize: '14px',
-        padding: '8px 12px',
-        border: `2px solid ${Colors.headlines.primary}`,
+        padding: '4px 12px',
+        border: `2px solid ${Colors.upgrades.primary}`,
         borderRadius: '6px',
         display: 'inline-block'
       }}>Upgrades</h3>
@@ -66,7 +66,7 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
         .filter(upgrade => {
             // Always show tutorial upgrade during tutorial
             if (upgrade.id === 'tutorial-upgrade') {
-              return tutorialState?.isActive && tutorialState.currentStep?.type === 'shop-intro' && !tutorialState.completedSteps.has('shop-intro');
+              return tutorialState?.isActive;
             }
             
           if (generatorFilter === 'current') {
@@ -91,35 +91,46 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
         .map(upgrade => {
         const canAfford = (biomass >= upgrade.cost || upgrade.id === 'tutorial-upgrade') && !upgrade.purchased;
         
+        // Check if tutorial upgrade should be enabled (after click-blob step is completed, but before evolution-intro)
+        const isTutorialEnabled = upgrade.id === 'tutorial-upgrade' && 
+          tutorialState?.completedSteps.has('click-blob') && 
+          !tutorialState?.completedSteps.has('evolution-intro');
+        
         return (
           <div key={upgrade.id} style={{
             background: upgrade.purchased 
-              ? `${Colors.upgrades.light}20` // lighter for purchased
-              : canAfford 
-                ? `${Colors.upgrades.primary}30`
-                : 'rgba(255, 255, 255, 0.1)',
+              ? `${Colors.upgrades.light}30` // purple for purchased tutorial upgrade
+              : upgrade.id === 'tutorial-upgrade' && !isTutorialEnabled
+                ? 'rgba(128, 128, 128, 0.3)' // gray for disabled tutorial upgrade
+                : canAfford 
+                  ? `${Colors.upgrades.primary}30`
+                  : 'rgba(255, 255, 255, 0.1)',
             border: `2px solid ${
               upgrade.purchased 
-                ? Colors.upgrades.light // lighter border for purchased
-                : canAfford 
-                  ? Colors.upgrades.primary 
-                  : '#666'
+                ? Colors.upgrades.light // purple border for purchased tutorial upgrade
+                : upgrade.id === 'tutorial-upgrade' && !isTutorialEnabled
+                  ? '#666' // gray border for disabled tutorial upgrade
+                  : canAfford 
+                    ? Colors.upgrades.primary 
+                    : '#666'
             }`,
             borderRadius: '8px',
             padding: '12px',
             marginBottom: '10px',
-            cursor: canAfford ? 'pointer' : 'not-allowed',
+            cursor: canAfford && (upgrade.id !== 'tutorial-upgrade' || isTutorialEnabled) ? 'pointer' : 'default',
             fontSize: '12px',
             transition: 'all 0.2s ease',
             transform: 'scale(1)',
             boxShadow: upgrade.purchased 
-              ? `0 2px 8px ${Colors.upgrades.light}40` // lighter shadow for purchased
-              : canAfford 
-                ? `0 2px 8px ${Colors.upgrades.primary}40` 
-                : 'none'
+              ? `0 2px 8px ${Colors.upgrades.light}40` // purple shadow for purchased tutorial upgrade
+              : upgrade.id === 'tutorial-upgrade' && !isTutorialEnabled
+                ? 'none' // no shadow for disabled tutorial upgrade
+                : canAfford 
+                  ? `0 2px 8px ${Colors.upgrades.primary}40` 
+                  : 'none'
           }}
           onClick={(e) => {
-            if (canAfford) {
+            if (canAfford && (upgrade.id !== 'tutorial-upgrade' || isTutorialEnabled)) {
               onBuyUpgrade(upgrade.id);
               
               // Add floating number animation - position outside shop panel (skip for tutorial upgrade)
@@ -143,7 +154,10 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.01)';
-            if (canAfford && !upgrade.purchased) {
+            if (upgrade.purchased) {
+              e.currentTarget.style.backgroundColor = `${Colors.tutorial.primary}40`;
+              e.currentTarget.style.boxShadow = `0 4px 12px ${Colors.tutorial.primary}60`;
+            } else if (canAfford && !upgrade.purchased && (upgrade.id !== 'tutorial-upgrade' || isTutorialEnabled)) {
               e.currentTarget.style.backgroundColor = `${Colors.upgrades.primary}40`;
               e.currentTarget.style.boxShadow = `0 4px 12px ${Colors.upgrades.primary}60`;
             } else if (!upgrade.purchased) {
@@ -153,13 +167,20 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'scale(1)';
-            if (!upgrade.purchased) {
-              e.currentTarget.style.backgroundColor = canAfford 
-                ? `${Colors.upgrades.primary}30` 
-                : 'rgba(255, 255, 255, 0.1)';
-              e.currentTarget.style.boxShadow = canAfford 
-                ? `0 2px 8px ${Colors.upgrades.primary}40` 
-                : 'none';
+            if (upgrade.purchased) {
+              e.currentTarget.style.backgroundColor = `${Colors.tutorial.primary}30`;
+              e.currentTarget.style.boxShadow = `0 2px 8px ${Colors.tutorial.primary}40`;
+            } else if (!upgrade.purchased) {
+              e.currentTarget.style.backgroundColor = upgrade.id === 'tutorial-upgrade' && !isTutorialEnabled
+                ? 'rgba(128, 128, 128, 0.3)'
+                : canAfford 
+                  ? `${Colors.upgrades.primary}30` 
+                  : 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.boxShadow = upgrade.id === 'tutorial-upgrade' && !isTutorialEnabled
+                ? 'none'
+                : canAfford 
+                  ? `0 2px 8px ${Colors.upgrades.primary}40` 
+                  : 'none';
             }
           }}
           >
@@ -170,7 +191,7 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
                   position: 'absolute',
                   top: '-8px',
                   right: '-8px',
-                  color: Colors.upgrades.primary,
+                  color: upgrade.id === 'tutorial-upgrade' ? Colors.tutorial.primary : Colors.upgrades.primary,
                   fontSize: '24px',
                   fontWeight: 'bold'
                 }}>✓</span>
