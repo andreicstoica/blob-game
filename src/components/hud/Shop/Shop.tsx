@@ -68,7 +68,7 @@ export const Shop: React.FC<ShopProps> = ({
       >
         <h2
           style={{
-            margin: "0 0 20px 0",
+            margin: "0 0 10px 0",
             fontSize: "24px",
             color: Colors.shop.primary,
             textAlign: "center",
@@ -87,7 +87,6 @@ export const Shop: React.FC<ShopProps> = ({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: "15px",
             gap: "10px",
           }}
         >
@@ -107,7 +106,7 @@ export const Shop: React.FC<ShopProps> = ({
         style={{
           flex: 1,
           overflowY: "auto",
-          padding: "0 20px 20px 20px",
+          padding: "5px 20px 20px 20px",
         }}
       >
         {/* Generators Component */}

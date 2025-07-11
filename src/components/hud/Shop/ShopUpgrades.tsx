@@ -119,13 +119,13 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
             <div
               key={upgrade.id}
               style={{
-                background: upgrade.purchased
-                  ? `${Colors.upgrades.light}30` // light upgrade color for purchased tutorial upgrade
-                  : upgrade.id === "tutorial-upgrade" && !isTutorialEnabled
-                  ? "rgba(128, 128, 128, 0.3)" // gray for disabled tutorial upgrade
-                  : canAfford
-                  ? `${Colors.upgrades.primary}30`
-                  : "rgba(255, 255, 255, 0.1)",
+                background: upgrade.id === "tutorial-upgrade"
+                  ? upgrade.purchased
+                    ? "rgba(128, 128, 128, 0.3)" // gray background for purchased tutorial upgrade
+                    : tutorialState?.currentStep?.type === "click-blob"
+                    ? "rgba(128, 128, 128, 0.3)" // gray background during click-blob phase
+                    : `${Colors.upgrades.primary}30` // purple background for unpurchased tutorial upgrade
+                  : "rgba(128, 128, 128, 0.2)", // Consistent gray background for other upgrades
                 border: `2px solid ${
                   upgrade.purchased
                     ? Colors.upgrades.light // purple border for purchased tutorial upgrade
@@ -188,40 +188,65 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "scale(1.01)";
                 if (upgrade.purchased) {
-                  e.currentTarget.style.backgroundColor = `${Colors.upgrades.light}40`;
+                  e.currentTarget.style.borderColor = Colors.upgrades.light;
                   e.currentTarget.style.boxShadow = `0 4px 12px ${Colors.upgrades.light}60`;
+                  if (upgrade.id === "tutorial-upgrade") {
+                    e.currentTarget.style.backgroundColor = "rgba(128, 128, 128, 0.4)";
+                  }
                 } else if (
                   canAfford &&
                   !upgrade.purchased &&
                   (upgrade.id !== "tutorial-upgrade" || isTutorialEnabled)
                 ) {
-                  e.currentTarget.style.backgroundColor = `${Colors.upgrades.primary}40`;
+                  e.currentTarget.style.borderColor = Colors.upgrades.primary;
                   e.currentTarget.style.boxShadow = `0 4px 12px ${Colors.upgrades.primary}60`;
+                  if (upgrade.id === "tutorial-upgrade") {
+                    if (tutorialState?.currentStep?.type === "click-blob") {
+                      e.currentTarget.style.backgroundColor = "rgba(128, 128, 128, 0.4)";
+                    } else {
+                      e.currentTarget.style.backgroundColor = `${Colors.upgrades.primary}40`;
+                    }
+                  }
                 } else if (!upgrade.purchased) {
-                  e.currentTarget.style.backgroundColor =
-                    "rgba(255, 255, 255, 0.15)";
-                  e.currentTarget.style.boxShadow =
-                    "0 4px 12px rgba(255, 255, 255, 0.1)";
+                  e.currentTarget.style.borderColor = "#999";
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(255, 255, 255, 0.1)";
+                  if (upgrade.id === "tutorial-upgrade") {
+                    if (tutorialState?.currentStep?.type === "click-blob") {
+                      e.currentTarget.style.backgroundColor = "rgba(128, 128, 128, 0.4)";
+                    } else {
+                      e.currentTarget.style.backgroundColor = `${Colors.upgrades.primary}20`;
+                    }
+                  }
                 }
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "scale(1)";
                 if (upgrade.purchased) {
-                  e.currentTarget.style.backgroundColor = `${Colors.upgrades.light}30`;
+                  e.currentTarget.style.borderColor = Colors.upgrades.light;
                   e.currentTarget.style.boxShadow = `0 2px 8px ${Colors.upgrades.light}40`;
+                  if (upgrade.id === "tutorial-upgrade") {
+                    e.currentTarget.style.backgroundColor = "rgba(128, 128, 128, 0.3)";
+                  }
                 } else if (!upgrade.purchased) {
-                  e.currentTarget.style.backgroundColor =
+                  e.currentTarget.style.borderColor =
                     upgrade.id === "tutorial-upgrade" && !isTutorialEnabled
-                      ? "rgba(128, 128, 128, 0.3)"
+                      ? "#666"
                       : canAfford
-                      ? `${Colors.upgrades.primary}30`
-                      : "rgba(255, 255, 255, 0.1)";
+                      ? Colors.upgrades.primary
+                      : "#666";
                   e.currentTarget.style.boxShadow =
                     upgrade.id === "tutorial-upgrade" && !isTutorialEnabled
                       ? "none"
                       : canAfford
                       ? `0 2px 8px ${Colors.upgrades.primary}40`
                       : "none";
+                  if (upgrade.id === "tutorial-upgrade") {
+                    if (tutorialState?.currentStep?.type === "click-blob") {
+                      e.currentTarget.style.backgroundColor = "rgba(128, 128, 128, 0.3)";
+                    } else {
+                      e.currentTarget.style.backgroundColor = `${Colors.upgrades.primary}30`;
+                    }
+                  }
                 }
               }}
             >
@@ -264,7 +289,7 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
                   style={{
                     color: canAfford
                       ? Colors.biomass.primary
-                      : Colors.headlines.primary,
+                      : Colors.headlines.medium,
                     fontWeight: "bold",
                     fontSize: "13px",
                   }}

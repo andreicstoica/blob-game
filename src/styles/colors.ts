@@ -56,6 +56,8 @@ export const Colors = {
     secondary: '#dc2626',  // Darker red for hover states
     light: '#f87171',      // Light red for subtle elements
     dark: '#b91c1c',       // Dark red for emphasis
+    darker: '#991b1b',     // Even darker red for unaffordable items
+    medium: '#d32f2f',     // Medium red for unaffordable items (between primary and darker)
   },
 
   // Neutral colors
