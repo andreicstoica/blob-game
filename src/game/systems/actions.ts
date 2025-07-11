@@ -117,12 +117,8 @@ export function evolveToNextLevel(state: GameState): GameState {
         return state;
     }
 
-    // Play appropriate sound based on current level
-    if (state.currentLevelId === 0) {
-        // Play game start sound for intro level
-        playSound('gameStart');
-    } else {
-        // Play evolve sound for all other levels
+    // Play evolve sound for all levels except intro (intro sound is handled in UI)
+    if (state.currentLevelId > 0) {
         playSound('evolve');
     }
 

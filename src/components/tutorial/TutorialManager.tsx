@@ -15,8 +15,8 @@ export const TutorialManager: React.FC<TutorialManagerProps> = ({
 }) => {
   const currentStep = getCurrentTutorialStep(tutorialState);
 
-  // Only show tutorial for click-blob step
-  if (!currentStep || currentStep.type !== 'click-blob') {
+  // Only show tutorial if it's active AND we have a click-blob step
+  if (!tutorialState.isActive || !currentStep || currentStep.type !== 'click-blob') {
     return null;
   }
 

@@ -101,12 +101,29 @@ export const updateTutorial = (tutorialState: TutorialState, gameState: GameStat
   return newTutorialState;
 }; 
 
+// Force complete tutorial when transitioning from intro level
+export const forceCompleteTutorial = (tutorialState: TutorialState): TutorialState => {
+  if (!tutorialState.isActive) return tutorialState;
+  
+  return {
+    ...tutorialState,
+    isActive: false,
+    currentStep: null,
+    completedSteps: new Set(['click-blob', 'first-evolution']), // Mark all intro steps as completed
+  };
+};
+
 // Progress tutorial based on a game event
 export function progressTutorial(
   tutorialState: TutorialState,
   event: 'manualClick' | 'buyGenerator' | 'evolve'
 ): TutorialState {
   if (!tutorialState.isActive || !tutorialState.currentStep) return tutorialState;
+
+  // If evolving from intro level, force complete the tutorial
+  if (event === 'evolve' && tutorialState.currentStep.type === 'click-blob') {
+    return forceCompleteTutorial(tutorialState);
+  }
 
   // Progression logic for each step
   switch (tutorialState.currentStep.type) {
