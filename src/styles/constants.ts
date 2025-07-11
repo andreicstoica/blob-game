@@ -1,3 +1,30 @@
+import brownBacteria from "/assets/images/particles/bacteria/brown-bacteria.png";
+import greenBacteria from "/assets/images/particles/bacteria/green-bacteria.png";
+import purpleBacteria from "/assets/images/particles/bacteria/purple-bacteria.png";
+import galaxy1 from "/assets/images/particles/galaxies/galaxy-1.png";
+import galaxy2 from "/assets/images/particles/galaxies/galaxy-2.webp";
+import mouse1 from "/assets/images/particles/mice/mouse-1.png";
+import mouse2 from "/assets/images/particles/mice/mouse-2.png";
+import mouse3 from "/assets/images/particles/mice/mouse-3.png";
+import spaceship1 from "/assets/images/particles/spaceships/spaceship-1.png";
+import spaceship2 from "/assets/images/particles/spaceships/spaceship-2.png";
+import spaceship3 from "/assets/images/particles/spaceships/spaceship-3.png";
+import tank1 from "/assets/images/particles/tanks/tank-1.png";
+import tank2 from "/assets/images/particles/tanks/tank-2.png";
+import tank3 from "/assets/images/particles/tanks/tank-3.png";
+import person1 from "/assets/images/particles/people/person-1.png";
+import person2 from "/assets/images/particles/people/person-2.png";
+
+export const VISUAL_ASSETS = {
+    circle: [],
+    bacteria: [brownBacteria, greenBacteria, purpleBacteria],
+    mice: [mouse1, mouse2, mouse3],
+    spaceships: [spaceship1, spaceship2, spaceship3],
+    tanks: [tank1, tank2, tank3],
+    galaxies: [galaxy1, galaxy2],
+    people: [person1, person2],
+};
+
 export const PHASE_BG_GRADIENT = {
     intro: {
         dark: 'linear-gradient(160deg,#e0c3fc,#8ec5fc)',

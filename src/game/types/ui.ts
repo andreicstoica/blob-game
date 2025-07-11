@@ -94,7 +94,7 @@ export interface Particle {
   speed: number;
   size: number;
   color: string;
-  type: 'bacteria' | 'mice' | 'spaceships' | 'tanks' | 'galaxies' | 'people';
+  type: 'circle' | 'bacteria' | 'mice' | 'spaceships' | 'tanks' | 'galaxies' | 'people';
   useImage?: boolean;
   image?: string;
   direction: { x: number; y: number };
