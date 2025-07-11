@@ -107,11 +107,20 @@ export function checkClickMilestones(state: GameState): { state: GameState; noti
         };
     }
 
+    if (state.notifications.totalClicks >= 1000 && !state.notifications.shownMilestones.has("clicker-immortal")) {
+        return {
+            state: markMilestoneAsShown(state, "clicker-immortal"),
+            notification: {
+                message: "1,000 clicks! You have transcended mortal limits. The click gods salute you. ⚡👑",
+                id: "clicker-immortal"
+            }
+        };
+    }
     if (state.notifications.totalClicks >= 500 && !state.notifications.shownMilestones.has("clicker-expert")) {
         return {
             state: markMilestoneAsShown(state, "clicker-expert"),
             notification: {
-                message: "500 clicks—you're unstoppable.",
+                message: "500 clicks! You're unstoppable.",
                 id: "clicker-expert"
             }
         };
@@ -134,7 +143,7 @@ export function checkClickMilestones(state: GameState): { state: GameState; noti
 export function calculateCPM(recentClicks: number[]): number {
     const now = Date.now();
     const oneMinuteAgo = now - 60000;
-    
+
     // Count clicks in the last minute
     return recentClicks.filter(timestamp => timestamp > oneMinuteAgo).length;
 }
@@ -142,13 +151,13 @@ export function calculateCPM(recentClicks: number[]): number {
 export function incrementClickCount(state: GameState): GameState {
     const now = Date.now();
     const oneMinuteAgo = now - 60000; // 60 seconds ago
-    
+
     // Add current click timestamp
     const updatedRecentClicks = [...state.notifications.recentClicks, now];
-    
+
     // Remove clicks older than 1 minute
     const filteredRecentClicks = updatedRecentClicks.filter(timestamp => timestamp > oneMinuteAgo);
-    
+
     return {
         ...state,
         notifications: {
