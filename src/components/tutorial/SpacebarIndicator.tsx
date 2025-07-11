@@ -1,5 +1,4 @@
-import React from 'react';
-import { Colors } from '../../styles/colors';
+import React from "react";
 
 interface SpacebarIndicatorProps {
   position: { x: number; y: number };
@@ -15,22 +14,22 @@ export const SpacebarIndicator: React.FC<SpacebarIndicatorProps> = ({
   }
 
   const spacebarStyle: React.CSSProperties = {
-    position: 'fixed',
+    position: "fixed",
     left: position.x,
     top: position.y,
-    transform: 'translateX(-50%)',
+    transform: "translateX(-50%)",
     zIndex: 9999,
-    pointerEvents: 'none',
+    pointerEvents: "none",
   };
 
   const arrowStyle: React.CSSProperties = {
-    position: 'fixed',
+    position: "fixed",
     left: position.x,
     top: position.y - 14, // Position arrow above the spacebar
-    transform: 'translateX(-50%)',
-    animation: 'tutorialBounce 2s ease-in-out infinite',
+    transform: "translateX(-50%)",
+    animation: "tutorialBounce 2s ease-in-out infinite",
     zIndex: 9999,
-    pointerEvents: 'none',
+    pointerEvents: "none",
   };
 
   return (
@@ -65,7 +64,7 @@ export const SpacebarIndicator: React.FC<SpacebarIndicatorProps> = ({
           }
         `}
       </style>
-      
+
       {/* Green arrow pointing down to spacebar */}
       <div style={arrowStyle} className="tutorial-arrow">
         <svg
@@ -87,7 +86,7 @@ export const SpacebarIndicator: React.FC<SpacebarIndicatorProps> = ({
               />
             </filter>
           </defs>
-          
+
           {/* Arrow body - pointing downward */}
           <path
             d="M30 20 L30 65"
@@ -96,7 +95,7 @@ export const SpacebarIndicator: React.FC<SpacebarIndicatorProps> = ({
             strokeLinecap="round"
             filter="url(#arrowGlow)"
           />
-          
+
           {/* Arrow head - pointing downward */}
           <path
             d="M20 55 L30 70 L40 55"
@@ -109,7 +108,7 @@ export const SpacebarIndicator: React.FC<SpacebarIndicatorProps> = ({
           />
         </svg>
       </div>
-      
+
       {/* Spacebar graphic */}
       <div style={spacebarStyle} className="spacebar-indicator">
         <svg
@@ -121,7 +120,13 @@ export const SpacebarIndicator: React.FC<SpacebarIndicatorProps> = ({
         >
           {/* Spacebar shadow/glow effect */}
           <defs>
-            <filter id="spacebarGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <filter
+              id="spacebarGlow"
+              x="-20%"
+              y="-20%"
+              width="140%"
+              height="140%"
+            >
               <feDropShadow
                 dx="0"
                 dy="2"
@@ -131,7 +136,7 @@ export const SpacebarIndicator: React.FC<SpacebarIndicatorProps> = ({
               />
             </filter>
           </defs>
-          
+
           {/* Spacebar body */}
           <rect
             x="5"
@@ -144,7 +149,7 @@ export const SpacebarIndicator: React.FC<SpacebarIndicatorProps> = ({
             strokeWidth="2"
             filter="url(#spacebarGlow)"
           />
-          
+
           {/* Spacebar text */}
           <text
             x="60"
@@ -161,4 +166,4 @@ export const SpacebarIndicator: React.FC<SpacebarIndicatorProps> = ({
       </div>
     </>
   );
-}; 
+};
