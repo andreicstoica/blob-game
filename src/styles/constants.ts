@@ -102,7 +102,7 @@ export const MILESTONES = [
     {
         id: "mountain-size",
         biomassThreshold: 100000000000000,
-        message: "You're as big as a mountain! 🏔️",
+        message: "You're as big as Mount Everest! 🏔️",
     },
     {
         id: "monaco-size",
