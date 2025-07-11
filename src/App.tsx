@@ -79,6 +79,7 @@ function GameComponent({ showIntro, gameHook }: { showIntro: boolean; gameHook: 
         onBuyGenerator={handleBuyGenerator}
         onBuyUpgrade={handleBuyUpgrade}
         onEvolve={handleEvolve}
+        onTutorialStepComplete={gameHook.handleTutorialStepComplete}
         blobSize={blobSize}
       />
     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { GameState } from '../../../game/types';
+import type { TutorialState } from '../../../game/types/ui';
 import { getCurrentLevel, getUnlockedGenerators } from '../../../game/systems/actions';
 import { ShopGenerators, ShopUpgrades, FilterToggle, BuyMultiplierToggle, ValueScale } from './index';
 
@@ -7,6 +8,7 @@ import { ShopGenerators, ShopUpgrades, FilterToggle, BuyMultiplierToggle, ValueS
 interface ShopProps {
   biomass: number;
   gameState?: GameState;
+  tutorialState?: TutorialState;
   onBuyGenerator?: (generatorId: string) => void;
   onBuyUpgrade?: (upgradeId: string) => void;
 }
@@ -14,6 +16,7 @@ interface ShopProps {
 export const Shop: React.FC<ShopProps> = ({ 
   biomass,
   gameState,
+  tutorialState,
   onBuyGenerator, 
   onBuyUpgrade 
 }) => {
@@ -137,6 +140,7 @@ export const Shop: React.FC<ShopProps> = ({
         <ShopGenerators
           biomass={biomass}
           gameState={gameState}
+          tutorialState={tutorialState}
           onBuyGenerator={handleBuyGenerator}
           generatorFilter={generatorFilter}
           currentLevel={currentLevel}
@@ -147,6 +151,7 @@ export const Shop: React.FC<ShopProps> = ({
         <ShopUpgrades
           biomass={biomass}
           gameState={gameState}
+          tutorialState={tutorialState}
           onBuyUpgrade={handleBuyUpgrade}
           generatorFilter={generatorFilter}
           currentLevel={currentLevel}

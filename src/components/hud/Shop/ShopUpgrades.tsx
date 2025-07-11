@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import type { GameState } from '../../../game/types';
+import type { TutorialState } from '../../../game/types/ui';
 import { NumberFormatter } from '../../../utils/numberFormat';
 import { LEVELS } from '../../../game/content/levels';
+import { TUTORIAL_UPGRADE } from '../../../game/content/tutorialContent';
 
 interface ShopFloatingNumber {
   id: string;
@@ -14,6 +16,7 @@ interface ShopFloatingNumber {
 interface UpgradesProps {
   biomass: number;
   gameState: GameState;
+  tutorialState?: TutorialState;
   onBuyUpgrade: (upgradeId: string) => void;
   generatorFilter: 'current' | 'all';
   currentLevel: { name: string };
@@ -22,6 +25,7 @@ interface UpgradesProps {
 export const ShopUpgrades: React.FC<UpgradesProps> = ({ 
   biomass,
   gameState,
+  tutorialState,
   onBuyUpgrade,
   generatorFilter,
   currentLevel
@@ -49,16 +53,27 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
   return (
     <>
       <h3 style={{ margin: '30px 0 15px 0', fontSize: '16px' }}>Upgrades</h3>
-      {Object.values(gameState.upgrades)
-        .filter(upgrade => {
-          if (generatorFilter === 'current') {
-            // Only show upgrades from current level
-            return upgrade.unlockedAtLevel === currentLevel.name;
-          } else {
-            // Show all unlocked upgrades
-            return isContentAvailable(upgrade.unlockedAtLevel);
-          }
-        })
+      {(() => {
+        let upgrades = Object.values(gameState.upgrades)
+          .filter(upgrade => {
+            // Always show tutorial upgrade during tutorial
+            if (upgrade.id === 'tutorial-upgrade') {
+              return tutorialState?.isActive && tutorialState.currentStep?.type === 'shop-intro' && !tutorialState.completedSteps.has('shop-intro');
+            }
+            
+            if (generatorFilter === 'current') {
+              // Only show upgrades from current level
+              return upgrade.unlockedAtLevel === currentLevel.name;
+            } else {
+              // Show all unlocked upgrades
+              return isContentAvailable(upgrade.unlockedAtLevel);
+            }
+          });
+
+        // Tutorial upgrade is now included in game state, so no need to add it here
+
+        return upgrades;
+      })()
         .sort((a, b) => {
           // Sort unpurchased first, then purchased
           if (a.purchased && !b.purchased) return 1;
@@ -66,7 +81,7 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
           return 0;
         })
         .map(upgrade => {
-        const canAfford = biomass >= upgrade.cost && !upgrade.purchased;
+        const canAfford = (biomass >= upgrade.cost || upgrade.id === 'tutorial-upgrade') && !upgrade.purchased;
         
         return (
           <div key={upgrade.id} style={{
@@ -99,21 +114,23 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
             if (canAfford) {
               onBuyUpgrade(upgrade.id);
               
-              // Add floating number animation - position outside shop panel
-              const rect = e.currentTarget.getBoundingClientRect();
-              const shopPanel = e.currentTarget.closest('[style*="height: 100vh"]');
-              const shopRect = shopPanel?.getBoundingClientRect();
-              
-              // Position the floating number outside the shop panel on the right
-              const x = shopRect ? shopRect.right + 20 : rect.right + 20;
-              const y = rect.top + rect.height / 2;
-              
-              addFloatingNumber(
-                `-${NumberFormatter.biomass(upgrade.cost, gameState)}`,
-                x,
-                y,
-                '#ef4444'
-              );
+              // Add floating number animation - position outside shop panel (skip for tutorial upgrade)
+              if (upgrade.id !== 'tutorial-upgrade') {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const shopPanel = e.currentTarget.closest('[style*="height: 100vh"]');
+                const shopRect = shopPanel?.getBoundingClientRect();
+                
+                // Position the floating number outside the shop panel on the right
+                const x = shopRect ? shopRect.right + 20 : rect.right + 20;
+                const y = rect.top + rect.height / 2;
+                
+                addFloatingNumber(
+                  `-${NumberFormatter.biomass(upgrade.cost, gameState)}`,
+                  x,
+                  y,
+                  '#ef4444'
+                );
+              }
             }
           }}
           onMouseEnter={(e) => {

@@ -9,6 +9,11 @@ export function getTotalGrowth(state: GameState): number {
     // Group generators by level
     const generatorsByLevel: Record<string, GeneratorState[]> = {};
     Object.values(state.generators).forEach((gen) => {
+        // Skip tutorial content
+        if (gen.id === 'tutorial-generator') {
+            return;
+        }
+        
         if (!generatorsByLevel[gen.unlockedAtLevel]) {
             generatorsByLevel[gen.unlockedAtLevel] = [];
         }
@@ -30,6 +35,11 @@ export function getTotalGrowth(state: GameState): number {
 
         // Apply upgrades that target this level
         Object.values(state.upgrades).forEach((upgrade) => {
+            // Skip tutorial content
+            if (upgrade.id === 'tutorial-upgrade') {
+                return;
+            }
+            
             if (
                 upgrade.purchased &&
                 upgrade.type === "growth" &&

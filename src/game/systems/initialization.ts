@@ -1,6 +1,7 @@
 import { GAME_CONFIG } from '../content/config';
 import { GENERATORS } from '../content/generators';
 import { UPGRADES } from '../content/upgrades';
+import { TUTORIAL_GENERATOR, TUTORIAL_UPGRADE } from '../content/tutorialContent';
 import type { GameState, GeneratorState, UpgradeState } from '../types';
 
 
@@ -13,6 +14,12 @@ export const initializeGenerators = (): Record<string, GeneratorState> => {
             level: 0
         };
     });
+    
+    // Add tutorial generator
+    generators[TUTORIAL_GENERATOR.id] = {
+        ...TUTORIAL_GENERATOR,
+        level: 0
+    };
     
     return generators;
 };
@@ -32,6 +39,13 @@ export const initializeUpgrades = () => {
             targetLevel: upgrade.targetLevel
         };
     });
+    
+    // Add tutorial upgrade
+    upgrades[TUTORIAL_UPGRADE.id] = {
+        ...TUTORIAL_UPGRADE,
+        purchased: false
+    };
+    
     return upgrades;
 };
 

@@ -31,7 +31,7 @@ export const ClickIndicator: React.FC<ClickIndicatorProps> = ({
         {`
           @keyframes leftButtonFlicker {
             0%, 50% {
-              fill: #22c55e;
+              fill: #60a5fa;
             }
             51%, 100% {
               fill: white;
@@ -39,13 +39,13 @@ export const ClickIndicator: React.FC<ClickIndicatorProps> = ({
           }
           
           .left-button-flicker {
-            animation: leftButtonFlicker 2s ease-in-out infinite;
+            animation: leftButtonFlicker 1s ease-in-out infinite;
           }
           
           @media (prefers-reduced-motion: reduce) {
             .left-button-flicker {
               animation: none;
-              fill: #22c55e;
+              fill: #60a5fa;
             }
           }
         `}
@@ -53,8 +53,8 @@ export const ClickIndicator: React.FC<ClickIndicatorProps> = ({
       
       <div style={indicatorStyle} className="click-indicator">
         <svg
-          width="48"
-          height="72"
+          width="60"
+          height="90"
           viewBox="0 0 48 72"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

@@ -7,10 +7,17 @@ export const TUTORIAL_STEPS: Record<string, Omit<TutorialStep, 'completed'>> = {
     id: 'click-blob',
     type: 'click-blob',
   },
-  // Future tutorial steps can be added here
-  'buy-first-generator': {
-    id: 'buy-first-generator', 
-    type: 'buy-generator',
+  'shop-intro': {
+    id: 'shop-intro',
+    type: 'shop-intro',
+    popupPosition: 'shop',
+    popupMessage: 'Generators work like auto-clickers.\n\nUpgrades make Generators stronger!'
+  },
+  'evolution-intro': {
+    id: 'evolution-intro',
+    type: 'evolution-intro',
+    popupPosition: 'evolution',
+    popupMessage: 'Growing enough unlocks Evolution, leading to new Levels and Upgrades.\n\nHow far can you go?'
   },
   'first-evolution': {
     id: 'first-evolution',
@@ -57,13 +64,35 @@ export const completeTutorialStep = (
   const newCompletedSteps = new Set(tutorialState.completedSteps);
   newCompletedSteps.add(stepId);
 
-  // For now, just complete the tutorial after the first step
-  // Later we can add logic to progress to next steps
+  // Progress to next step based on current step
+  let nextStep: TutorialStep | null = null;
+  
+  switch (stepId) {
+    case 'click-blob':
+      nextStep = {
+        ...TUTORIAL_STEPS['shop-intro'],
+        completed: false,
+      };
+      break;
+    case 'shop-intro':
+      // Progress to evolution-intro step after popup is clicked
+      nextStep = {
+        ...TUTORIAL_STEPS['evolution-intro'],
+        completed: false,
+      };
+      break;
+    case 'evolution-intro':
+      // Wait for user to evolve
+      break;
+    default:
+      break;
+  }
+
   return {
     ...tutorialState,
-    currentStep: null,
+    currentStep: nextStep,
     completedSteps: newCompletedSteps,
-    isActive: false,
+    isActive: nextStep !== null,
   };
 };
 
@@ -132,10 +161,25 @@ export function progressTutorial(
         return completeTutorialStep(tutorialState, 'click-blob');
       }
       break;
-    case 'buy-generator':
+    case 'shop-intro':
+      // This step is completed by buying a generator or upgrade
       if (event === 'buyGenerator') {
-        return completeTutorialStep(tutorialState, 'buy-first-generator');
+        // Mark shop-intro as completed but stay on this step until evolution popup
+        const newCompletedSteps = new Set(tutorialState.completedSteps);
+        newCompletedSteps.add('shop-intro');
+        
+        return {
+          ...tutorialState,
+          completedSteps: newCompletedSteps,
+          currentStep: {
+            ...TUTORIAL_STEPS['evolution-intro'],
+            completed: false,
+          },
+        };
       }
+      break;
+    case 'evolution-intro':
+      // This step is completed by clicking the popup, not by game events
       break;
     case 'evolve':
       if (event === 'evolve') {
