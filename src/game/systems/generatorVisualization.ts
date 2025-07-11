@@ -75,7 +75,7 @@ export function initializeGeneratorMovement(
       position,
       velocity,
       count: generator.level,
-      totalEffect: generator.baseEffect * generator.level,
+      totalEffect: generator.growthPerTick * generator.level,
       levelId: generator.unlockedAtLevel,
       lastFloatingNumber: Date.now(), // Initialize to current time to prevent immediate floating numbers
       // Wave movement properties
@@ -106,7 +106,7 @@ export function initializeStackedGeneratorMovement(
 
     // Calculate total count and effect for this level
     const totalCount = levelGenerators.reduce((sum, gen) => sum + gen.level, 0);
-    const totalEffect = levelGenerators.reduce((sum, gen) => sum + gen.baseEffect * gen.level, 0);
+    const totalEffect = levelGenerators.reduce((sum, gen) => sum + gen.growthPerTick * gen.level, 0);
     
     // Get emoji from first generator in the level
     const firstGenerator = GENERATORS[levelGenerators[0].id];

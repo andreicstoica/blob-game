@@ -38,7 +38,7 @@ export const Shop: React.FC<ShopProps> = ({
     // Calculate values for unlocked generators only
     const unlockedValues = unlockedGenerators.map(generator => {
       const nextCost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
-      const growthIncrease = generator.baseEffect;
+      const growthIncrease = generator.growthPerTick;
       return growthIncrease > 0 ? nextCost / growthIncrease : 0;
     }).filter(value => value > 0);
     
