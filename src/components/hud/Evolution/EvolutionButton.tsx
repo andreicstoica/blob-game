@@ -1,4 +1,6 @@
 import React from "react";
+import { useIntroStore } from "../../../store/introStore";
+import { playSound } from "../../../utils/sound";
 
 interface EvolutionButtonProps {
   canEvolve: boolean;
@@ -13,6 +15,8 @@ export const EvolutionButton: React.FC<EvolutionButtonProps> = ({
   onEvolve,
   currentLevelId = 0,
 }) => {
+  const startIntro = useIntroStore(state => state.startIntro);
+
   if (!hasNextLevel) {
     return (
       <div
@@ -43,10 +47,22 @@ export const EvolutionButton: React.FC<EvolutionButtonProps> = ({
   const buttonText = isIntroLevel ? "Start Game!" : "Evolve!";
   const notReadyText = isIntroLevel ? "Not Ready" : "Not Ready";
 
+  const handleClick = () => {
+    if (isIntroLevel) {
+      // For intro level: play sound immediately, start intro animation
+      playSound('gameStart');
+      startIntro();
+      // Game progression will happen after animation completes via IntroScreen
+    } else {
+      // For other levels, use the normal evolve behavior
+      onEvolve?.();
+    }
+  };
+
   return (
     <>
       <button
-        onClick={onEvolve}
+        onClick={handleClick}
         disabled={!canEvolve}
         style={{
           width: "100%",
