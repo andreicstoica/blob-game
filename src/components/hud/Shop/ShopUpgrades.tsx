@@ -3,7 +3,7 @@ import type { GameState } from '../../../game/types';
 import type { TutorialState } from '../../../game/types/ui';
 import { NumberFormatter } from '../../../utils/numberFormat';
 import { LEVELS } from '../../../game/content/levels';
-import { TUTORIAL_UPGRADE } from '../../../game/content/tutorialContent';
+
 
 interface ShopFloatingNumber {
   id: string;

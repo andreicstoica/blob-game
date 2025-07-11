@@ -5,7 +5,7 @@ import { NumberFormatter } from '../../../utils/numberFormat';
 import { getGeneratorValueInfo } from '../../../game/systems/generatorValue';
 import { isContentAvailable, calculateTotalCost } from '../../../game/systems/actions';
 import { GAME_CONFIG } from '../../../game/content/config';
-import { TUTORIAL_GENERATOR } from '../../../game/content/tutorialContent';
+
 
 
 interface ShopFloatingNumber {
