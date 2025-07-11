@@ -150,58 +150,27 @@ export function initializeStackedGeneratorMovement(
 }
 
 /**
- * Update generator positions with boundary collision and sinusoidal wave movement
+ * Update generator positions with sinusoidal wave movement (no boundary checking)
  */
 export function updateGeneratorPositions(
   generators: GeneratorVisualization[],
   blobSize: number,
   deltaTime: number
 ): GeneratorVisualization[] {
-  const blobRadius = blobSize * 0.35;
-  const padding = GAME_CONFIG.generatorVisualization.movement.padding;
-  const maxDistance = blobRadius - padding;
   const currentTime = Date.now() * 0.001; // Convert to seconds
 
   return generators.map((generator) => {
-    // Apply speed multiplier to base velocity
-    const adjustedSpeed = GAME_CONFIG.generatorVisualization.movement.speed * generator.speedMultiplier;
-    
     // Calculate sinusoidal wave offset
     const waveTime = currentTime * generator.waveFrequency + generator.waveOffset;
     const waveX = Math.sin(waveTime) * generator.waveAmplitude;
     const waveY = Math.cos(waveTime * 0.7) * generator.waveAmplitude * 0.8; // Different frequency for Y
     
-    // Calculate new position with wave movement
+    // Calculate new position with wave movement only
     const newX = generator.position.x + generator.velocity.x * deltaTime + waveX * deltaTime;
     const newY = generator.position.y + generator.velocity.y * deltaTime + waveY * deltaTime;
-    
-    // Check boundary collision
-    const distance = Math.sqrt(newX * newX + newY * newY);
-    
-    if (distance > maxDistance) {
-      // Bounce: reverse velocity and normalize
-      const angle = Math.atan2(newY, newX);
-      
-      // Add some randomness to the bounce to prevent getting stuck
-      const bounceAngle = angle + (Math.random() - 0.5) * 0.5; // ±0.25 radians
-      
-      const velocity = {
-        x: -Math.cos(bounceAngle) * adjustedSpeed,
-        y: -Math.sin(bounceAngle) * adjustedSpeed
-      };
-      
-      // Clamp position to boundary with a small safety margin
-      const safeDistance = maxDistance * 0.95; // 95% of max distance for safety
-      const position = {
-        x: Math.cos(angle) * safeDistance,
-        y: Math.sin(angle) * safeDistance
-      };
 
-      return { ...generator, position, velocity };
-    } else {
-      const position = { x: newX, y: newY };
-      return { ...generator, position };
-    }
+    const position = { x: newX, y: newY };
+    return { ...generator, position };
   });
 }
 

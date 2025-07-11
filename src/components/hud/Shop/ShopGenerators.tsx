@@ -83,10 +83,13 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
   return (
     <>
       <h3 style={{ margin: '10px 0 10px 0', fontSize: '16px' }}>Generators</h3>
-      {sortedGenerators.map((generator) => {
+      {sortedGenerators.map((generator, index) => {
 
         const totalCost = calculateTotalCost(generator, buyMultiplier);
         const canAfford = biomass >= totalCost;
+        
+        // Check if this is the first affordable generator
+        const isFirstAffordable = canAfford && index === sortedGenerators.findIndex(g => biomass >= calculateTotalCost(g, buyMultiplier));
         
         // Get level color for gradient
         const getLevelColor = (levelName: string) => {
@@ -110,8 +113,8 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
             className="generator-card"
             style={{
                           background: canAfford 
-              ? `linear-gradient(30deg, rgba(74, 222, 128, 0.2) 0%, rgba(74, 222, 128, 0.2) 65%, rgba(74, 222, 128, 0.18) 66%, rgba(74, 222, 128, 0.15) 66.5%, rgba(74, 222, 128, 0.12) 66.8%, rgba(74, 222, 128, 0.08) 67%, rgba(74, 222, 128, 0.05) 67.2%, ${levelColor}30 67%, ${levelColor}50 70%, ${levelColor}70 75%, ${levelColor}80 100%)`
-              : `linear-gradient(30deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 65%, rgba(255, 255, 255, 0.04) 66%, rgba(255, 255, 255, 0.03) 66.5%, rgba(255, 255, 255, 0.02) 66.8%, rgba(255, 255, 255, 0.01) 67%, rgba(255, 255, 255, 0.005) 67.2%, ${levelColor}20 67%, ${levelColor}30 70%, ${levelColor}40 75%, ${levelColor}50 100%)`,
+              ? `linear-gradient(20deg, rgba(74, 222, 128, 0.2) 0%, rgba(74, 222, 128, 0.2) 70%, ${levelColor}20 70%, ${levelColor}20 100%)`
+              : `linear-gradient(20deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 70%, ${levelColor}15 70%, ${levelColor}15 100%)`,
               border: `2px solid ${
                 canAfford 
                   ? '#4ade80' 
@@ -127,7 +130,8 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
               transform: 'scale(1)',
               boxShadow: canAfford 
                 ? '0 2px 8px rgba(74, 222, 128, 0.3)' 
-                : 'none'
+                : 'none',
+              animation: isFirstAffordable ? 'generatorPulse 2s ease-in-out infinite' : 'none'
             }}
           onClick={(e) => {
             if (canAfford) {
@@ -213,14 +217,14 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
                 fontSize: '13px',
                 fontWeight: 'normal'
               }}>
-                Per: <span style={{ fontSize: '15px' }}>{NumberFormatter.rate(generator.baseEffect * (1000 / GAME_CONFIG.tickRate), gameState)}</span>
+                Per: <span style={{ fontSize: '15px' }}>{NumberFormatter.rate(generator.baseEffect * 10, gameState)}</span> / sec
               </div>
               <div style={{ 
                 color: '#60a5fa',
                 fontSize: '13px',
                 fontWeight: 'bold'
               }}>
-                Total: <span style={{ fontSize: '15px' }}>{NumberFormatter.rate(generator.baseEffect * generator.level * (1000 / GAME_CONFIG.tickRate), gameState)}</span>
+                Total: <span style={{ fontSize: '15px' }}>{NumberFormatter.rate(generator.baseEffect * generator.level * 10, gameState)}</span> / sec
               </div>
             </div>
             
@@ -299,6 +303,21 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
           100% {
             opacity: 0;
             transform: translate(-50%, -50%) translateY(-40px);
+          }
+        }
+        
+        @keyframes generatorPulse {
+          0% {
+            box-shadow: 0 2px 8px rgba(74, 222, 128, 0.3);
+            transform: scale(1);
+          }
+          50% {
+            box-shadow: 0 4px 16px rgba(74, 222, 128, 0.5);
+            transform: scale(1.02);
+          }
+          100% {
+            box-shadow: 0 2px 8px rgba(74, 222, 128, 0.3);
+            transform: scale(1);
           }
         }
       `}</style>
