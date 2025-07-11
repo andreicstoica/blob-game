@@ -71,7 +71,7 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'whole',
     background: 'city-bg',
     foodTypes: [],
-    description: 'Infiltrate through the city.',
+    description: 'Infiltrate throughout the city.',
     blobSizeStart: 240,
     blobSizeEnd: 1200
   },

@@ -32,13 +32,13 @@ const BASE_PARTICLE_CONFIGS = {
         color: Colors.evolution.primary,
     },
     lab: {
-        spawnRate: .5,
+        spawnRate: .75,
         speed: 80,
-        size: 100,
+        size: 120,
         color: Colors.shop.primary,
     },
     neighborhood: {
-        spawnRate: .25,
+        spawnRate: 1,
         speed: 60,
         size: 100,
         color: '#06b6d4',

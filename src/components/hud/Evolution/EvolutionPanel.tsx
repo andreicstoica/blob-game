@@ -34,15 +34,16 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
     <div
       style={{
         position: "fixed",
-        top: "50%",
+        top: "0",
         right: "0",
-        transform: "translateY(-50%)",
+        transform: "none",
         width: `${width}px`,
+        height: "100vh",
         backgroundColor: "rgba(0, 0, 0, 0.4)",
         color: "white",
         fontFamily: "Arial, sans-serif",
         padding: "20px",
-        borderRadius: "12px",
+        borderRadius: "0",
         zIndex: 1000,
         userSelect: "none",
         display: "flex",
@@ -58,7 +59,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
           textAlign: "center",
           textTransform: "uppercase",
           textShadow:
-            "0 0 8px rgba(200, 200, 200, 0.25), 0 0 16px rgba(200, 200, 200, 0.25)",
+            "0 0 12px rgba(200, 200, 200, 0.4), 0 0 24px rgba(200, 200, 200, 0.4)",
         }}
       >
         EVOLUTION

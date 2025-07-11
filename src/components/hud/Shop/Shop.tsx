@@ -75,7 +75,7 @@ export const Shop: React.FC<ShopProps> = ({
             userSelect: "none",
             textTransform: "uppercase",
             textShadow:
-              "0 0 8px rgba(200, 200, 200, 0.25), 0 0 16px rgba(200, 200, 200, 0.2)",
+              "0 0 12px rgba(200, 200, 200, 0.4), 0 0 24px rgba(200, 200, 200, 0.4)",
           }}
         >
           SHOP
