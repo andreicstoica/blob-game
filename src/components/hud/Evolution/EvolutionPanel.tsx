@@ -82,28 +82,6 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
         onEvolve={onEvolve}
         currentLevelId={currentLevel.id}
       />
-
-      {/* Debug Information */}
-      <div
-        style={{
-          marginTop: "20px",
-          padding: "10px",
-          backgroundColor: "rgba(255, 255, 255, 0.1)",
-          borderRadius: "5px",
-        }}
-      >
-        <h4
-          style={{ margin: "0 0 10px 0", fontSize: "14px", color: "#93c5fd" }}
-        >
-          Debug Info
-        </h4>
-        <div style={{ fontSize: "12px", lineHeight: "1.4" }}>
-          <div>Zoom: {currentZoom.toFixed(3)}</div>
-          <div>Blob Size: {blobSize.toFixed(0)}px</div>
-          <div>Growth Rate: {gameState.growth.toFixed(1)}/s</div>
-          <div>Level: {currentLevel.name}</div>
-        </div>
-      </div>
     </div>
   );
 };

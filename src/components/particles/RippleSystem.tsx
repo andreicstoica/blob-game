@@ -44,50 +44,60 @@ export const RippleSystem: React.FC<RippleSystemProps> = ({
   const blobRadius = baseRadius + heatShrinkage; // clickBoost is negative, so this shrinks
 
   // Create ripple effect at absorption point with directional movement
-  const createRippleEffect = useCallback((absorbX: number, absorbY: number, direction?: { x: number; y: number }) => {
-    const blobCenterX = blobPosition.x;
-    const blobCenterY = blobPosition.y;
-    
-    // Convert absorption position to blob-relative coordinates
-    const relativeX = absorbX - blobCenterX;
-    const relativeY = absorbY - blobCenterY;
-    
-    // Create single ripple for clean trajectory following
-    const maxLife = 0.8 + Math.random() * 0.3; // Reduced lifetime: 0.8-1.1 seconds
-    
-    // Smart scaling: small ripples for small blobs, larger ripples for large blobs
-    const baseSize = blobRadius * 0.3; // 30% of blob radius
-    const minSize = Math.max(15, baseSize * 0.5); // Minimum 15px, or 15% of radius
-    const maxSize = Math.max(40, baseSize); // Minimum 40px, or 30% of radius
-    const finalSize = minSize + Math.random() * (maxSize - minSize);
-    
-    // White/light colors only (no blue)
-    const rippleColors = ['#ffffff', '#f8fafc', '#e2e8f0'];
-    const color = rippleColors[Math.floor(Math.random() * rippleColors.length)];
-    
-    // Calculate initial velocity based on particle direction
-    const velocityMultiplier = 25 + Math.random() * 20; // 25-45 pixels per second
-    const initialVelocity = direction ? {
-      x: direction.x * velocityMultiplier,
-      y: direction.y * velocityMultiplier
-    } : { x: 0, y: 0 };
-    
-    const newRipple: RippleParticle = {
-      id: Math.random().toString(36),
-      x: relativeX,
-      y: relativeY,
-      size: 2, // Start smaller
-      maxSize: finalSize,
-      life: maxLife,
-      maxLife: maxLife,
-      color,
-      opacity: 0.6, // Reduced opacity for subtlety
-      direction,
-      velocity: initialVelocity,
-    };
-    
-    setRippleParticles(prev => [...prev, newRipple]);
-  }, [blobPosition, blobRadius]);
+  const createRippleEffect = useCallback(
+    (
+      absorbX: number,
+      absorbY: number,
+      direction?: { x: number; y: number }
+    ) => {
+      const blobCenterX = blobPosition.x;
+      const blobCenterY = blobPosition.y;
+
+      // Convert absorption position to blob-relative coordinates
+      const relativeX = absorbX - blobCenterX;
+      const relativeY = absorbY - blobCenterY;
+
+      // Create single ripple for clean trajectory following
+      const maxLife = 0.8 + Math.random() * 0.3; // Reduced lifetime: 0.8-1.1 seconds
+
+      // Smart scaling: small ripples for small blobs, larger ripples for large blobs
+      const baseSize = blobRadius * 0.3; // 30% of blob radius
+      const minSize = Math.max(15, baseSize * 0.5); // Minimum 15px, or 15% of radius
+      const maxSize = Math.max(40, baseSize); // Minimum 40px, or 30% of radius
+      const finalSize = minSize + Math.random() * (maxSize - minSize);
+
+      // White/light colors only (no blue)
+      const rippleColors = ["#ffffff", "#f8fafc", "#e2e8f0"];
+      const color =
+        rippleColors[Math.floor(Math.random() * rippleColors.length)];
+
+      // Calculate initial velocity based on particle direction
+      const velocityMultiplier = 25 + Math.random() * 20; // 25-45 pixels per second
+      const initialVelocity = direction
+        ? {
+            x: direction.x * velocityMultiplier,
+            y: direction.y * velocityMultiplier,
+          }
+        : { x: 0, y: 0 };
+
+      const newRipple: RippleParticle = {
+        id: Math.random().toString(36),
+        x: relativeX,
+        y: relativeY,
+        size: 2, // Start smaller
+        maxSize: finalSize,
+        life: maxLife,
+        maxLife: maxLife,
+        color,
+        opacity: 0.6, // Reduced opacity for subtlety
+        direction,
+        velocity: initialVelocity,
+      };
+
+      setRippleParticles((prev) => [...prev, newRipple]);
+    },
+    [blobPosition, blobRadius]
+  );
 
   // Listen for particle absorption events (we'll connect this to the particle system)
   useEffect(() => {
@@ -97,10 +107,16 @@ export const RippleSystem: React.FC<RippleSystemProps> = ({
     };
 
     // Listen for custom particle absorption events
-    window.addEventListener('particle-absorbed', handleParticleAbsorption as EventListener);
+    window.addEventListener(
+      "particle-absorbed",
+      handleParticleAbsorption as EventListener
+    );
 
     return () => {
-      window.removeEventListener('particle-absorbed', handleParticleAbsorption as EventListener);
+      window.removeEventListener(
+        "particle-absorbed",
+        handleParticleAbsorption as EventListener
+      );
     };
   }, [createRippleEffect]);
 
@@ -114,47 +130,50 @@ export const RippleSystem: React.FC<RippleSystemProps> = ({
 
     const animate = (currentTime: number) => {
       if (currentTime - lastUpdate >= updateInterval) {
-        setRippleParticles(prev => 
-          prev
-            .map(ripple => {
-              const deltaTime = updateInterval / 1000; // Convert to seconds
-              const newLife = ripple.life - deltaTime;
-              
-              if (newLife <= 0) {
-                return null; // Remove expired ripple
-              }
+        setRippleParticles(
+          (prev) =>
+            prev
+              .map((ripple) => {
+                const deltaTime = updateInterval / 1000; // Convert to seconds
+                const newLife = ripple.life - deltaTime;
 
-              // Simplified easing for performance
-              const progress = 1 - (newLife / ripple.maxLife); // 0 to 1
-              const newSize = ripple.maxSize * progress;
-              
-              // Simple fade out
-              const opacity = (1 - progress) * 0.6;
+                if (newLife <= 0) {
+                  return null; // Remove expired ripple
+                }
 
-              // Update position based on velocity (directional movement)
-              const newX = ripple.x + (ripple.velocity?.x || 0) * deltaTime;
-              const newY = ripple.y + (ripple.velocity?.y || 0) * deltaTime;
-              
-              // Apply drag to velocity for natural deceleration
-              const dragFactor = 0.95; // 5% velocity loss per update
-              const newVelocity = ripple.velocity ? {
-                x: ripple.velocity.x * dragFactor,
-                y: ripple.velocity.y * dragFactor
-              } : undefined;
+                // Simplified easing for performance
+                const progress = 1 - newLife / ripple.maxLife; // 0 to 1
+                const newSize = ripple.maxSize * progress;
 
-              return {
-                ...ripple,
-                x: newX,
-                y: newY,
-                size: newSize,
-                life: newLife,
-                opacity,
-                velocity: newVelocity,
-              };
-            })
-            .filter(Boolean) as RippleParticle[]
+                // Simple fade out
+                const opacity = (1 - progress) * 0.6;
+
+                // Update position based on velocity (directional movement)
+                const newX = ripple.x + (ripple.velocity?.x || 0) * deltaTime;
+                const newY = ripple.y + (ripple.velocity?.y || 0) * deltaTime;
+
+                // Apply drag to velocity for natural deceleration
+                const dragFactor = 0.95; // 5% velocity loss per update
+                const newVelocity = ripple.velocity
+                  ? {
+                      x: ripple.velocity.x * dragFactor,
+                      y: ripple.velocity.y * dragFactor,
+                    }
+                  : undefined;
+
+                return {
+                  ...ripple,
+                  x: newX,
+                  y: newY,
+                  size: newSize,
+                  life: newLife,
+                  opacity,
+                  velocity: newVelocity,
+                };
+              })
+              .filter(Boolean) as RippleParticle[]
         );
-        
+
         lastUpdate = currentTime;
       }
 
@@ -171,7 +190,10 @@ export const RippleSystem: React.FC<RippleSystemProps> = ({
   if (rippleParticles.length === 0) return null;
 
   return (
-    <div className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 75 }}>
+    <div
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      style={{ zIndex: 75 }}
+    >
       {/* Tighter ripple container that matches blob size more closely */}
       <div
         style={{
@@ -194,11 +216,14 @@ export const RippleSystem: React.FC<RippleSystemProps> = ({
           const containerRadius = blobRadius * (blobRadius > 300 ? 0.75 : 0.9);
           const rippleX = containerRadius + ripple.x - ripple.size;
           const rippleY = containerRadius + ripple.y - ripple.size;
-          
+
           // Scale border thickness: thinner for small blobs, thicker for large blobs
           const baseBorderThickness = baseRadius < 50 ? 1 : 2; // 1px for small blobs, 2px for larger
-          const borderThickness = Math.max(baseBorderThickness, Math.round(ripple.size / 15));
-          
+          const borderThickness = Math.max(
+            baseBorderThickness,
+            Math.round(ripple.size / 15)
+          );
+
           return (
             <div
               key={ripple.id}
@@ -223,4 +248,4 @@ export const RippleSystem: React.FC<RippleSystemProps> = ({
       </div>
     </div>
   );
-}; 
+};
