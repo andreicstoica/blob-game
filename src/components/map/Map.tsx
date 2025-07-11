@@ -10,13 +10,13 @@ export default function Map({ className, zoom = 1 }: MapProps) {
   const currentLevel = useMapSelector((s) => s.currentLevel);
   const blobPosition = calculateBlobPosition();
 
-  // Calculate the offset needed to keep the blob centered during zoom
+  // Calculate the transform origin as a percentage of the screen
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
-  
-  // Calculate how much to offset the background to keep blob position stable
-  const offsetX = (blobPosition.x - screenWidth / 2) * (1 - zoom);
-  const offsetY = (blobPosition.y - screenHeight / 2) * (1 - zoom);
+
+  // Transform origin should be at the blob position (as percentages)
+  const transformOriginX = (blobPosition.x / screenWidth) * 100;
+  const transformOriginY = (blobPosition.y / screenHeight) * 100;
 
   return (
     <div
@@ -26,8 +26,8 @@ export default function Map({ className, zoom = 1 }: MapProps) {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-        transform: `scale(${zoom}) translate(${offsetX}px, ${offsetY}px)`,
-        transformOrigin: "center center",
+        transform: `scale(${zoom})`,
+        transformOrigin: `${transformOriginX}% ${transformOriginY}%`,
       }}
     />
   );

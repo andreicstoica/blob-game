@@ -58,10 +58,11 @@ const calculateLevelZoom = (
 const calculateMaxZoom = () => {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
-    const hudWidth = 350;
+    const hudWidth = 300; // Shop panel width
+    const rightHudWidth = 300; // Evolution panel width (matches evolutionWidth in GameHUD)
     const padding = 100; // Minimum padding around blob
 
-    const availableWidth = screenWidth - hudWidth - padding;
+    const availableWidth = screenWidth - hudWidth - rightHudWidth - padding;
     const availableHeight = screenHeight - padding;
 
     // Calculate maximum zoom that keeps blob within bounds

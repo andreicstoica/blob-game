@@ -13,7 +13,7 @@ export function getTotalGrowth(state: GameState): number {
         if (gen.id === 'tutorial-generator') {
             return;
         }
-        
+
         if (!generatorsByLevel[gen.unlockedAtLevel]) {
             generatorsByLevel[gen.unlockedAtLevel] = [];
         }
@@ -39,7 +39,7 @@ export function getTotalGrowth(state: GameState): number {
             if (upgrade.id === 'tutorial-upgrade') {
                 return;
             }
-            
+
             if (
                 upgrade.purchased &&
                 upgrade.type === "growth" &&
@@ -66,8 +66,8 @@ export function calculateClickPower(state: GameState): number {
 export function calculateBlobPosition(): { x: number; y: number } {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
-    const hudWidth = 300; // Reduced shop width
-    const rightHudWidth = 0; // No right panel anymore
+    const hudWidth = 300; // Shop panel width
+    const rightHudWidth = 300; // Evolution panel width (matches evolutionWidth in GameHUD)
 
     const playableWidth = screenWidth - hudWidth - rightHudWidth;
     const centerX = hudWidth + playableWidth / 2;

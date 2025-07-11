@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
-import type { GameState } from '../../../game/types';
-import type { TutorialState } from '../../../game/types/ui';
-import { getCurrentLevel } from '../../../game/systems/actions';
-import { ShopGenerators, ShopUpgrades, FilterToggle, BuyMultiplierToggle } from './index';
-import { Colors } from '../../../styles/colors';
-
+import React, { useState } from "react";
+import type { GameState } from "../../../game/types";
+import type { TutorialState } from "../../../game/types/ui";
+import { getCurrentLevel } from "../../../game/systems/actions";
+import {
+  ShopGenerators,
+  ShopUpgrades,
+  FilterToggle,
+  BuyMultiplierToggle,
+} from "./index";
+import { Colors } from "../../../styles/colors";
 
 interface ShopProps {
   biomass: number;
@@ -14,23 +18,23 @@ interface ShopProps {
   onBuyUpgrade?: (upgradeId: string) => void;
 }
 
-export const Shop: React.FC<ShopProps> = ({ 
+export const Shop: React.FC<ShopProps> = ({
   biomass,
   gameState,
   tutorialState,
-  onBuyGenerator, 
-  onBuyUpgrade 
+  onBuyGenerator,
+  onBuyUpgrade,
 }) => {
-  const [generatorFilter, setGeneratorFilter] = useState<'current' | 'all'>('all');
-  const [buyMultiplier, setBuyMultiplier] = useState<1 | 10 | 100>(1);
+  const [generatorFilter, setGeneratorFilter] = useState<"current" | "all">(
+    "all"
+  );
+  const [buyMultiplier, setBuyMultiplier] = useState<1 | 10>(1);
 
   if (!gameState || !onBuyGenerator || !onBuyUpgrade) {
     return null;
   }
 
-    const currentLevel = getCurrentLevel(gameState);
-
-
+  const currentLevel = getCurrentLevel(gameState);
 
   const handleBuyGenerator = (generatorId: string) => {
     // Buy multiple generators based on multiplier
@@ -44,59 +48,68 @@ export const Shop: React.FC<ShopProps> = ({
   };
 
   return (
-    <div style={{ 
-      userSelect: 'none',
-      backgroundColor: 'rgba(0, 0, 0, 0.4)',
-      color: 'white',
-      fontFamily: 'Arial, sans-serif',
-      height: '100vh',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
+    <div
+      style={{
+        userSelect: "none",
+        backgroundColor: "rgba(0, 0, 0, 0.4)",
+        color: "white",
+        fontFamily: "Arial, sans-serif",
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       {/* Fixed Header */}
-      <div style={{ 
-        padding: '20px 20px 15px 20px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
-      }}>
-        <h2 style={{
-          margin: '0 0 20px 0',
-          fontSize: '24px',
-          color: Colors.shop.primary,
-          textAlign: 'center',
-          userSelect: 'none',
-          textTransform: 'uppercase',
-          textShadow: '0 0 8px rgba(200, 200, 200, 0.25), 0 0 16px rgba(200, 200, 200, 0.2)'
-        }}>
+      <div
+        style={{
+          padding: "20px 20px 15px 20px",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+        }}
+      >
+        <h2
+          style={{
+            margin: "0 0 20px 0",
+            fontSize: "24px",
+            color: Colors.shop.primary,
+            textAlign: "center",
+            userSelect: "none",
+            textTransform: "uppercase",
+            textShadow:
+              "0 0 8px rgba(200, 200, 200, 0.25), 0 0 16px rgba(200, 200, 200, 0.2)",
+          }}
+        >
           SHOP
         </h2>
-        
+
         {/* Filter and Buy Multiplier Row */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          marginBottom: '15px',
-          gap: '10px'
-        }}>
-          <FilterToggle 
-            filter={generatorFilter} 
-            onFilterChange={setGeneratorFilter} 
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "15px",
+            gap: "10px",
+          }}
+        >
+          <FilterToggle
+            filter={generatorFilter}
+            onFilterChange={setGeneratorFilter}
           />
-          <BuyMultiplierToggle 
-            multiplier={buyMultiplier} 
-            onMultiplierChange={setBuyMultiplier} 
+          <BuyMultiplierToggle
+            multiplier={buyMultiplier}
+            onMultiplierChange={setBuyMultiplier}
           />
         </div>
-
-
       </div>
 
       {/* Scrollable Content */}
-      <div style={{ 
-        flex: 1,
-        overflowY: 'auto',
-        padding: '0 20px 20px 20px'
-      }}>
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          padding: "0 20px 20px 20px",
+        }}
+      >
         {/* Generators Component */}
         <ShopGenerators
           biomass={biomass}
@@ -150,4 +163,4 @@ export const Shop: React.FC<ShopProps> = ({
       `}</style>
     </div>
   );
-}; 
+};
