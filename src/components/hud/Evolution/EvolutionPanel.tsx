@@ -10,18 +10,19 @@ import { CurrentLevel } from "./CurrentLevel";
 import { NextEvolution } from "./NextEvolution";
 import { EvolutionButton } from "./EvolutionButton";
 
-
 interface EvolutionPanelProps {
   biomass: number;
   gameState?: GameState;
   onEvolve?: () => void;
   zoom?: number;
+  width?: number;
 }
 
 export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
   biomass,
   gameState,
   onEvolve,
+  width = 275,
 }) => {
   if (!gameState) return null;
 
@@ -29,50 +30,72 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
   const nextLevel = getNextLevel(gameState);
   const canEvolve = canEvolveToNextLevel(gameState);
 
-
   return (
     <div
       style={{
         position: "fixed",
-        top: 0,
-        right: 0,
-        width: "300px",
+        top: "0",
+        right: "0",
+        transform: "none",
+        width: `${width}px`,
         height: "100vh",
         backgroundColor: "rgba(0, 0, 0, 0.4)",
         color: "white",
         fontFamily: "Arial, sans-serif",
         padding: "20px",
-        overflowY: "auto",
+        borderRadius: "0",
         zIndex: 1000,
         userSelect: "none",
+        display: "flex",
+        flexDirection: "column",
+        gap: "20px",
       }}
     >
       <h2
         style={{
-          margin: "0 0 20px 0",
+          margin: "0",
           fontSize: "24px",
           color: Colors.evolution.primary,
           textAlign: "center",
           textTransform: "uppercase",
-          textShadow: "0 0 8px rgba(200, 200, 200, 0.25), 0 0 16px rgba(200, 200, 200, 0.25)"
+          textShadow:
+            "0 0 12px rgba(200, 200, 200, 0.4), 0 0 24px rgba(200, 200, 200, 0.4)",
         }}
       >
         EVOLUTION
       </h2>
 
-      <CurrentLevel
-        displayName={currentLevel.displayName}
-        name={currentLevel.name}
-        description={currentLevel.description}
-      />
-      {nextLevel && (
-        <NextEvolution
-          nextLevel={nextLevel}
-          canEvolve={canEvolve}
-          biomass={biomass}
-          gameState={gameState}
+      <div
+        style={{
+          backgroundColor: "rgba(255, 255, 255, 0.1)",
+          padding: "15px",
+          borderRadius: "8px",
+        }}
+      >
+        <CurrentLevel
+          displayName={currentLevel.displayName}
+          name={currentLevel.name}
+          description={currentLevel.description}
         />
+      </div>
+
+      {nextLevel && (
+        <div
+          style={{
+            backgroundColor: "rgba(255, 255, 255, 0.1)",
+            padding: "15px",
+            borderRadius: "8px",
+          }}
+        >
+          <NextEvolution
+            nextLevel={nextLevel}
+            canEvolve={canEvolve}
+            biomass={biomass}
+            gameState={gameState}
+          />
+        </div>
       )}
+
       <EvolutionButton
         canEvolve={canEvolve}
         hasNextLevel={!!nextLevel}

@@ -13,38 +13,34 @@ export const CurrentLevel: React.FC<CurrentLevelProps> = ({
 }) => {
   // Styles
   const containerStyle: React.CSSProperties = {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center'
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
   };
 
   const titleStyle: React.CSSProperties = {
     margin: "0 0 4px 0",
-    fontSize: "14px",
+    fontSize: "15px",
     color: "white",
-    fontWeight: "bold"
+    fontWeight: "bold",
   };
 
   const descriptionStyle: React.CSSProperties = {
     margin: "0",
-    fontSize: "10px",
+    fontSize: "13px",
     opacity: 0.8,
     lineHeight: "1.3",
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap'
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   };
 
   return (
     <div style={containerStyle}>
-      <h3 style={titleStyle}>
-        Current: {displayName || name}
-      </h3>
-      
-      <p style={descriptionStyle}>
-        {description}
-      </p>
+      <h3 style={titleStyle}>Current: {displayName || name}</h3>
+
+      <p style={descriptionStyle}>{description}</p>
     </div>
   );
 };

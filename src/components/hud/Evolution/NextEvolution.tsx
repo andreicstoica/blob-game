@@ -1,6 +1,6 @@
 import React from "react";
 import { NumberFormatter } from "../../../utils/numberFormat";
-import type { GameState, Level } from '../../../game/types';
+import type { GameState, Level } from "../../../game/types";
 import { Colors } from "../../../styles/colors";
 
 interface NextEvolutionProps {
@@ -17,27 +17,27 @@ export const NextEvolution: React.FC<NextEvolutionProps> = ({
 }) => {
   // Styles
   const containerStyle: React.CSSProperties = {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center'
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
   };
 
   const titleStyle: React.CSSProperties = {
     margin: "0 0 4px 0",
-    fontSize: "14px",
+    fontSize: "15px",
     color: "white",
-    fontWeight: "bold"
+    fontWeight: "bold",
   };
 
   const descriptionStyle: React.CSSProperties = {
     margin: "0 0 4px 0",
-    fontSize: "10px",
+    fontSize: "13px",
     opacity: 0.8,
     lineHeight: "1.3",
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap'
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   };
 
   const requirementRowStyle: React.CSSProperties = {
@@ -47,11 +47,11 @@ export const NextEvolution: React.FC<NextEvolutionProps> = ({
   };
 
   const labelStyle: React.CSSProperties = {
-    fontSize: "10px"
+    fontSize: "13px",
   };
 
   const valueStyle: React.CSSProperties = {
-    fontSize: "12px",
+    fontSize: "15px",
     fontWeight: "bold",
     color: canEvolve ? Colors.biomass.primary : Colors.headlines.primary,
   };
@@ -61,11 +61,9 @@ export const NextEvolution: React.FC<NextEvolutionProps> = ({
       <h3 style={titleStyle}>
         Next: {nextLevel.displayName || nextLevel.name}
       </h3>
-      
-      <p style={descriptionStyle}>
-        {nextLevel.description}
-      </p>
-      
+
+      <p style={descriptionStyle}>{nextLevel.description}</p>
+
       <div style={requirementRowStyle}>
         <span style={labelStyle}>Required:</span>
         <span style={valueStyle}>

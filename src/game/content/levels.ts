@@ -23,7 +23,7 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'decimal',
     background: 'microscopic-bg',
     foodTypes: [],
-    description: 'Begin as a single cell in a drop of water.',
+    description: 'Begin as a single cell.',
     blobSizeStart: 80,
     blobSizeEnd: 1200
   },
@@ -35,7 +35,7 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'whole',
     background: 'petri-bg',
     foodTypes: [],
-    description: 'Grow into visible colonies in a petri dish.',
+    description: 'Grow into a visible slime.',
     blobSizeStart: 120,
     blobSizeEnd: 1200
   },
@@ -47,7 +47,7 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'whole',
     background: 'lab-bg',
     foodTypes: [],
-    description: 'Expand your experiments in a high-tech lab.',
+    description: 'Experiment in a high-tech lab.',
     blobSizeStart: 120,
     blobSizeEnd: 1200
   },
@@ -59,7 +59,7 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'whole',
     background: 'neighborhood-bg',
     foodTypes: [],
-    description: 'Spread through suburban neighborhoods.',
+    description: 'Spread through the neighborhood.',
     blobSizeStart: 180,
     blobSizeEnd: 1200
   },
@@ -71,7 +71,7 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'whole',
     background: 'city-bg',
     foodTypes: [],
-    description: 'Infiltrate and spread through a bustling city.',
+    description: 'Infiltrate throughout the city.',
     blobSizeStart: 240,
     blobSizeEnd: 1200
   },
@@ -83,7 +83,7 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'whole',
     background: 'continent-bg',
     foodTypes: [],
-    description: 'Expand across entire continents.',
+    description: 'Expand across the continent.',
     blobSizeStart: 260,
     blobSizeEnd: 1200
   },
@@ -107,7 +107,7 @@ export const LEVELS: Level[] = [
     biomassDisplayFormat: 'scientific',
     background: 'solar-system-bg',
     foodTypes: [],
-    description: 'Expand your reach to the entire solar system.',
+    description: 'Expand your reach to the solar system.',
     blobSizeStart: 260,
     blobSizeEnd: 1200
   }
