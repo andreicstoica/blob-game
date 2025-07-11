@@ -3,6 +3,7 @@ import type { TutorialState } from '../../game/types/ui';
 import { TutorialArrow } from './TutorialArrow';
 import { ClickIndicator } from './ClickIndicator';
 import { TutorialPopup } from './TutorialPopup';
+import { SpacebarIndicator } from './SpacebarIndicator';
 import { getCurrentTutorialStep } from '../../game/systems/tutorial';
 import { Colors } from '../../styles/colors';
 
@@ -53,7 +54,15 @@ export const TutorialManager: React.FC<TutorialManagerProps> = ({
           <ClickIndicator
             position={{
               x: blobPosition.x,
-              y: blobPosition.y + 130
+              y: blobPosition.y + 134
+            }}
+            isVisible={true}
+          />
+          {/* Spacebar indicator above blob */}
+          <SpacebarIndicator
+            position={{
+              x: blobPosition.x,
+              y: blobPosition.y - 135
             }}
             isVisible={true}
           />

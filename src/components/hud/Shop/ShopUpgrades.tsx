@@ -67,12 +67,12 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
       <h3
         style={{
           margin: "30px 0 15px 0",
-          fontSize: "12px",
-          padding: "8px 16px",
-          backgroundColor: Colors.upgrades.primary,
+          fontSize: "14px",
+          padding: "6px 16px",
+          backgroundColor: "transparent",
           color: "#fff",
           border: `2px solid ${Colors.upgrades.primary}`,
-          borderRadius: "6px",
+          borderRadius: "20px",
           display: "inline-block",
           fontWeight: "bold",
         }}
