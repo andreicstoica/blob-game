@@ -57,3 +57,66 @@ export const PHASE_BG_GRADIENT = {
 } as const
 
 export type Phase = keyof typeof PHASE_BG_GRADIENT
+
+export const MILESTONES = [
+    {
+        id: "ant-size",
+        biomassThreshold: 1000,
+        message: "You're now the size of an ant! 🐜",
+    },
+    {
+        id: "mouse-size",
+        biomassThreshold: 100000,
+        message: "You're as big as a mouse! 🐭",
+    },
+    {
+        id: "human-size",
+        biomassThreshold: 10000000,
+        message: "You're as big as a human! 🧑",
+    },
+    {
+        id: "car-size",
+        biomassThreshold: 1000000000,
+        message: "You're as large as an American car! 🚗",
+    },
+    {
+        id: "house-size",
+        biomassThreshold: 10000000000,
+        message: "You're the size of a house! 🏠",
+    },
+    {
+        id: "whale-size",
+        biomassThreshold: 100000000000,
+        message: "You're as big as a blue whale! 🐋",
+    },
+    {
+        id: "eiffel-tower-size",
+        biomassThreshold: 1000000000000,
+        message: "You're as tall as the Eiffel Tower! 🗼",
+    },
+    {
+        id: "nyc-block-size",
+        biomassThreshold: 10000000000000,
+        message: "You're the size of a NYC block! 🏙️",
+    },
+    {
+        id: "mountain-size",
+        biomassThreshold: 100000000000000,
+        message: "You're as big as a mountain! 🏔️",
+    },
+    {
+        id: "monaco-size",
+        biomassThreshold: 10000000000000000,
+        message: "You're as big as Monaco! 🌍",
+    },
+    {
+        id: "jupiter-size",
+        biomassThreshold: 1000000000000000000,
+        message: "You're as big as Jupiter! 🪐",
+    },
+    {
+        id: "solar-system-size",
+        biomassThreshold: 1000000000000000000000,
+        message: "You're the size of the solar system! 🌌",
+    },
+] as const;
