@@ -87,16 +87,6 @@ export function checkFirstUpgrade(state: GameState): { state: GameState; notific
 
 // Check click milestones
 export function checkClickMilestones(state: GameState): { state: GameState; notification?: { message: string; id: string } } {
-    if (state.notifications.totalClicks >= 1000 && !state.notifications.shownMilestones.has("click-legend")) {
-        return {
-            state: markMilestoneAsShown(state, "click-legend"),
-            notification: {
-                message: "Legend! You've clicked 1,000 times!",
-                id: "click-legend"
-            }
-        };
-    }
-
     if (state.notifications.totalClicks >= 100 && !state.notifications.shownMilestones.has("clicker-master")) {
         return {
             state: markMilestoneAsShown(state, "clicker-master"),

@@ -6,6 +6,7 @@ export const SOUNDS = {
     uiClick: "/assets/sounds/click-1.wav",
     evolve: "/assets/sounds/evolve.wav",
     gameStart: "/assets/sounds/game-start.mp3",
+    cashRegister: "/assets/sounds/cash-register.mp3",
 };
 
 export const BACKGROUND_MUSIC = {
