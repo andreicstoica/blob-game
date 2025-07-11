@@ -113,7 +113,7 @@ button, input, textarea, select {
   margin: 4px !important;
   padding: 16px !important;
   font-size: 14px !important;
-  line-height: 1.3 !important;
+  line-height: 1 !important;
 }
 
 .blob-toast .Toastify__progress-bar {
