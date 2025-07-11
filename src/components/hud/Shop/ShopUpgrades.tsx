@@ -53,7 +53,14 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
 
   return (
     <>
-      <h3 style={{ margin: '30px 0 15px 0', fontSize: '16px' }}>Upgrades</h3>
+      <h3 style={{ 
+        margin: '30px 0 15px 0', 
+        fontSize: '14px',
+        padding: '8px 12px',
+        border: `2px solid ${Colors.headlines.primary}`,
+        borderRadius: '6px',
+        display: 'inline-block'
+      }}>Upgrades</h3>
       {(() => {
         const upgrades = Object.values(gameState.upgrades)
         .filter(upgrade => {
@@ -87,13 +94,13 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
         return (
           <div key={upgrade.id} style={{
             background: upgrade.purchased 
-              ? `${Colors.upgrades.primary}30` // purple for purchased
+              ? `${Colors.upgrades.light}20` // lighter for purchased
               : canAfford 
                 ? `${Colors.upgrades.primary}30`
                 : 'rgba(255, 255, 255, 0.1)',
             border: `2px solid ${
               upgrade.purchased 
-                ? Colors.upgrades.primary // purple border for purchased
+                ? Colors.upgrades.light // lighter border for purchased
                 : canAfford 
                   ? Colors.upgrades.primary 
                   : '#666'
@@ -106,7 +113,7 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
             transition: 'all 0.2s ease',
             transform: 'scale(1)',
             boxShadow: upgrade.purchased 
-              ? `0 2px 8px ${Colors.upgrades.primary}40` // purple shadow for purchased
+              ? `0 2px 8px ${Colors.upgrades.light}40` // lighter shadow for purchased
               : canAfford 
                 ? `0 2px 8px ${Colors.upgrades.primary}40` 
                 : 'none'
@@ -156,10 +163,17 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
             }
           }}
           >
-            <div style={{ fontWeight: 'bold', marginBottom: '5px', fontSize: '15px' }}>
+            <div style={{ fontWeight: 'bold', marginBottom: '5px', fontSize: '15px', position: 'relative' }}>
               {upgrade.name}
               {upgrade.purchased && (
-                <span style={{ marginLeft: '5px', color: Colors.upgrades.primary }}>✓</span>
+                <span style={{ 
+                  position: 'absolute',
+                  top: '-8px',
+                  right: '-8px',
+                  color: Colors.upgrades.primary,
+                  fontSize: '24px',
+                  fontWeight: 'bold'
+                }}>✓</span>
               )}
             </div>
             <div style={{ opacity: 0.8, marginBottom: '5px', lineHeight: '1.3', fontSize: '13px' }}>

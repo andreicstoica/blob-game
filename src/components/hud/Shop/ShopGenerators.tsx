@@ -93,7 +93,14 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
 
   return (
     <>
-      <h3 style={{ margin: '10px 0 10px 0', fontSize: '16px' }}>Generators</h3>
+      <h3 style={{ 
+        margin: '10px 0 10px 0', 
+        fontSize: '14px',
+        padding: '8px 12px',
+        border: `2px solid ${Colors.headlines.primary}`,
+        borderRadius: '6px',
+        display: 'inline-block'
+      }}>Generators</h3>
       {sortedGenerators.map((generator, index) => {
 
         const totalCost = calculateTotalCost(generator, buyMultiplier);
@@ -236,7 +243,7 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
               <div style={{ 
                 fontSize: '24px', 
                 fontWeight: 'bold', 
-                color: generator.level === 0 ? '#6b7280' : '#ffffff' 
+                color: generator.level === 0 ? '#d1d5db' : '#ffffff' 
               }}>
                 {NumberFormatter.owned(generator.level, gameState)}
               </div>
