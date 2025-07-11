@@ -105,7 +105,7 @@ button, input, textarea, select {
 /* Toast Notification Styles */
 .blob-toast {
   background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  border: 2px solid #ef4444;
+  border: 2px solid #dc2626;
   border-radius: 16px;
   color: #f1f5f9;
   font-weight: 500;

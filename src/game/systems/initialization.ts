@@ -62,5 +62,6 @@ export const INITIAL_STATE: GameState = {
     notifications: {
         shownMilestones: new Set<string>(),
         totalClicks: 0,
+        recentClicks: [],
     },
 }; 

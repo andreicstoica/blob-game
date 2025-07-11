@@ -55,8 +55,8 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
     <>
       <h3 style={{ 
         margin: '30px 0 15px 0', 
-        fontSize: '14px',
-        padding: '4px 12px',
+        fontSize: '12px',
+        padding: '8px 16px',
         border: `2px solid ${Colors.upgrades.primary}`,
         borderRadius: '6px',
         display: 'inline-block'
@@ -99,7 +99,7 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
         return (
           <div key={upgrade.id} style={{
             background: upgrade.purchased 
-              ? `${Colors.upgrades.light}30` // purple for purchased tutorial upgrade
+              ? `${Colors.upgrades.light}30` // light upgrade color for purchased tutorial upgrade
               : upgrade.id === 'tutorial-upgrade' && !isTutorialEnabled
                 ? 'rgba(128, 128, 128, 0.3)' // gray for disabled tutorial upgrade
                 : canAfford 
@@ -125,6 +125,8 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
               ? `0 2px 8px ${Colors.upgrades.light}40` // purple shadow for purchased tutorial upgrade
               : upgrade.id === 'tutorial-upgrade' && !isTutorialEnabled
                 ? 'none' // no shadow for disabled tutorial upgrade
+              : upgrade.id === 'tutorial-upgrade' && tutorialState?.currentStep?.type === 'click-blob'
+                ? 'none' // no shadow during click-blob phase
                 : canAfford 
                   ? `0 2px 8px ${Colors.upgrades.primary}40` 
                   : 'none'
@@ -147,7 +149,7 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
                 `-${NumberFormatter.biomass(upgrade.cost, gameState)}`,
                 x,
                 y,
-                '#ef4444'
+                Colors.headlines.primary
               );
               }
             }
@@ -155,8 +157,8 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.01)';
             if (upgrade.purchased) {
-              e.currentTarget.style.backgroundColor = `${Colors.tutorial.primary}40`;
-              e.currentTarget.style.boxShadow = `0 4px 12px ${Colors.tutorial.primary}60`;
+              e.currentTarget.style.backgroundColor = `${Colors.upgrades.light}40`;
+              e.currentTarget.style.boxShadow = `0 4px 12px ${Colors.upgrades.light}60`;
             } else if (canAfford && !upgrade.purchased && (upgrade.id !== 'tutorial-upgrade' || isTutorialEnabled)) {
               e.currentTarget.style.backgroundColor = `${Colors.upgrades.primary}40`;
               e.currentTarget.style.boxShadow = `0 4px 12px ${Colors.upgrades.primary}60`;
@@ -168,8 +170,8 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'scale(1)';
             if (upgrade.purchased) {
-              e.currentTarget.style.backgroundColor = `${Colors.tutorial.primary}30`;
-              e.currentTarget.style.boxShadow = `0 2px 8px ${Colors.tutorial.primary}40`;
+              e.currentTarget.style.backgroundColor = `${Colors.upgrades.light}30`;
+              e.currentTarget.style.boxShadow = `0 2px 8px ${Colors.upgrades.light}40`;
             } else if (!upgrade.purchased) {
               e.currentTarget.style.backgroundColor = upgrade.id === 'tutorial-upgrade' && !isTutorialEnabled
                 ? 'rgba(128, 128, 128, 0.3)'
@@ -191,7 +193,7 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
                   position: 'absolute',
                   top: '-8px',
                   right: '-8px',
-                  color: upgrade.id === 'tutorial-upgrade' ? Colors.tutorial.primary : Colors.upgrades.primary,
+                  color: Colors.upgrades.light,
                   fontSize: '24px',
                   fontWeight: 'bold'
                 }}>✓</span>
@@ -202,7 +204,7 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
             </div>
             {!upgrade.purchased && (
               <div style={{ 
-                color: canAfford ? Colors.biomass.primary : '#ef4444',
+                color: canAfford ? Colors.biomass.primary : Colors.headlines.primary,
                 fontWeight: 'bold',
                 fontSize: '13px'
               }}>

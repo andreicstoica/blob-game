@@ -55,7 +55,7 @@ export const NextEvolution: React.FC<NextEvolutionProps> = ({
         style={{
           fontSize: "16px",
           fontWeight: "bold",
-          color: canEvolve ? Colors.biomass.primary : "#ef4444",
+                          color: canEvolve ? Colors.biomass.primary : Colors.headlines.primary,
         }}
       >
         {NumberFormatter.threshold(nextLevel.biomassThreshold, gameState)}

@@ -3,6 +3,7 @@ import type { GameState } from '../../game/types';
 import { NumberFormatter } from '../../utils/numberFormat';
 import { GAME_CONFIG } from '../../game/content/config';
 import { Colors } from '../../styles/colors';
+import { calculateCPM } from '../../game/systems/notifications';
 
 interface GameStatsProps {
   biomass: number;
@@ -12,6 +13,9 @@ interface GameStatsProps {
 export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
   const formattedBiomass = NumberFormatter.biomass(biomass, gameState);
   const biomassLength = formattedBiomass.length;
+  
+  // Calculate CPM
+  const cpm = gameState ? calculateCPM(gameState.notifications.recentClicks) : 0;
   
   // Dynamic font size based on biomass length to ensure it fits
   let fontSize = 72;
@@ -66,13 +70,13 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
         </div>
       </div>
 
-      {/* Growth and Click Power Row */}
+      {/* Growth, Click Power, and CPM Row */}
       {gameState && (
         <div style={{ 
           display: 'flex', 
           justifyContent: 'space-around',
           alignItems: 'center',
-          gap: '20px'
+          gap: '15px'
         }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ 
@@ -115,6 +119,31 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
               marginBottom: '5px'
             }}>
               {NumberFormatter.power(gameState.clickPower, gameState)}
+            </div>
+          </div>
+          
+          <div style={{ 
+            width: '1px', 
+            height: '30px', 
+            backgroundColor: 'rgba(255, 255, 255, 0.2)' 
+          }} />
+          
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ 
+              fontSize: '12px', 
+              opacity: 0.7, 
+              marginBottom: '2px',
+              fontWeight: 'bold'
+            }}>
+              CPM
+            </div>
+            <div style={{ 
+              fontSize: '18px', 
+              fontWeight: 'bold', 
+              color: Colors.biomass.primary,
+              marginBottom: '5px'
+            }}>
+              {cpm}
             </div>
           </div>
         </div>
