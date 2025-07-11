@@ -6,30 +6,32 @@ import { useGame } from "./hooks/useGame";
 import { useCameraZoom } from "./hooks/useCameraZoom";
 import { useBlobSize } from "./hooks/useBlobSize";
 import { getCurrentLevel } from "./game/systems/actions";
-import { useState } from "react";
+import { useIntroStore } from "./store/introStore";
 
 function App() {
-  const [showIntro, setShowIntro] = useState(true);
+  const showIntro = useIntroStore(state => state.showIntro);
+  const endIntro = useIntroStore(state => state.endIntro);
+  const gameHook = useGame();
 
   const handleIntroTransition = () => {
-    // Just a placeholder for the IntroScreen callback
-    // The actual transition is handled by the IntroScreen component
+    // Placeholder for any transition logic
   };
 
   const handleIntroComplete = () => {
-    setShowIntro(false);
+    endIntro();
   };
 
   return (
     <div className="w-screen h-screen relative overflow-hidden">
       {/* Game Screen - always renders in background */}
-      <GameComponent showIntro={showIntro} />
+      <GameComponent showIntro={showIntro} gameHook={gameHook} />
       
       {/* Intro Screen - overlays on top with transparency */}
       {showIntro && (
         <IntroScreen 
           onTransitionStart={handleIntroTransition}
           onComplete={handleIntroComplete}
+          onEvolve={gameHook.handleEvolve}
         />
       )}
     </div>
@@ -37,7 +39,7 @@ function App() {
 }
 
 // Game component that always renders
-function GameComponent({ showIntro }: { showIntro: boolean }) {
+function GameComponent({ showIntro, gameHook }: { showIntro: boolean; gameHook: ReturnType<typeof useGame> }) {
   const {
     gameState,
     tutorialState,
@@ -45,7 +47,7 @@ function GameComponent({ showIntro }: { showIntro: boolean }) {
     handleBuyGenerator,
     handleBuyUpgrade,
     handleEvolve,
-  } = useGame();
+  } = gameHook;
 
   const currentLevel = getCurrentLevel(gameState);
   const currentZoom = useCameraZoom({ gameState, currentLevel });
@@ -56,7 +58,8 @@ function GameComponent({ showIntro }: { showIntro: boolean }) {
       className="w-screen h-screen relative overflow-hidden"
       style={{
         opacity: showIntro ? 0.3 : 1, // Dimmed when intro is showing
-        transition: 'opacity 0.5s ease-in-out',
+        filter: showIntro ? 'blur(10px)' : 'none', // Blur background during intro
+        transition: 'opacity 0.25s ease-in-out, filter 1s ease-in-out',
         zIndex: 1 // Lower z-index so intro appears on top
       }}
     >

@@ -65,6 +65,8 @@ export const useGame = () => {
     setTutorialState((prevTutorialState: TutorialState) => progressTutorial(prevTutorialState, 'evolve'));
   }, [mapEvolveToNextLevel, gameState]);
 
+
+
   const getNearbyNutrientsForBlob = useCallback((blobPosition: { x: number; y: number }) => {
     return getNearbyNutrients(gameState, blobPosition);
   }, [gameState]);
