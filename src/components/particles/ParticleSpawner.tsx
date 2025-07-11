@@ -194,7 +194,6 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
         break;
       case "microscopic":
       case "petri-dish":
-      case "lab":
         visualType = "bacteria";
         useImage = true;
         image =
@@ -202,25 +201,38 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
             Math.floor(Math.random() * VISUAL_ASSETS.bacteria.length)
           ];
         break;
+      case "lab":
+        visualType = "mice";
+        useImage = true;
+        image =
+          VISUAL_ASSETS.mice[
+            Math.floor(Math.random() * VISUAL_ASSETS.mice.length)
+          ];
+        break;
       case "neighborhood":
         visualType = "people";
-        useImage = false;
-        image = "";
+        useImage = true;
+        image =
+          VISUAL_ASSETS.people[
+            Math.floor(Math.random() * VISUAL_ASSETS.people.length)
+          ];
         break;
       case "city":
-        visualType = "people";
-        useImage = false;
-        image = "";
+        visualType = "tanks";
+        useImage = true;
+        image =
+          VISUAL_ASSETS.tanks[
+            Math.floor(Math.random() * VISUAL_ASSETS.tanks.length)
+          ];
         break;
       case "continent":
-        visualType = "people";
-        useImage = false;
-        image = "";
-        break;
       case "earth":
-        visualType = "people";
-        useImage = false;
-        image = "";
+        visualType = "spaceships";
+        useImage = true;
+        image =
+          VISUAL_ASSETS.spaceships[
+            Math.floor(Math.random() * VISUAL_ASSETS.spaceships.length)
+          ];
         break;
       case "solar-system":
         visualType = "galaxies";
