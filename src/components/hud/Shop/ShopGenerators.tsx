@@ -116,12 +116,12 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
       <h3
         style={{
           margin: "10px 0 10px 0",
-          fontSize: "12px",
-          padding: "8px 16px",
-          backgroundColor: Colors.generators.primary,
+          fontSize: "14px",
+          padding: "6px 14px",
+          backgroundColor: "transparent",
           color: "#fff",
           border: `2px solid ${Colors.generators.primary}`,
-          borderRadius: "6px",
+          borderRadius: "20px",
           display: "inline-block",
           fontWeight: "bold",
         }}

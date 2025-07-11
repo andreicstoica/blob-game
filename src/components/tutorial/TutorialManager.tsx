@@ -3,6 +3,7 @@ import type { TutorialState } from '../../game/types/ui';
 import { TutorialArrow } from './TutorialArrow';
 import { ClickIndicator } from './ClickIndicator';
 import { TutorialPopup } from './TutorialPopup';
+import { SpacebarIndicator } from './SpacebarIndicator';
 import { getCurrentTutorialStep } from '../../game/systems/tutorial';
 import { Colors } from '../../styles/colors';
 
@@ -53,7 +54,15 @@ export const TutorialManager: React.FC<TutorialManagerProps> = ({
           <ClickIndicator
             position={{
               x: blobPosition.x,
-              y: blobPosition.y + 130
+              y: blobPosition.y + 134
+            }}
+            isVisible={true}
+          />
+          {/* Spacebar indicator above blob */}
+          <SpacebarIndicator
+            position={{
+              x: blobPosition.x,
+              y: blobPosition.y - 135
             }}
             isVisible={true}
           />
@@ -64,7 +73,7 @@ export const TutorialManager: React.FC<TutorialManagerProps> = ({
               left: mousePosition.x,
               top: mousePosition.y + 20,
               transform: 'translateX(-50%)',
-              fontSize: '18px',
+              fontSize: '12px',
               color: Colors.biomass.dark,
               textAlign: 'center',
               textTransform: 'uppercase',
@@ -74,8 +83,8 @@ export const TutorialManager: React.FC<TutorialManagerProps> = ({
               pointerEvents: 'none',
               zIndex: 10000,
               backgroundColor: 'rgba(0, 0, 0, 0.7)',
-              padding: '4px 12px',
-              borderRadius: '6px',
+              padding: '2px 7px',
+              borderRadius: '4px',
               border: `2px solid ${Colors.biomass.dark}`,
             }}
           >
