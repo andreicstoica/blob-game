@@ -3,6 +3,7 @@ import type { GameState } from '../../../game/types';
 import { NumberFormatter } from '../../../utils/numberFormat';
 import { getGeneratorValueInfo } from '../../../game/systems/generatorValue';
 import { isContentAvailable, calculateTotalCost } from '../../../game/systems/actions';
+import { GAME_CONFIG } from '../../../game/content/config';
 
 
 interface ShopFloatingNumber {
@@ -136,7 +137,8 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
           onClick={(e) => {
             if (canAfford) {
               // Calculate growth increase before purchase
-              const growthIncrease = generator.baseEffect * buyMultiplier * 10; // Convert to per-second
+              const growthIncrease = generator.growthPerTick * buyMultiplier; // This is per tick
+              const growthPerSecond = growthIncrease * (1000 / GAME_CONFIG.tickRate); // Convert to per-second
               
               onBuyGenerator(generator.id);
               
@@ -155,7 +157,7 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
               if (gameStatsElement) {
                 const gameStatsRect = gameStatsElement.getBoundingClientRect();
                 addFloatingNumber(
-                  `+${NumberFormatter.rate(growthIncrease, gameState)}`,
+                  `+${NumberFormatter.rate(growthPerSecond, gameState)}`,
                   gameStatsRect.left + gameStatsRect.width / 2 + 80, // Right of the GROWTH/SEC number
                   gameStatsRect.top + 80, // Aligned with the growth rate value
                   '#4ade80'
@@ -233,14 +235,14 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
                 fontSize: '13px',
                 fontWeight: 'normal'
               }}>
-                Per: <span style={{ fontSize: '15px' }}>{NumberFormatter.rate(generator.baseEffect * 10, gameState)}</span> / sec
+                Per: <span style={{ fontSize: '15px' }}>{NumberFormatter.rate(generator.growthPerTick * 10, gameState)}</span> / sec
               </div>
               <div style={{ 
                 color: '#60a5fa',
                 fontSize: '13px',
                 fontWeight: 'bold'
               }}>
-                Total: <span style={{ fontSize: '15px' }}>{NumberFormatter.rate(generator.baseEffect * generator.level * 10, gameState)}</span> / sec
+                Total: <span style={{ fontSize: '15px' }}>{NumberFormatter.rate(generator.growthPerTick * generator.level * 10, gameState)}</span> / sec
               </div>
             </div>
             

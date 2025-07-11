@@ -5,8 +5,6 @@ import {
   manualClick,
   buyGenerator,
   buyUpgrade,
-  consumeNutrient,
-  getNearbyNutrients,
   evolveToNextLevel,
   type GameState
 } from '../game/systems/actions';
@@ -51,10 +49,6 @@ export const useGame = () => {
     setGameState(prevState => buyUpgrade(prevState, upgradeId));
   }, []);
 
-  const handleNutrientEaten = useCallback((_blobId: string, nutrientId: string) => {
-    setGameState(prevState => consumeNutrient(prevState, nutrientId));
-  }, []);
-
   const handleEvolve = useCallback(() => {
     setGameState(prevState => {
       const newState = evolveToNextLevel(prevState);
@@ -65,20 +59,12 @@ export const useGame = () => {
     setTutorialState((prevTutorialState: TutorialState) => progressTutorial(prevTutorialState, 'evolve'));
   }, [mapEvolveToNextLevel, gameState]);
 
-
-
-  const getNearbyNutrientsForBlob = useCallback((blobPosition: { x: number; y: number }) => {
-    return getNearbyNutrients(gameState, blobPosition);
-  }, [gameState]);
-
   return {
     gameState,
     tutorialState,
     handleBlobClick,
     handleBuyGenerator,
     handleBuyUpgrade,
-    handleNutrientEaten,
     handleEvolve,
-    getNearbyNutrientsForBlob
   };
 }; 

@@ -82,3 +82,56 @@ when blob is in a petri dish -- it fills up the petri dish and breaks out in a p
 - Different music/SFX for each level
 - Make nutrients part of gameState
 - Save state persistence
+
+
+## Plans for Friday (Jul 11):
+
+Mechanics
+- [ ] Space bar to click
+- [ ] Rebalance progression
+- [X] Fix click power
+- [X] Simple headlines / lore
+
+Aesthetics
+- [X] Make nutrients smaller
+- [X] UI: Evolution - break into wings on game stats, next evolution into button
+- [X] UI: biomass in GameStats showing ... 
+- [ ] Remove trails from bacteria
+- [ ] Background music
+- [ ] Simple ending trigger (main -> endless)
+- [ ] Floating number animations:
+  - [ ] Shop purchase (-##)
+  - [ ] Growth increase (+## / sec)
+  - [ ] Generators (random popups?)
+
+Architecture
+- [ ] Clean up animation loops
+- [ ] Deployment
+- [ ] Investigate performance issues
+- [ ] Tweak intro animation
+
+Other Ideas
+- [ ] Add notification / headline when purchasing first of new generator 
+    (e.g. Purchased Bioreactor! This massive labratory machine does such and such, giving you such and such domination)
+
+### Stretch Goals
+
+- Better shop names - more themed or more description
+- UI: Upgrades like cookie clicker
+- AI headlines / achievements
+- Better ending
+- Different music/SFX for each level
+- Save state persistence
+
+### Ben
+[X] Simple click power fix
+[ ] Animation tweaks
+[ ] UI: biomass in GameStats showing ... 
+
+### Andrei
+[ ] Nutrient sizes and spawn rates + improved background images
+[ ] UI: break Evolution into wings on game stats, next evolution into button
+[ ] Simple headlines / lore
+
+
+

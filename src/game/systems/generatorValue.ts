@@ -4,16 +4,12 @@ import { getUnlockedGenerators } from './actions';
 
 // Calculate the value of purchasing the next level of a generator: Value = (cost of next generator) / (increase in growth)
 // Lower values are better (cheaper per unit of growth)
-export function calculateGeneratorValue(
-  generator: GeneratorState
-): number {
-  const nextCost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
-  const growthIncrease = generator.baseEffect; // Each level adds baseEffect growth
-  
-  if (growthIncrease <= 0) return Infinity;
-  
-  // Lower values = better value (cheaper per unit of growth)
-  return nextCost / growthIncrease;
+export function calculateGeneratorValue(generator: GeneratorState, _gameState: GameState): number {
+    const growthIncrease = generator.growthPerTick; // Each level adds growthPerTick growth
+    const cost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
+    
+    // Value is growth per biomass spent
+    return growthIncrease / cost;
 }
 
 /**
@@ -23,7 +19,7 @@ export function calculateAllGeneratorValues(gameState: GameState): GeneratorValu
   const values: GeneratorValue[] = [];
   
   Object.values(gameState.generators).forEach(generator => {
-    const value = calculateGeneratorValue(generator);
+    const value = calculateGeneratorValue(generator, gameState);
     values.push({
       generatorId: generator.id,
       value,
@@ -86,7 +82,7 @@ export function getGeneratorValueInfo(
   const values: GeneratorValue[] = [];
   
   unlockedGenerators.forEach(generator => {
-    const value = calculateGeneratorValue(generator);
+    const value = calculateGeneratorValue(generator, gameState);
     values.push({
       generatorId: generator.id,
       value,

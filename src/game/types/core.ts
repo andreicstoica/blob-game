@@ -11,7 +11,6 @@ export interface GameState {
     clickPower: number
     generators: Record<string, GeneratorState>
     upgrades: Record<string, UpgradeState>
-    nutrients: NutrientState[]
     currentLevelId: number
     highestLevelReached: number
     gameMode: 'tutorial' | 'main' | 'endless'
@@ -28,4 +27,4 @@ export interface FormatOptions {
 }
 
 // Import types that are used in GameState
-import type { GeneratorState, UpgradeState, NutrientState } from './progression'; 
+import type { GeneratorState, UpgradeState } from './progression'; 

@@ -13,13 +13,6 @@ export interface Level {
   blobSizeEnd: number;
 }
 
-export interface NutrientState {
-  id: string
-  x: number
-  y: number
-  consumed: boolean
-}
-
 export type CellStatus = 'empty' | 'nutrient' | 'blob';
 export interface Cell {
   x: number;
@@ -51,7 +44,7 @@ export interface GeneratorState {
   name: string
   baseCost: number
   description: string
-  baseEffect: number
+  growthPerTick: number
   level: number
   costMultiplier: number
   unlockedAtLevel: string

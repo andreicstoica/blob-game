@@ -1,42 +1,41 @@
 import { LEVELS } from '../content/levels';
 import type { GameState } from '../types';
-import { getTotalGrowth } from './calculations';
-import { spawnMoreNutrients, getNearbyNutrients, consumeNutrient } from './nutrients';
+import { getTotalGrowth, calculateClickPower } from './calculations';
 import { INITIAL_STATE } from './initialization';
 import { playSound } from '../../utils/sound';
 
 // Re-export commonly used functions and types
 export { INITIAL_STATE };
-export { getNearbyNutrients, consumeNutrient };
 export type { GameState };
 
 // Tick function - runs every game loop iteration
 export function tick(state: GameState): GameState {
     const growth = getTotalGrowth(state);
     const newBiomass = state.biomass + growth;
+    const clickPower = calculateClickPower({ ...state, biomass: newBiomass });
 
     const newState = {
         ...state,
         biomass: newBiomass,
         growth,
+        clickPower,
     };
 
-    // Spawn more nutrients if needed
-    const stateWithNutrients = spawnMoreNutrients(newState);
-
-    return stateWithNutrients;
+    return newState;
 }
 
 // Manual click function
 export function manualClick(state: GameState): GameState {
     const newBiomass = state.biomass + state.clickPower;
+    const clickPower = calculateClickPower({ ...state, biomass: newBiomass });
 
     // Play blob click sound
     playSound('blobClick');
 
     return {
         ...state,
-        biomass: newBiomass
+        biomass: newBiomass,
+        clickPower,
     };
 }
 
@@ -50,9 +49,13 @@ export function buyGenerator(state: GameState, generatorId: string): GameState {
         // Play UI click sound for generator purchase
         playSound('uiClick');
 
+        const newBiomass = state.biomass - cost;
+        const clickPower = calculateClickPower({ ...state, biomass: newBiomass });
+
         return {
             ...state,
-            biomass: state.biomass - cost,
+            biomass: newBiomass,
+            clickPower,
             generators: {
                 ...state.generators,
                 [generatorId]: {
@@ -74,9 +77,13 @@ export function buyUpgrade(state: GameState, upgradeId: string): GameState {
         // Play UI click sound for upgrade purchase
         playSound('uiClick');
 
+        const newBiomass = state.biomass - upgrade.cost;
+        const clickPower = calculateClickPower({ ...state, biomass: newBiomass });
+
         return {
             ...state,
-            biomass: state.biomass - upgrade.cost,
+            biomass: newBiomass,
+            clickPower,
             upgrades: {
                 ...state.upgrades,
                 [upgradeId]: {

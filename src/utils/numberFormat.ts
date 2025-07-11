@@ -94,23 +94,19 @@ function formatNumberByType(
 function formatDecimal(value: number, maxDecimals: number, numberType: NumberType): string {
   switch (numberType) {
     case 'biomass':
-      // 1 decimal place until 1000, then integer until 1B, then large number format
-      if (value < 1000) {
-        return value.toFixed(1);
-      } else if (value < 1_000_000_000) {
+      // No decimals until 1B, then large number format with 3 decimals
+      if (value < 1_000_000_000) {
         return Math.floor(value).toLocaleString();
       } else {
-        return formatLargeNumber(value, 2);
+        return formatLargeNumber(value, 3);
       }
     case 'rate':
     case 'power':
-      // 1 decimal place until 100, then integer until 1M, then large number format
-      if (value < 100) {
-        return value.toFixed(1);
-      } else if (value < 1_000_000) {
+      // No decimals until 1M, then large number format with 3 decimals
+      if (value < 1_000_000) {
         return Math.floor(value).toLocaleString();
       } else {
-        return formatLargeNumber(value, 2);
+        return formatLargeNumber(value, 3);
       }
     default:
       return value.toFixed(Math.min(maxDecimals, 2));
@@ -122,35 +118,35 @@ function formatWhole(value: number, numberType: NumberType): string {
   const intValue = Math.floor(value);
   switch (numberType) {
     case 'cost':
-      // Integer until 1B, then large number format with 1 decimal
+      // Integer until 1B, then large number format with 3 decimals
       if (intValue < 1_000_000_000) {
         return intValue.toLocaleString();
       } else {
-        return formatLargeNumber(intValue, 1);
+        return formatLargeNumber(intValue, 3);
       }
     case 'owned':
       // Always integer, no formatting
       return intValue.toString();
     case 'power':
-      // Integer until 1M, then large number format with 2 decimals
+      // Integer until 1M, then large number format with 3 decimals
       if (intValue < 1_000_000) {
         return intValue.toLocaleString();
       } else {
-        return formatLargeNumber(intValue, 2);
+        return formatLargeNumber(intValue, 3);
       }
     case 'biomass':
-      // Integer until 1B, then large number format with 2 decimals
+      // Integer until 1B, then large number format with 3 decimals
       if (intValue < 1_000_000_000) {
         return intValue.toLocaleString();
       } else {
-        return formatLargeNumber(intValue, 2);
+        return formatLargeNumber(intValue, 3);
       }
     case 'threshold':
-      // Integer until 1B, then large number format with 2 decimals
+      // Integer until 1B, then large number format with 3 decimals
       if (intValue < 1_000_000_000) {
         return intValue.toLocaleString();
       } else {
-        return formatLargeNumber(intValue, 2);
+        return formatLargeNumber(intValue, 3);
       }
     default:
       return intValue.toLocaleString();
@@ -162,31 +158,27 @@ function formatStandard(value: number, numberType: NumberType): string {
   switch (numberType) {
     case 'biomass':
     case 'threshold':
-      // 1 decimal place until 1000, then integer until 1B, then large number format
-      if (value < 1000) {
-        return value.toFixed(1);
-      } else if (value < 1_000_000_000) {
+      // No decimals until 1B, then large number format with 3 decimals
+      if (value < 1_000_000_000) {
         return Math.floor(value).toLocaleString();
       } else {
-        return formatLargeNumber(value, 2);
+        return formatLargeNumber(value, 3);
       }
     case 'rate':
     case 'power':
-      // 1 decimal place until 100, then integer until 1M, then large number format
-      if (value < 100) {
-        return value.toFixed(1);
-      } else if (value < 1_000_000) {
+      // No decimals until 1M, then large number format with 3 decimals
+      if (value < 1_000_000) {
         return Math.floor(value).toLocaleString();
       } else {
-        return formatLargeNumber(value, 2);
+        return formatLargeNumber(value, 3);
       }
     case 'cost':
-      // Integer until 1B, then large number format with 1 decimal
+      // Integer until 1B, then large number format with 3 decimals
       const intValue = Math.floor(value);
       if (intValue < 1_000_000_000) {
         return intValue.toLocaleString();
       } else {
-        return formatLargeNumber(intValue, 1);
+        return formatLargeNumber(intValue, 3);
       }
     case 'owned':
       // Always integer, no formatting
