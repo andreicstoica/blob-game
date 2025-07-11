@@ -14,10 +14,10 @@ export function formatNumber(value: number, options: FormatOptions): string {
   } = options;
 
   const currentLevel = gameState ? getCurrentLevel(gameState) : null;
-  
+
   // Determine the format to use based on number type
   let format: 'standard' | 'scientific' | 'decimal' | 'whole';
-  
+
   if (forceFormat) {
     format = forceFormat;
   } else if (type === 'owned') {
@@ -36,14 +36,14 @@ export function formatNumber(value: number, options: FormatOptions): string {
     // For biomass and rate, use level-appropriate formatting
     format = currentLevel?.biomassDisplayFormat || 'standard';
   }
-  
+
   const adjustedValue = adjustValueForType(value, type);
   let formatted = formatNumberByType(adjustedValue, format, maxDecimals, type);
-  
+
   if (showPlus && adjustedValue > 0) {
     formatted = `+${formatted}`;
   }
-  
+
   return formatted;
 }
 
@@ -69,7 +69,7 @@ function adjustValueForType(value: number, type: NumberType): number {
 
 // Formats a number according to the specified format type and number type
 function formatNumberByType(
-  value: number, 
+  value: number,
   format: 'standard' | 'scientific' | 'decimal' | 'whole',
   maxDecimals: number,
   numberType: NumberType
@@ -77,13 +77,13 @@ function formatNumberByType(
   switch (format) {
     case 'scientific':
       return value.toExponential(maxDecimals);
-    
+
     case 'decimal':
       return formatDecimal(value, maxDecimals, numberType);
-    
+
     case 'whole':
       return formatWhole(value, numberType);
-    
+
     case 'standard':
     default:
       return formatStandard(value, numberType);
@@ -103,7 +103,7 @@ function formatDecimal(value: number, maxDecimals: number, numberType: NumberTyp
     case 'rate':
     case 'power':
       // No decimals until 1M, then large number format with 3 decimals
-      if (value < 1_000_000) {
+      if (value < 1_000_000) { // Reverted condition from 1_000 to 1_000_000
         return Math.floor(value).toLocaleString();
       } else {
         return formatLargeNumber(value, 3);
@@ -127,9 +127,10 @@ function formatWhole(value: number, numberType: NumberType): string {
     case 'owned':
       // Always integer, no formatting
       return intValue.toString();
+    case 'rate':
     case 'power':
       // Integer until 1M, then large number format with 3 decimals
-      if (intValue < 1_000_000) {
+      if (intValue < 1_000_000) { // Reverted condition from 1_000 to 1_000_000
         return intValue.toLocaleString();
       } else {
         return formatLargeNumber(intValue, 3);
@@ -167,7 +168,7 @@ function formatStandard(value: number, numberType: NumberType): string {
     case 'rate':
     case 'power':
       // No decimals until 1M, then large number format with 3 decimals
-      if (value < 1_000_000) {
+      if (value < 1_000_000) { // Reverted condition from 1_000 to 1_000_000
         return Math.floor(value).toLocaleString();
       } else {
         return formatLargeNumber(value, 3);
@@ -180,7 +181,7 @@ function formatStandard(value: number, numberType: NumberType): string {
       } else {
         return formatLargeNumber(intValue, 3);
       }
-      }
+    }
     case 'owned':
       // Always integer, no formatting
       return Math.floor(value).toString();
@@ -191,7 +192,7 @@ function formatStandard(value: number, numberType: NumberType): string {
 
 // American system large number names (from Britannica)
 const LARGE_NUMBER_NAMES = [
-  '', 'Thousand', 'Million', 'Billion', 'Trillion', 'Quadrillion', 
+  '', 'Thousand', 'Million', 'Billion', 'Trillion', 'Quadrillion',
   'Quintillion', 'Sextillion', 'Septillion', 'Octillion', 'Nonillion',
   'Decillion', 'Undecillion', 'Duodecillion', 'Tredecillion', 'Quattuordecillion'
 ];
@@ -201,11 +202,11 @@ function formatLargeNumber(value: number, maxDecimals: number): string {
   if (value < 1000) {
     return value.toFixed(Math.min(maxDecimals, 2));
   }
-  
+
   const exp = Math.floor(Math.log(value) / Math.log(1000));
   const scaled = value / Math.pow(1000, exp);
   const suffix = LARGE_NUMBER_NAMES[exp] || `10^${exp * 3}`;
-  
+
   return scaled.toFixed(Math.min(maxDecimals, 2)) + ' ' + suffix;
 }
 
@@ -214,46 +215,45 @@ function formatCompact(value: number): string {
   if (value < 1000) {
     return Math.floor(value).toString();
   }
-  
+
   const exp = Math.floor(Math.log(value) / Math.log(1000));
   const scaled = value / Math.pow(1000, exp);
   const suffixes = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc'];
   const suffix = suffixes[exp] || `e${exp * 3}`;
-  
+
   return Math.floor(scaled).toString() + suffix;
 }
 
 // Convenience functions for common formatting needs
 export const NumberFormatter = {
   // Format biomass values with level-appropriate formatting
-  biomass: (value: number, gameState?: GameState, options?: Partial<FormatOptions>) => 
+  biomass: (value: number, gameState?: GameState, options?: Partial<FormatOptions>) =>
     formatNumber(value, { type: 'biomass', gameState, ...options }),
-  
+
   // Format cost values (typically whole numbers with commas)
-  cost: (value: number, gameState?: GameState, options?: Partial<FormatOptions>) => 
+  cost: (value: number, gameState?: GameState, options?: Partial<FormatOptions>) =>
     formatNumber(value, { type: 'cost', gameState, ...options }),
-  
+
   // Format rate values (per-second, growth, etc.)
-  rate: (value: number, gameState?: GameState, options?: Partial<FormatOptions>) => 
+  rate: (value: number, gameState?: GameState, options?: Partial<FormatOptions>) =>
     formatNumber(value, { type: 'rate', gameState, showPlus: true, ...options }),
-  
-   // Format power values (click power, etc.)
-  power: (value: number, gameState?: GameState, options?: Partial<FormatOptions>) => 
+
+  // Format power values (click power, etc.)
+  power: (value: number, gameState?: GameState, options?: Partial<FormatOptions>) =>
     formatNumber(value, { type: 'power', gameState, showPlus: true, ...options }),
-  
-   // Format threshold values (level requirements)
-  threshold: (value: number, gameState?: GameState, options?: Partial<FormatOptions>) => 
+
+  // Format threshold values (level requirements)
+  threshold: (value: number, gameState?: GameState, options?: Partial<FormatOptions>) =>
     formatNumber(value, { type: 'threshold', gameState, ...options }),
-  
+
   // Format owned counts (always integer, no formatting)
-  owned: (value: number, gameState?: GameState, options?: Partial<FormatOptions>) => 
+  owned: (value: number, gameState?: GameState, options?: Partial<FormatOptions>) =>
     formatNumber(value, { type: 'owned', gameState, ...options }),
-  
+
   // Format any number with custom options
   custom: (value: number, options: FormatOptions) => formatNumber(value, options),
-  
+
   // Compact format for value scales (K, M, B notation without plus)
   compact: (value: number) => formatCompact(value)
 };
 
- 

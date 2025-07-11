@@ -28,7 +28,7 @@ export const VISUAL_ASSETS = {
 export const MILESTONES = [
     {
         id: "ant-size",
-        biomassThreshold: 3000,
+        biomassThreshold: 5000,
         message: "You're now the size of an ant! 🐜",
     },
     {
@@ -43,13 +43,13 @@ export const MILESTONES = [
     },
     {
         id: "car-size",
-        biomassThreshold: 1000000000,
+        biomassThreshold: 1200000000,
         message: "You're as large as an American car! 🚗",
     },
     {
         id: "house-size",
         biomassThreshold: 10000000000,
-        message: "You're the size of a house! 🏠",
+        message: "You're the size of a skyscraper! 🌃",
     },
     {
         id: "whale-size",

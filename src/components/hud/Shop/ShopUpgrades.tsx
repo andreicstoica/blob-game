@@ -4,6 +4,7 @@ import type { TutorialState } from "../../../game/types/ui";
 import { NumberFormatter } from "../../../utils/numberFormat";
 import { LEVELS } from "../../../game/content/levels";
 import { Colors } from "../../../styles/colors";
+import { playSound } from "../../../utils/sound";
 
 interface ShopFloatingNumber {
   id: string;
@@ -163,6 +164,11 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
                   (upgrade.id !== "tutorial-upgrade" || isTutorialEnabled)
                 ) {
                   onBuyUpgrade(upgrade.id);
+
+                  // Play cash register sound for upgrade purchases
+                  if (upgrade.id !== "tutorial-upgrade") {
+                    playSound("cashRegister", 0.6);
+                  }
 
                   // Add floating number animation - position outside shop panel (skip for tutorial upgrade)
                   if (upgrade.id !== "tutorial-upgrade") {

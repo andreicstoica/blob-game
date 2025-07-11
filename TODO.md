@@ -83,36 +83,39 @@ when blob is in a petri dish -- it fills up the petri dish and breaks out in a p
 - Make nutrients part of gameState
 - Save state persistence
 
-
 ## Plans for Friday (Jul 11):
 
 Mechanics
-- [ ] Space bar to click
-- [ ] Rebalance progression
-- [X] Fix click power
-- [X] Simple headlines / lore
+
+- [x] Space bar to click
+- [x] Rebalance progression
+- [x] Fix click power
+- [x] Simple headlines / lore
 
 Aesthetics
-- [X] Make nutrients smaller
-- [X] UI: Evolution - break into wings on game stats, next evolution into button
-- [X] UI: biomass in GameStats showing ... 
-- [ ] Remove trails from bacteria
-- [ ] Background music
+
+- [x] Make nutrients smaller
+- [x] UI: Evolution - break into wings on game stats, next evolution into button
+- [x] UI: biomass in GameStats showing ...
+- [x] Remove trails from bacteria
+- [x] Background music
 - [ ] Simple ending trigger (main -> endless)
-- [ ] Floating number animations:
-  - [ ] Shop purchase (-##)
-  - [ ] Growth increase (+## / sec)
-  - [ ] Generators (random popups?)
+- [x] Floating number animations:
+  - [x] Shop purchase (-##)
+  - [x] Growth increase (+## / sec)
+  - [x] Generators (random popups?)
 
 Architecture
-- [ ] Clean up animation loops
-- [ ] Deployment
+
+- [ ] Clean up animation loops -- too hard for now Dx
+- [x] Deployment
 - [ ] Investigate performance issues
-- [ ] Tweak intro animation
+- [x] Tweak intro animation
 
 Other Ideas
-- [ ] Add notification / headline when purchasing first of new generator 
-    (e.g. Purchased Bioreactor! This massive labratory machine does such and such, giving you such and such domination)
+
+- [x] Add notification / headline when purchasing first of new generator
+      (e.g. Purchased Bioreactor! This massive labratory machine does such and such, giving you such and such domination)
 
 ### Stretch Goals
 
@@ -124,14 +127,13 @@ Other Ideas
 - Save state persistence
 
 ### Ben
+
 [X] Simple click power fix
-[ ] Animation tweaks
-[ ] UI: biomass in GameStats showing ... 
+[X] Animation tweaks
+[ ] UI: biomass in GameStats showing ...
 
 ### Andrei
-[ ] Nutrient sizes and spawn rates + improved background images
-[ ] UI: break Evolution into wings on game stats, next evolution into button
-[ ] Simple headlines / lore
 
-
-
+[X] Nutrient sizes and spawn rates + improved background images
+[~~ ~~] UI: break Evolution into wings on game stats, next evolution into button
+[X] Simple headlines / lore
