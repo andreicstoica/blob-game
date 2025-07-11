@@ -1,4 +1,5 @@
 import type { GameState, GeneratorState } from '../types';
+import { GAME_CONFIG } from '../content/config';
 
 export function getGeneratorCost(generator: GeneratorState): number {
     return Math.floor(generator.baseCost * Math.pow(generator.costMultiplier, generator.level));
@@ -18,7 +19,7 @@ export function getTotalGrowth(state: GameState): number {
     const baseGrowthByLevel: Record<string, number> = {};
     Object.entries(generatorsByLevel).forEach(([level, generators]) => {
         baseGrowthByLevel[level] = generators.reduce((sum, gen) => {
-            return sum + gen.baseEffect * gen.level;
+            return sum + gen.growthPerTick * gen.level;
         }, 0);
     });
 
@@ -42,6 +43,14 @@ export function getTotalGrowth(state: GameState): number {
     });
 
     return finalGrowth;
+}
+
+export function calculateClickPower(state: GameState): number {
+    // Click power is 25% of growth per second
+    const growthPercentage = 0.25;
+    const ticksPerSecond = 1000 / GAME_CONFIG.tickRate; // Convert tick rate to ticks per second
+    const growthPerSecond = state.growth * ticksPerSecond; // Convert from per-tick to per-second
+    return Math.max(GAME_CONFIG.startingClickPower, Math.floor(growthPerSecond * growthPercentage));
 }
 
 export function calculateBlobPosition(): { x: number; y: number } {

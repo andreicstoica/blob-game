@@ -7,7 +7,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🦠 Microscopic Cloner',
     baseCost: 15,
     description: 'Clones basic slime cells',
-    baseEffect: 1,
+    growthPerTick: 1,
     costMultiplier: 1.15,
     unlockedAtLevel: 'microscopic'
   },
@@ -18,7 +18,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🔍 Colony Expansion',
     baseCost: 100,
     description: 'Expands colonies for more biomass',
-    baseEffect: 8,
+    growthPerTick: 8,
     costMultiplier: 1.15,
     unlockedAtLevel: 'petri-dish'
   },
@@ -29,7 +29,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🧪 Centrifuge Sorter',
     baseCost: 1100,
     description: 'Sorts cells for maximum efficiency',
-    baseEffect: 47,
+    growthPerTick: 47,
     costMultiplier: 1.15,
     unlockedAtLevel: 'lab'
   },
@@ -38,7 +38,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🧪 Bioreactor Tank',
     baseCost: 12000,
     description: 'Massive bioreactor for rapid growth',
-    baseEffect: 260,
+    growthPerTick: 260,
     costMultiplier: 1.15,
     unlockedAtLevel: 'lab'
   },
@@ -49,7 +49,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🏘️ Backyard Colonizer',
     baseCost: 130000,
     description: 'Colonizes suburban backyards',
-    baseEffect: 1400,
+    growthPerTick: 1400,
     costMultiplier: 1.15,
     unlockedAtLevel: 'neighborhood'
   },
@@ -58,7 +58,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🏘️ Garden Infester',
     baseCost: 1400000,
     description: 'Infests neighborhood gardens',
-    baseEffect: 7800,
+    growthPerTick: 7800,
     costMultiplier: 1.15,
     unlockedAtLevel: 'neighborhood'
   },
@@ -69,7 +69,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🏙️ Humanoid Slimes',
     baseCost: 20000000,
     description: 'Slimes disguised as humans',
-    baseEffect: 44000,
+    growthPerTick: 44000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'city'
   },
@@ -78,7 +78,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🏙️ Sewer Colonies',
     baseCost: 260000000,
     description: 'Colonies thriving in the sewers',
-    baseEffect: 260000,
+    growthPerTick: 260000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'city'
   },
@@ -89,7 +89,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🗺️ National Highway System',
     baseCost: 7100000000,
     description: 'Uses highway systems for rapid spread',
-    baseEffect: 1500000,
+    growthPerTick: 1500000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'continent'
   },
@@ -98,7 +98,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🗺️ Railway Network',
     baseCost: 83000000000,
     description: 'Hijacks railway networks',
-    baseEffect: 8300000,
+    growthPerTick: 8300000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'continent'
   },
@@ -109,7 +109,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🌍 Cargo Ship Infestors',
     baseCost: 1000000000000,
     description: 'Infest cargo ships for global spread',
-    baseEffect: 47000000,
+    growthPerTick: 47000000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'earth'
   },
@@ -118,7 +118,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🌍 Airplane Spore Units',
     baseCost: 6500000000000,
     description: 'Spread spores via airplanes',
-    baseEffect: 260000000,
+    growthPerTick: 260000000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'earth'
   },
@@ -129,7 +129,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🚀 Terraforming Ooze',
     baseCost: 71000000000000,
     description: 'Ooze that terraforms planets',
-    baseEffect: 1500000000,
+    growthPerTick: 1500000000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'solar-system'
   },
@@ -138,7 +138,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🚀 Asteroid Seeder', 
     baseCost: 550000000000000,
     description: 'Seeds asteroids with life',
-    baseEffect: 7800000000,
+    growthPerTick: 7800000000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'solar-system'
   },
@@ -147,7 +147,7 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🚀 Starship Incubator',
     baseCost: 4800000000000000,
     description: 'Incubates life on starships',
-    baseEffect: 39000000000,
+    growthPerTick: 39000000000,
     costMultiplier: 1.15,
     unlockedAtLevel: 'solar-system'
   }
