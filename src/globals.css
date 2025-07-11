@@ -4,14 +4,84 @@
 
 @import './styles/theme.css';
 
-/* Prevent double-tap zoom while allowing pinch-to-zoom */
+/* Custom font declarations */
+@font-face {
+  font-family: 'Mars Attacks';
+  src: url('/assets/fonts/Mars Attacks.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Darker Grotesque';
+  src: url('/assets/fonts/DarkerGrotesque-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900; /* Variable font supports range of weights */
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Prevent unwanted zooming and selection during rapid clicking */
 * {
   touch-action: manipulation;
+  -webkit-touch-callout: none;
   -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 
+/* Allow text selection for UI elements that need it */
 button, input, textarea, select {
   -webkit-user-select: auto;
+  -moz-user-select: auto;
+  -ms-user-select: auto;
   user-select: auto;
+}
+
+/* Intro Screen Animations */
+@keyframes jiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(1deg) scale(1.02); }
+  50% { transform: rotate(-1deg) scale(1.05); }
+  75% { transform: rotate(1deg) scale(1.02); }
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0;
+    transform: translateY(30px) scale(0.8);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.intro-word {
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-weight: bold;
+  text-shadow: 0 0 20px currentColor;
+  animation: slideIn 0.5s ease-out, jiggle 2s ease-in-out infinite;
+  display: inline-block;
+}
+
+.intro-word-small {
+  font-size: 2.5rem;
+}
+
+.intro-word-large {
+  font-size: 4rem;
+}
+
+/* Responsive sizing */
+@media (max-width: 768px) {
+  .intro-word-small {
+    font-size: 1.5rem;
+  }
+  
+  .intro-word-large {
+    font-size: 2.5rem;
+  }
 }
