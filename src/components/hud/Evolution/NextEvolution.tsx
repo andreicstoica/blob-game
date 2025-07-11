@@ -1,10 +1,10 @@
 import React from "react";
 import { NumberFormatter } from "../../../utils/numberFormat";
-import type { GameState } from '../../../game/types';
+import type { GameState, Level } from '../../../game/types';
 import { Colors } from "../../../styles/colors";
 
 interface NextEvolutionProps {
-  nextLevel: any;
+  nextLevel: Level;
   canEvolve: boolean;
   biomass: number;
   gameState: GameState;
@@ -13,71 +13,65 @@ interface NextEvolutionProps {
 export const NextEvolution: React.FC<NextEvolutionProps> = ({
   nextLevel,
   canEvolve,
-  biomass,
   gameState,
-}) => (
-  <div
-    style={{
-      backgroundColor: "rgba(255, 255, 255, 0.1)",
-      padding: "15px",
-      borderRadius: "8px",
-      marginBottom: "20px",
-    }}
-  >
-    <h3
-      style={{
-        margin: "0 0 10px 0",
-        fontSize: "18px",
-        color: "white",
-      }}
-    >
-      Next Evolution: {nextLevel.displayName || nextLevel.name}
-    </h3>
-    <p
-      style={{
-        margin: "0 0 15px 0",
-        fontSize: "14px",
-        opacity: 0.8,
-      }}
-    >
-      {nextLevel.description}
-    </p>
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "10px",
-      }}
-    >
-      <span style={{ fontSize: "14px" }}>Required Biomass:</span>
-      <span
-        style={{
-          fontSize: "16px",
-          fontWeight: "bold",
-          color: canEvolve ? Colors.biomass.primary : "#ef4444",
-        }}
-      >
-        {NumberFormatter.threshold(nextLevel.biomassThreshold, gameState)}
-      </span>
+}) => {
+  // Styles
+  const containerStyle: React.CSSProperties = {
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center'
+  };
+
+  const titleStyle: React.CSSProperties = {
+    margin: "0 0 4px 0",
+    fontSize: "14px",
+    color: "white",
+    fontWeight: "bold"
+  };
+
+  const descriptionStyle: React.CSSProperties = {
+    margin: "0 0 4px 0",
+    fontSize: "10px",
+    opacity: 0.8,
+    lineHeight: "1.3",
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
+  };
+
+  const requirementRowStyle: React.CSSProperties = {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: "10px"
+  };
+
+  const valueStyle: React.CSSProperties = {
+    fontSize: "12px",
+    fontWeight: "bold",
+    color: canEvolve ? Colors.biomass.primary : Colors.headlines.primary,
+  };
+
+  return (
+    <div style={containerStyle}>
+      <h3 style={titleStyle}>
+        Next: {nextLevel.displayName || nextLevel.name}
+      </h3>
+      
+      <p style={descriptionStyle}>
+        {nextLevel.description}
+      </p>
+      
+      <div style={requirementRowStyle}>
+        <span style={labelStyle}>Required:</span>
+        <span style={valueStyle}>
+          {NumberFormatter.threshold(nextLevel.biomassThreshold, gameState)}
+        </span>
+      </div>
     </div>
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
-      <span style={{ fontSize: "14px" }}>Your Biomass:</span>
-      <span
-        style={{
-          fontSize: "16px",
-          fontWeight: "bold",
-          color: canEvolve ? Colors.biomass.primary : "#9ca3af",
-        }}
-      >
-        {NumberFormatter.biomass(biomass, gameState)}
-      </span>
-    </div>
-  </div>
-);
+  );
+};

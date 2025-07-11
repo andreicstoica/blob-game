@@ -1,54 +1,50 @@
 import React from "react";
-import type { ScaleLevel } from "../../../game/types";
 
 interface CurrentLevelProps {
   displayName: string;
   name: string;
   description: string;
-  scale?: ScaleLevel;
 }
 
 export const CurrentLevel: React.FC<CurrentLevelProps> = ({
   displayName,
   name,
   description,
-  scale,
-}) => (
-  <div
-    style={{
-      backgroundColor: "rgba(255, 255, 255, 0.1)",
-      padding: "15px",
-      borderRadius: "8px",
-      marginBottom: "20px",
-    }}
-  >
-    <h3
-      style={{
-        margin: "0 0 10px 0",
-        fontSize: "18px",
-        color: "white",
-      }}
-    >
-      Current Level: {displayName || name}
-    </h3>
-    <p
-      style={{
-        margin: "0 0 10px 0",
-        fontSize: "14px",
-        opacity: 0.8,
-      }}
-    >
-      {description}
-    </p>
-    {scale && (
-      <div style={{ fontSize: "14px", lineHeight: "1.4" }}>
-        <div style={{ marginBottom: "5px" }}>
-          <span style={{ opacity: 0.8 }}>Scale: </span>
-          <span style={{ color: scale.color, fontWeight: "bold" }}>
-            {scale.icon} {scale.name} ({scale.unit})
-          </span>
-        </div>
-      </div>
-    )}
-  </div>
-);
+}) => {
+  // Styles
+  const containerStyle: React.CSSProperties = {
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center'
+  };
+
+  const titleStyle: React.CSSProperties = {
+    margin: "0 0 4px 0",
+    fontSize: "14px",
+    color: "white",
+    fontWeight: "bold"
+  };
+
+  const descriptionStyle: React.CSSProperties = {
+    margin: "0",
+    fontSize: "10px",
+    opacity: 0.8,
+    lineHeight: "1.3",
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
+  };
+
+  return (
+    <div style={containerStyle}>
+      <h3 style={titleStyle}>
+        Current: {displayName || name}
+      </h3>
+      
+      <p style={descriptionStyle}>
+        {description}
+      </p>
+    </div>
+  );
+};

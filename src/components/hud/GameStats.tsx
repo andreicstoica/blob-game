@@ -3,15 +3,22 @@ import type { GameState } from '../../game/types';
 import { NumberFormatter } from '../../utils/numberFormat';
 import { GAME_CONFIG } from '../../game/content/config';
 import { Colors } from '../../styles/colors';
+import { calculateCPM } from '../../game/systems/notifications';
 
 interface GameStatsProps {
   biomass: number;
   gameState?: GameState;
 }
 
-export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
+export const GameStats: React.FC<GameStatsProps> = ({ 
+  biomass, 
+  gameState
+}) => {
   const formattedBiomass = NumberFormatter.biomass(biomass, gameState);
   const biomassLength = formattedBiomass.length;
+  
+  // Calculate CPM
+  const cpm = gameState ? calculateCPM(gameState.notifications.recentClicks) : 0;
   
   // Dynamic font size based on biomass length to ensure it fits
   let fontSize = 72;
@@ -25,13 +32,13 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
   return (
     <div style={{ 
       textAlign: 'center',
-      minHeight: '120px',
+      minHeight: '80px',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
       width: 'fit-content',
-      minWidth: '100px',
-      maxWidth: '100%',
+      minWidth: '200px',
+      maxWidth: 'none',
       backgroundColor: 'rgba(0, 0, 0, 0.4)',
       padding: `20px ${horizontalPadding}px`,
       borderRadius: '0 0 18px 18px',
@@ -42,10 +49,9 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
       {/* Main Biomass Display */}
       <div style={{ marginBottom: '15px' }}>
         <div style={{ 
-          fontSize: '18px', 
+          fontSize: '16px',
           opacity: 0.8, 
           marginBottom: '5px',
-          marginTop: '30px',
           fontWeight: 'bold'
         }}>
           BIOMASS
@@ -58,8 +64,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
           lineHeight: '1',
           padding: '0 10px',
           whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
+          overflow: 'visible',
           minWidth: '0',
           flexShrink: 1
         }}>
@@ -67,30 +72,55 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
         </div>
       </div>
 
-      {/* Growth and Click Power Row */}
+      {/* Growth, Click Power, and CPM Row */}
       {gameState && (
         <div style={{ 
           display: 'flex', 
           justifyContent: 'space-around',
           alignItems: 'center',
-          gap: '20px'
+          gap: '15px'
         }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ 
-              fontSize: '12px', 
+              fontSize: '12px',
               opacity: 0.7, 
-              marginBottom: '2px',
+              marginBottom: '3px',
               fontWeight: 'bold'
             }}>
               GROWTH
             </div>
             <div style={{ 
-              fontSize: '18px', 
+              fontSize: '16px',
               fontWeight: 'bold', 
               color: Colors.biomass.primary,
               marginBottom: '5px'
             }}>
               +{NumberFormatter.rate(gameState.growth * (1000 / GAME_CONFIG.tickRate), gameState)}<span style={{ fontSize: '12px', color: 'white' }}> / sec</span>
+            </div>
+          </div>
+          
+          <div style={{ 
+            width: '1px', 
+            height: '30px',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)' 
+          }} />
+          
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ 
+              fontSize: '12px',
+              opacity: 0.7, 
+              marginBottom: '3px',
+              fontWeight: 'bold'
+            }}>
+              CLICK POWER
+            </div>
+            <div style={{ 
+              fontSize: '16px',
+              fontWeight: 'bold', 
+              color: Colors.biomass.primary,
+              marginBottom: '5px'
+            }}>
+              {NumberFormatter.power(gameState.clickPower, gameState)}
             </div>
           </div>
           
@@ -107,7 +137,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
               marginBottom: '2px',
               fontWeight: 'bold'
             }}>
-              CLICK POWER
+              CPM
             </div>
             <div style={{ 
               fontSize: '18px', 
@@ -115,7 +145,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
               color: Colors.biomass.primary,
               marginBottom: '5px'
             }}>
-              {NumberFormatter.power(gameState.clickPower, gameState)}
+              {cpm}
             </div>
           </div>
         </div>

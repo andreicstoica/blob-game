@@ -21,6 +21,7 @@ export interface BlobProps {
   position: { x: number; y: number };
   size?: number;
   biomass?: number;
+  gameState?: import('./core').GameState;
   onBlobClick?:
   | ((blobId: string, clickPosition: { x: number; y: number }) => void)
   | (() => void);

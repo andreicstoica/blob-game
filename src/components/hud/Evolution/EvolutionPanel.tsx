@@ -9,7 +9,7 @@ import {
 import { CurrentLevel } from "./CurrentLevel";
 import { NextEvolution } from "./NextEvolution";
 import { EvolutionButton } from "./EvolutionButton";
-import { getScaleLevel } from "../../../game/systems/scaleLevels";
+
 
 interface EvolutionPanelProps {
   biomass: number;
@@ -27,8 +27,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
 
   const currentLevel = getCurrentLevel(gameState);
   const nextLevel = getNextLevel(gameState);
-    const canEvolve = canEvolveToNextLevel(gameState);
-  const scale = getScaleLevel(biomass);
+  const canEvolve = canEvolveToNextLevel(gameState);
 
 
   return (
@@ -55,7 +54,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
           color: Colors.evolution.primary,
           textAlign: "center",
           textTransform: "uppercase",
-          textShadow: "0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)"
+          textShadow: "0 0 8px rgba(200, 200, 200, 0.25), 0 0 16px rgba(200, 200, 200, 0.25)"
         }}
       >
         EVOLUTION
@@ -65,7 +64,6 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
         displayName={currentLevel.displayName}
         name={currentLevel.name}
         description={currentLevel.description}
-        scale={scale}
       />
       {nextLevel && (
         <NextEvolution

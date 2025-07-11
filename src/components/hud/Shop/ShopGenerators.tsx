@@ -56,7 +56,7 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
       .filter(generator => {
         // Always show tutorial generator during tutorial
         if (generator.id === 'tutorial-generator') {
-          return tutorialState?.isActive && tutorialState.currentStep?.type === 'shop-intro' && !tutorialState.completedSteps.has('shop-intro');
+          return tutorialState?.isActive;
         }
         
         if (generatorFilter === 'current') {
@@ -95,9 +95,9 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
     <>
       <h3 style={{ 
         margin: '10px 0 10px 0', 
-        fontSize: '14px',
-        padding: '8px 12px',
-        border: `2px solid ${Colors.headlines.primary}`,
+        fontSize: '12px',
+        padding: '8px 16px',
+        border: `2px solid ${Colors.generators.primary}`,
         borderRadius: '6px',
         display: 'inline-block'
       }}>Generators</h3>
@@ -109,59 +109,57 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
         // Tutorial generator is considered "purchased" after 1 level
         const isTutorialPurchased = generator.id === 'tutorial-generator' && generator.level >= 1;
         
+        // Check if tutorial generator should be enabled (after click-blob step is completed, but before evolution-intro)
+        const isTutorialEnabled = generator.id === 'tutorial-generator' && 
+          tutorialState?.completedSteps.has('click-blob') && 
+          !tutorialState?.completedSteps.has('evolution-intro');
+        
         // Check if this is the first affordable generator
         const isFirstAffordable = canAfford && index === sortedGenerators.findIndex(g => biomass >= calculateTotalCost(g, buyMultiplier));
         
-        // Get level color for gradient
-        const getLevelColor = (levelName: string) => {
-          switch (levelName) {
-            case 'microscopic': return '#c0c0c0'; // Silver
-            case 'petri-dish': return '#3b82f6'; // Blue
-            case 'lab': return '#84cc16'; // Lime
-            case 'neighborhood': return '#f59e0b'; // Amber
-            case 'city': return '#8b5cf6'; // Purple
-            case 'continent': return '#06b6d4'; // Cyan
-            case 'earth': return '#10b981'; // Emerald
-            case 'solar-system': return '#f97316'; // Orange
-            default: return '#6b7280'; // Gray
-          }
-        };
 
-        const levelColor = getLevelColor(generator.unlockedAtLevel);
         
         return (
           <div key={generator.id} 
             className="generator-card"
             style={{
               background: isTutorialPurchased 
-                ? `${Colors.tutorial.primary}30` // purple for purchased tutorial generator
-                : canAfford 
-                  ? `linear-gradient(20deg, ${Colors.generators.primary}30 0%, ${Colors.generators.primary}30 70%, ${levelColor}20 70%, ${levelColor}20 100%)`
-                  : `linear-gradient(20deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 70%, ${levelColor}15 70%, ${levelColor}15 100%)`,
+                ? `${Colors.generators.light}30` // light generator color for purchased tutorial generator
+                : generator.id === 'tutorial-generator' && !isTutorialEnabled
+                  ? 'rgba(128, 128, 128, 0.3)' // gray for disabled tutorial generator
+                  : canAfford 
+                    ? `${Colors.generators.primary}30`
+                    : 'rgba(255, 255, 255, 0.05)',
               border: `2px solid ${
                 isTutorialPurchased 
-                  ? Colors.tutorial.primary // purple border for purchased tutorial generator
-                  : canAfford 
-                    ? Colors.generators.primary 
-                    : '#666'
+                  ? Colors.generators.light // light generator border for purchased tutorial generator
+                  : generator.id === 'tutorial-generator' && !isTutorialEnabled
+                    ? '#666' // gray border for disabled tutorial generator
+                    : canAfford 
+                      ? Colors.generators.primary 
+                      : '#666'
               }`,
               borderRadius: '8px',
               padding: '12px',
               marginBottom: '10px',
-              cursor: canAfford && !isTutorialPurchased ? 'pointer' : 'default',
+              cursor: canAfford && !isTutorialPurchased && (generator.id !== 'tutorial-generator' || isTutorialEnabled) ? 'pointer' : 'default',
               fontSize: '12px',
               position: 'relative',
               transition: 'all 0.3s ease-in-out',
               transform: 'scale(1)',
               boxShadow: isTutorialPurchased 
-                ? `0 2px 8px ${Colors.tutorial.primary}40` // purple shadow for purchased tutorial generator
-                : canAfford 
-                  ? `0 2px 8px ${Colors.generators.primary}40` 
-                  : 'none',
+                ? `0 2px 8px ${Colors.generators.light}40` // light generator shadow for purchased tutorial generator
+                : generator.id === 'tutorial-generator' && !isTutorialEnabled
+                  ? 'none' // no shadow for disabled tutorial generator
+                : generator.id === 'tutorial-generator' && tutorialState?.currentStep?.type === 'click-blob'
+                  ? 'none' // no shadow during click-blob phase
+                  : canAfford 
+                    ? `0 2px 8px ${Colors.generators.primary}40` 
+                    : 'none',
               animation: isFirstAffordable ? 'generatorPulse 2s ease-in-out infinite' : 'none'
             }}
           onClick={(e) => {
-            if (canAfford && !isTutorialPurchased) {
+            if (canAfford && !isTutorialPurchased && (generator.id !== 'tutorial-generator' || isTutorialEnabled)) {
               // Calculate growth increase before purchase
               const growthIncrease = generator.growthPerTick * buyMultiplier; // This is per tick
               const growthPerSecond = growthIncrease * (1000 / GAME_CONFIG.tickRate); // Convert to per-second
@@ -174,7 +172,7 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
                 `-${NumberFormatter.biomass(totalCost, gameState)}`,
                 rect.right - 20,
                 rect.top + rect.height / 2,
-                '#ef4444'
+                Colors.headlines.primary
               );
               
               // Add floating number animation for growth increase - position next to GameStats
@@ -194,9 +192,9 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.01)';
             if (isTutorialPurchased) {
-              e.currentTarget.style.backgroundColor = `${Colors.tutorial.primary}40`;
-              e.currentTarget.style.boxShadow = `0 4px 12px ${Colors.tutorial.primary}60`;
-            } else if (canAfford) {
+              e.currentTarget.style.backgroundColor = `${Colors.generators.light}40`;
+              e.currentTarget.style.boxShadow = `0 4px 12px ${Colors.generators.light}60`;
+            } else if (canAfford && (generator.id !== 'tutorial-generator' || isTutorialEnabled)) {
               e.currentTarget.style.backgroundColor = `${Colors.generators.primary}40`;
               e.currentTarget.style.boxShadow = `0 4px 12px ${Colors.generators.primary}60`;
             } else {
@@ -212,15 +210,19 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'scale(1)';
             if (isTutorialPurchased) {
-              e.currentTarget.style.backgroundColor = `${Colors.tutorial.primary}30`;
-              e.currentTarget.style.boxShadow = `0 2px 8px ${Colors.tutorial.primary}40`;
+              e.currentTarget.style.backgroundColor = `${Colors.generators.light}30`;
+              e.currentTarget.style.boxShadow = `0 2px 8px ${Colors.generators.light}40`;
             } else {
-              e.currentTarget.style.backgroundColor = canAfford 
-                ? `${Colors.generators.primary}30` 
-                : 'rgba(255, 255, 255, 0.1)';
-              e.currentTarget.style.boxShadow = canAfford 
-                ? `0 2px 8px ${Colors.generators.primary}40` 
-                : 'none';
+              e.currentTarget.style.backgroundColor = generator.id === 'tutorial-generator' && !isTutorialEnabled
+                ? 'rgba(128, 128, 128, 0.3)'
+                : canAfford 
+                  ? `${Colors.generators.primary}30` 
+              : 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.boxShadow = generator.id === 'tutorial-generator' && !isTutorialEnabled
+                ? 'none'
+                : canAfford 
+                  ? `0 2px 8px ${Colors.generators.primary}40` 
+              : 'none';
             }
             // Hide stats on leave
             const statsElement = e.currentTarget.querySelector('.generator-stats') as HTMLElement;
@@ -282,9 +284,6 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
             
             <div style={{ fontWeight: 'bold', marginBottom: '5px', fontSize: '15px' }}>
               {generator.name}
-              {isTutorialPurchased && (
-                <span style={{ marginLeft: '5px', color: Colors.tutorial.primary }}>✓</span>
-              )}
             </div>
             <div style={{ opacity: 0.8, marginBottom: '5px', lineHeight: '1.3', fontSize: '13px' }}>
               {generator.description}
@@ -310,7 +309,7 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
                   />
                 )} */}
                 <div style={{ 
-                  color: canAfford ? '#f59e0b' : '#ef4444',
+                  color: canAfford ? Colors.biomass.primary : Colors.headlines.primary,
                   fontWeight: 'bold',
                   fontSize: '13px'
                 }}>

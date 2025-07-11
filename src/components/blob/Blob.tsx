@@ -10,6 +10,7 @@ import {
   createBlobAnimationValues,
 } from "../../game/systems/blobSystem";
 import type { BlobAnimationValues } from "../../game/types/ui";
+import { calculateCPM } from "../../game/systems/notifications";
 
 const Blob = React.memo(
   ({
@@ -17,6 +18,7 @@ const Blob = React.memo(
     position,
     size: propSize,
     biomass,
+    gameState,
     color = Colors.biomass.primary,
     strokeColor = Colors.biomass.light,
     glowColor = Colors.biomass.light,
@@ -48,6 +50,26 @@ const Blob = React.memo(
     const [, forceRender] = useState({});
     const lastRenderTime = useRef(0);
 
+    // Function to get color based on CPM
+    const getCPMColor = useCallback((cpm: number): string => {
+      if (cpm < 10) {
+        // Slow clicking - cool blues
+        return "#3b82f6"; // Blue
+      } else if (cpm < 30) {
+        // Moderate clicking - greens
+        return "#22c55e"; // Green
+      } else if (cpm < 60) {
+        // Fast clicking - yellows
+        return "#fbbf24"; // Yellow
+      } else if (cpm < 100) {
+        // Very fast clicking - oranges
+        return "#f97316"; // Orange
+      } else {
+        // Insane clicking - reds
+        return "#ef4444"; // Red
+      }
+    }, []);
+
     useEffect(() => {
       const newSize = calculateCurrentSize();
       setStableSize(newSize);
@@ -73,28 +95,12 @@ const Blob = React.memo(
 
       // Trigger floating number animation
       if (addFloatingNumber && clickPower > 0) {
-        // Generate random color in blue-purple-white gradient
-        const colors = [
-          "#6366f1", // Indigo
-          "#8b5cf6", // Violet
-          "#a855f7", // Purple
-          "#c084fc", // Light purple
-          "#ddd6fe", // Very light purple
-          "#e0e7ff", // Light indigo
-          "#f3f4f6", // Light gray
-          "#ffffff", // White
-          "#7c3aed", // Dark purple
-          "#3b82f6", // Blue
-          "#fbbf24", // Yellow
-          "#facc15", // Bright yellow
-          "#22c55e", // Green
-          "#4ade80", // Light green
-          "#10b981", // Emerald
-        ];
-        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        // Get CPM-based color
+        const cpm = gameState ? calculateCPM(gameState.notifications.recentClicks) : 0;
+        const cpmColor = getCPMColor(cpm);
 
         // Use the same formatting as generator floating numbers (raw value)
-        addFloatingNumber({ x: worldX, y: worldY }, clickPower, randomColor);
+        addFloatingNumber({ x: worldX, y: worldY }, clickPower, cpmColor);
       }
 
       if (onBlobClick) {
@@ -118,6 +124,45 @@ const Blob = React.memo(
     const handleMouseLeave = () => {
       if (isPressed) setIsPressed(false);
     };
+
+    // Handle keyboard events for spacebar clicking
+    useEffect(() => {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.code === 'Space' && !isDisabled && isActive) {
+          e.preventDefault(); // Prevent page scrolling
+          
+          // Simulate a click at the blob's center
+          // Since the blob is centered on screen, use the viewport center
+          const worldX = window.innerWidth / 2;
+          const worldY = window.innerHeight / 2;
+          
+          // Trigger floating number animation
+          if (addFloatingNumber && clickPower > 0) {
+            // Get CPM-based color
+            const cpm = gameState ? calculateCPM(gameState.notifications.recentClicks) : 0;
+            const cpmColor = getCPMColor(cpm);
+            addFloatingNumber({ x: worldX, y: worldY }, clickPower, cpmColor);
+          }
+
+          if (onBlobClick) {
+            if (onBlobClick.length === 0) {
+              (onBlobClick as () => void)();
+            } else {
+              (onBlobClick as (blobId: string, clickPosition: { x: number; y: number }) => void)(
+                id, 
+                { x: 0, y: 0 } // Center of blob
+              );
+            }
+          }
+
+          // Handle blob click animation and effects
+          handleBlobClick(animationValuesRef.current, Date.now());
+        }
+      };
+
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [id, isDisabled, isActive, clickPower, addFloatingNumber, onBlobClick, position.x, position.y, gameState, getCPMColor]);
 
     useEffect(() => {
       let animationId: number;

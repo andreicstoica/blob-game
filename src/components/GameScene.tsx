@@ -74,6 +74,7 @@ export const GameScene: React.FC<GameSceneProps> = ({
       <BlobContainer
         id="main-blob"
         biomass={gameState.biomass}
+        gameState={gameState}
         size={blobSize}
         onBlobClick={onBlobClick}
         clickPower={gameState.clickPower}

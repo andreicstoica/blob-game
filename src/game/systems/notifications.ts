@@ -130,12 +130,31 @@ export function checkClickMilestones(state: GameState): { state: GameState; noti
     return { state };
 }
 
+// Calculate clicks per minute from recent clicks
+export function calculateCPM(recentClicks: number[]): number {
+    const now = Date.now();
+    const oneMinuteAgo = now - 60000;
+    
+    // Count clicks in the last minute
+    return recentClicks.filter(timestamp => timestamp > oneMinuteAgo).length;
+}
+
 export function incrementClickCount(state: GameState): GameState {
+    const now = Date.now();
+    const oneMinuteAgo = now - 60000; // 60 seconds ago
+    
+    // Add current click timestamp
+    const updatedRecentClicks = [...state.notifications.recentClicks, now];
+    
+    // Remove clicks older than 1 minute
+    const filteredRecentClicks = updatedRecentClicks.filter(timestamp => timestamp > oneMinuteAgo);
+    
     return {
         ...state,
         notifications: {
             ...state.notifications,
             totalClicks: state.notifications.totalClicks + 1,
+            recentClicks: filteredRecentClicks,
         },
     };
 } 

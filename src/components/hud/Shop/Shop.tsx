@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import type { GameState } from '../../../game/types';
 import type { TutorialState } from '../../../game/types/ui';
-import { getCurrentLevel, getUnlockedGenerators } from '../../../game/systems/actions';
-import { ShopGenerators, ShopUpgrades, FilterToggle, BuyMultiplierToggle, ValueScale } from './index';
+import { getCurrentLevel } from '../../../game/systems/actions';
+import { ShopGenerators, ShopUpgrades, FilterToggle, BuyMultiplierToggle } from './index';
 import { Colors } from '../../../styles/colors';
 
 
@@ -30,44 +30,7 @@ export const Shop: React.FC<ShopProps> = ({
 
     const currentLevel = getCurrentLevel(gameState);
 
-  // Calculate value thresholds for the scale - use useMemo to recalculate when gameState changes
-  const valueThresholds = useMemo(() => {
-    // Get all unlocked generators through current level
-    const unlockedGenerators = getUnlockedGenerators(gameState);
-    
-    if (unlockedGenerators.length === 0) {
-      return { highThreshold: 0, lowThreshold: 0 };
-    }
-    
-    // Calculate values for unlocked generators only
-    const unlockedValues = unlockedGenerators.map(generator => {
-      const nextCost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
-      const growthIncrease = generator.growthPerTick;
-      return growthIncrease > 0 ? nextCost / growthIncrease : 0;
-    }).filter(value => value > 0);
-    
-    if (unlockedValues.length === 0) {
-      return { highThreshold: 0, lowThreshold: 0 };
-    }
-    
-    // Find min and max values for unlocked generators
-    const minValue = Math.min(...unlockedValues);
-    const maxValue = Math.max(...unlockedValues);
-    const valueRange = maxValue - minValue;
-    
-    if (valueRange === 0) {
-      return { highThreshold: minValue, lowThreshold: minValue };
-    }
-    
-    // Calculate thresholds based on value ranges for unlocked generators
-    // Lower values = better deals (green), higher values = worse deals (red)
-    const lowThreshold = minValue + (valueRange * 0.33); // 33% from min (green/yellow boundary)
-    const highThreshold = minValue + (valueRange * 0.66); // 66% from min (yellow/red boundary)
-    
-    return { highThreshold, lowThreshold };
-  }, [gameState, currentLevel.name]);
 
-  
 
   const handleBuyGenerator = (generatorId: string) => {
     // Buy multiple generators based on multiplier
@@ -102,7 +65,7 @@ export const Shop: React.FC<ShopProps> = ({
           textAlign: 'center',
           userSelect: 'none',
           textTransform: 'uppercase',
-          textShadow: '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)'
+          textShadow: '0 0 8px rgba(200, 200, 200, 0.25), 0 0 16px rgba(200, 200, 200, 0.2)'
         }}>
           SHOP
         </h2>
@@ -125,12 +88,7 @@ export const Shop: React.FC<ShopProps> = ({
           />
         </div>
 
-        {/* Value Scale Display */}
-        <ValueScale 
-          gameState={gameState}
-          highThreshold={valueThresholds.highThreshold}
-          lowThreshold={valueThresholds.lowThreshold}
-        />
+
       </div>
 
       {/* Scrollable Content */}

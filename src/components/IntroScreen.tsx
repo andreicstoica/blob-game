@@ -20,13 +20,13 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
     setIsTransitioning(true);
     onTransitionStart(); // Start game render and fade-in
     
-          // Complete transition after faster fade out
-      setTimeout(() => {
+    // Complete transition after faster fade out
+    setTimeout(() => {
         endIntro(); // Use Zustand store to end the intro
         playSound('evolve'); // Play evolve sound when game starts
         onEvolve?.(); // Start the game progression (this should handle tutorial state)
         onComplete(); // Keep the original callback for any additional logic
-      }, 500); // Reduced from 1000ms to 500ms
+    }, 500); // Reduced from 1000ms to 500ms
   };
 
   const handleClick = () => {
@@ -164,7 +164,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
   // GROW - actually grows in size
   const growWordStyle = {
     ...baseWordStyle,
-    fontSize: '8rem', // Much bigger base size
+    fontSize: '7rem', // Smaller base size
     color: '#fb923c', // Keep the old orange color
     animation: 'grow 3s cubic-bezier(0.34, 1.56, 0.64, 1)'
   };
@@ -196,7 +196,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
           position: 'relative',
           width: '100%',
           height: '100vh',
-          display: 'flex',
+          display: 'flex', 
           flexDirection: 'column',
           justifyContent: 'flex-start', 
           alignItems: 'center',
@@ -208,33 +208,33 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
             position: 'absolute',
             top: '8vh',
             left: '50%',
-            transform: 'translateX(-50%)',
+            transform: 'translateX(-60%)',
             display: 'flex', 
             justifyContent: 'center', 
             alignItems: 'center',
-            gap: '30px',
+            gap: '50px',
             minHeight: '120px'
           }}>
             <div style={{ width: '200px', textAlign: 'center' }}>
               {showThe && (
-                <span style={theWordStyle}>
-                  THE
-                </span>
-              )}
+            <span style={theWordStyle}>
+              THE
+            </span>
+          )}
             </div>
-            <div style={{ width: '200px', textAlign: 'center', transform: 'translateX(-20%)' }}>
+            <div style={{ width: '200px', textAlign: 'center' }}>
               {showBlob && (
-                <span style={blobWordStyle}>
-                  BLOB
-                </span>
-              )}
+            <span style={blobWordStyle}>
+              BLOB
+            </span>
+          )}
             </div>
           </div>
           
-          {/* Second row: MUST - fixed position */}
+                    {/* Second row: MUST - fixed position */}
           <div style={{ 
             position: 'absolute',
-            top: 'calc(8vh + 140px)',
+            top: 'calc(8vh + 150px)',
             left: '50%',
             transform: 'translateX(-50%)',
             display: 'flex', 
@@ -243,16 +243,16 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
             minHeight: '120px'
           }}>
             {showMust && (
-              <span style={mustWordStyle}>
-                MUST
-              </span>
-            )}
+            <span style={mustWordStyle}>
+              MUST
+            </span>
+          )}
           </div>
           
           {/* Third row: GROW - fixed position */}
           <div style={{ 
             position: 'absolute',
-            top: 'calc(8vh + 280px)',
+            top: 'calc(8vh + 330px)',
             left: '50%',
             transform: 'translateX(-50%)',
             display: 'flex', 
@@ -261,13 +261,13 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
             minHeight: '200px'
           }}>
             {showGrow && (
-              <span style={growWordStyle}>
-                GROW
-              </span>
-            )}
+            <span style={growWordStyle}>
+              GROW
+            </span>
+          )}
           </div>
         </div>
       </div>
     </>
   );
-};
+}; 
