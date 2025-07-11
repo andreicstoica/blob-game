@@ -109,8 +109,8 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
 
     for (let i = 0; i < burstCount; i++) {
       const angle = (i / burstCount) * Math.PI * 2;
-      const velocity = 150 + Math.random() * 100;
-      const size = isCombo ? 6 + Math.random() * 4 : 3 + Math.random() * 3;
+      const velocity = 100 + Math.random() * 50; // Reduced from 150-250 to 100-150 for smaller radius
+      const size = 6 + Math.random() * 4; // Use combo size for all bursts (was 3-6, now 6-10)
       const life = 0.3 + Math.random() * 0.4;
 
       newBursts.push({
@@ -119,7 +119,7 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
         y,
         vx: Math.cos(angle) * velocity,
         vy: Math.sin(angle) * velocity,
-        color: isCombo ? "#fbbf24" : "#b8f2e6", // Very pale green - like blob edge
+        color: "#b8f2e6", // Always pale green
         life,
         maxLife: life,
         size,
@@ -369,7 +369,7 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
                   blobPosition.y + directionY * (blobRadius + edgeOffset);
 
                 // Create enhanced burst effect for combos (external)
-                createBurstEffect(burstX, burstY, comboTracker.isActive);
+                createBurstEffect(burstX, burstY, false); // Always use pale green, never yellow combo color
 
                 // Emit event for ripple system with particle direction
                 window.dispatchEvent(
