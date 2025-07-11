@@ -28,7 +28,7 @@ export const VISUAL_ASSETS = {
 export const MILESTONES = [
     {
         id: "ant-size",
-        biomassThreshold: 2000,
+        biomassThreshold: 3000,
         message: "You're now the size of an ant! 🐜",
     },
     {

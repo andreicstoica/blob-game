@@ -57,7 +57,7 @@ export const TutorialPopup: React.FC<TutorialPopupProps> = ({
     } else if (position === "evolution") {
       return {
         ...baseStyle,
-        right: "320px", // Position next to evolution panel (evolution is now 300px wide + 20px padding)
+        right: "375px", // Position further left to avoid overlap with evolution panel
         top: "45%",
         transform: "translateY(-50%)",
         boxShadow: `0 2px 8px ${Colors.evolution.primary}40`,
