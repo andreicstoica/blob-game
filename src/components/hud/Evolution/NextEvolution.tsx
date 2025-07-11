@@ -13,7 +13,6 @@ interface NextEvolutionProps {
 export const NextEvolution: React.FC<NextEvolutionProps> = ({
   nextLevel,
   canEvolve,
-  biomass,
   gameState,
 }) => {
   // Styles

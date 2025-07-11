@@ -12,7 +12,7 @@ import {
 import { CurrentLevel } from "./Evolution/CurrentLevel";
 import { NextEvolution } from "./Evolution/NextEvolution";
 import { EvolutionButton } from "./Evolution/EvolutionButton";
-import { getScaleLevel } from "../../game/systems/scaleLevels";
+
 
 export const GameHUD: React.FC<GameHUDProps> = ({
   biomass,
@@ -22,7 +22,6 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   onBuyUpgrade,
   onEvolve,
   onTutorialStepComplete,
-  zoom,
 }) => {
   const blobPosition = calculateBlobPosition();
   const shopWidth = 300;
@@ -31,7 +30,6 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   const currentLevel = gameState ? getCurrentLevel(gameState) : null;
   const nextLevel = gameState ? getNextLevel(gameState) : null;
   const canEvolve = gameState ? canEvolveToNextLevel(gameState) : false;
-  const scale = getScaleLevel(biomass);
 
   // Calculate top bar dimensions
   const topBarHeight = 60;
