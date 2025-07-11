@@ -7,22 +7,7 @@ import type {
   ComboTracker,
 } from "../../game/types";
 import { calculateParticleConfig } from "../../game/systems/particles";
-import brownBacteria from "/assets/images/particles/bacteria/brown-bacteria.png";
-import greenBacteria from "/assets/images/particles/bacteria/green-bacteria.png";
-import purpleBacteria from "/assets/images/particles/bacteria/purple-bacteria.png";
-import galaxy1 from "/assets/images/particles/galaxies/galaxy-1.png";
-import galaxy2 from "/assets/images/particles/galaxies/galaxy-2.webp";
-import mouse1 from "/assets/images/particles/mice/mouse-1.png";
-import mouse2 from "/assets/images/particles/mice/mouse-2.png";
-import mouse3 from "/assets/images/particles/mice/mouse-3.png";
-import spaceship1 from "/assets/images/particles/spaceships/spaceship-1.png";
-import spaceship2 from "/assets/images/particles/spaceships/spaceship-2.png";
-import spaceship3 from "/assets/images/particles/spaceships/spaceship-3.png";
-import tank1 from "/assets/images/particles/tanks/tank-1.png";
-import tank2 from "/assets/images/particles/tanks/tank-2.png";
-import tank3 from "/assets/images/particles/tanks/tank-3.png";
-import person1 from "/assets/images/particles/people/person-1.png";
-import person2 from "/assets/images/particles/people/person-2.png";
+import { VISUAL_ASSETS } from "../../styles/constants";
 
 // Interface for burst particles (firework effect)
 interface BurstParticle {
@@ -36,17 +21,6 @@ interface BurstParticle {
   size: number;
   maxLife: number;
 }
-
-// Visual assets for different particle types
-const VISUAL_ASSETS = {
-  circle: [],
-  bacteria: [brownBacteria, greenBacteria, purpleBacteria],
-  mice: [mouse1, mouse2, mouse3],
-  spaceships: [spaceship1, spaceship2, spaceship3],
-  tanks: [tank1, tank2, tank3],
-  galaxies: [galaxy1, galaxy2],
-  people: [person1, person2],
-};
 
 interface ParticleSpawnerProps {
   gameState: GameState;

@@ -13,14 +13,14 @@ export interface ParticleSystemConfig {
 // Base configurations for each level
 const BASE_PARTICLE_CONFIGS = {
     intro: {
-        spawnRate: 8,
+        spawnRate: 3,
         speed: 80,
         size: 14,
         color: '#4ade80',
     },
     microscopic: {
         spawnRate: 1,
-        speed: 80,
+        speed: 100,
         size: 60,
         color: '#22c55e',
     },
