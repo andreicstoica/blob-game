@@ -42,6 +42,7 @@ const Blob = React.memo(
     const [scale, setScale] = useState(1);
     const [isPressed, setIsPressed] = useState(false);
     const [rotation, setRotation] = useState(0); // Add rotation state
+    const [isSpacePressed, setIsSpacePressed] = useState(false); // Add spacebar tracking
 
     const animationValuesRef = useRef<BlobAnimationValues>(
       createBlobAnimationValues()
@@ -125,14 +126,14 @@ const Blob = React.memo(
       if (isPressed) setIsPressed(false);
     };
 
-    // Handle keyboard events for spacebar clicking
+    // Handle keyboard events for spacebar clicking - FIXED VERSION
     useEffect(() => {
       const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.code === 'Space' && !isDisabled && isActive) {
+        if (e.code === 'Space' && !isDisabled && isActive && !isSpacePressed) {
           e.preventDefault(); // Prevent page scrolling
+          setIsSpacePressed(true); // Mark spacebar as pressed
           
           // Simulate a click at the blob's center
-          // Since the blob is centered on screen, use the viewport center
           const worldX = window.innerWidth / 2;
           const worldY = window.innerHeight / 2;
           
@@ -160,9 +161,19 @@ const Blob = React.memo(
         }
       };
 
+      const handleKeyUp = (e: KeyboardEvent) => {
+        if (e.code === 'Space') {
+          setIsSpacePressed(false); // Reset spacebar tracking
+        }
+      };
+
       document.addEventListener('keydown', handleKeyDown);
-      return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [id, isDisabled, isActive, clickPower, addFloatingNumber, onBlobClick, position.x, position.y, gameState, getCPMColor]);
+      document.addEventListener('keyup', handleKeyUp);
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+        document.removeEventListener('keyup', handleKeyUp);
+      };
+    }, [id, isDisabled, isActive, clickPower, addFloatingNumber, onBlobClick, gameState, getCPMColor, isSpacePressed]);
 
     useEffect(() => {
       let animationId: number;
