@@ -8,7 +8,6 @@ export const SOUNDS = {
 };
 
 export const initSounds = () => {
-    console.log("Initializing sounds...");
     for (const key in SOUNDS) {
         if (Object.prototype.hasOwnProperty.call(SOUNDS, key)) {
             const soundFile = SOUNDS[key as keyof typeof SOUNDS];

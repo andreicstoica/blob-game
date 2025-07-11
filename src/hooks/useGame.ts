@@ -19,7 +19,6 @@ export const useGame = () => {
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
   const [tutorialState, setTutorialState] = useState<TutorialState>(() => {
     // Force tutorial reset for testing (remove this later)
-    console.log('Forcing tutorial reset for debugging');
     return createTutorialState();
   });
   const mapEvolveToNextLevel = useMap(state => state.evolveToNextLevel);
@@ -30,18 +29,6 @@ export const useGame = () => {
       setGameState(prevState => tick(prevState));
       setTutorialState((prevTutorialState: TutorialState) => {
         const newTutorialState = updateTutorial(prevTutorialState, gameState);
-        
-        // Debug tutorial state changes
-        if (newTutorialState !== prevTutorialState) {
-          console.log('Tutorial state changed:', {
-            from: prevTutorialState,
-            to: newTutorialState,
-            gameState: {
-              currentLevelId: gameState.currentLevelId,
-              gameMode: gameState.gameMode
-            }
-          });
-        }
         
         return newTutorialState;
       });

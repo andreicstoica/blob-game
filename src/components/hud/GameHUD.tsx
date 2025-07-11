@@ -69,7 +69,6 @@ export const GameHUD: React.FC<GameHUDProps> = ({
 
       {/* Tutorial System - Highest z-index */}
       {tutorialState && (() => {
-        console.log('GameHUD rendering TutorialManager with state:', tutorialState);
         return (
           <TutorialManager
             tutorialState={tutorialState}
