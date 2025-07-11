@@ -165,7 +165,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
                 fontWeight: "bold",
               }}
             >
-              CPM
+              CPS
             </div>
             <div
               style={{
