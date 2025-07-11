@@ -6,7 +6,7 @@ import { ParticleRenderer } from "./ParticleRenderer";
 interface ParticleSystemProps {
   gameState: GameState;
   currentLevel: Level;
-  blobSize: number; // Need blob size for proper scaling
+  blobSize: number;
 }
 
 export const ParticleSystem: React.FC<ParticleSystemProps> = ({
@@ -21,11 +21,10 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({
         currentLevel={currentLevel} 
         blobSize={blobSize}
       >
-        {(particles, burstParticles, trailParticles) => (
+        {(particles, burstParticles) => (
           <ParticleRenderer 
             particles={particles} 
             burstParticles={burstParticles}
-            trailParticles={trailParticles}
           />
         )}
       </ParticleSpawner>
