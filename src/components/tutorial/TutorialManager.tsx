@@ -64,7 +64,7 @@ export const TutorialManager: React.FC<TutorialManagerProps> = ({
               left: mousePosition.x,
               top: mousePosition.y + 20,
               transform: 'translateX(-50%)',
-              fontSize: '18px',
+              fontSize: '12px',
               color: Colors.biomass.dark,
               textAlign: 'center',
               textTransform: 'uppercase',
@@ -74,8 +74,8 @@ export const TutorialManager: React.FC<TutorialManagerProps> = ({
               pointerEvents: 'none',
               zIndex: 10000,
               backgroundColor: 'rgba(0, 0, 0, 0.7)',
-              padding: '4px 12px',
-              borderRadius: '6px',
+              padding: '2px 7px',
+              borderRadius: '4px',
               border: `2px solid ${Colors.biomass.dark}`,
             }}
           >
