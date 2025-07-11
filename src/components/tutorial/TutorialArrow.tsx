@@ -16,7 +16,7 @@ export const TutorialArrow: React.FC<TutorialArrowProps> = ({
   const arrowStyle: React.CSSProperties = {
     position: 'fixed',
     left: targetPosition.x,
-    top: targetPosition.y + 40,
+    top: targetPosition.y + 35,
     transform: 'translateX(-50%)',
     animation: 'tutorialBounce 2s ease-in-out infinite',
     zIndex: 1000,
@@ -52,8 +52,8 @@ export const TutorialArrow: React.FC<TutorialArrowProps> = ({
       
       <div style={arrowStyle} className="tutorial-arrow">
         <svg
-          width="60"
-          height="80"
+          width="75"
+          height="100"
           viewBox="0 0 60 80"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +65,7 @@ export const TutorialArrow: React.FC<TutorialArrowProps> = ({
                 dx="0"
                 dy="0"
                 stdDeviation="3"
-                floodColor="#22c55e"
+                floodColor="#60a5fa"
                 floodOpacity="0.8"
               />
             </filter>
@@ -74,7 +74,7 @@ export const TutorialArrow: React.FC<TutorialArrowProps> = ({
           {/* Arrow body - now pointing upward */}
           <path
             d="M30 25 L30 70"
-            stroke="#22c55e"
+            stroke="#60a5fa"
             strokeWidth="4"
             strokeLinecap="round"
             filter="url(#arrowGlow)"
@@ -83,7 +83,7 @@ export const TutorialArrow: React.FC<TutorialArrowProps> = ({
           {/* Arrow head - now pointing upward */}
           <path
             d="M20 35 L30 20 L40 35"
-            stroke="#22c55e"
+            stroke="#60a5fa"
             strokeWidth="4"
             strokeLinecap="round"
             strokeLinejoin="round"

@@ -1,9 +1,11 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import type { GameState } from '../../../game/types';
+import type { TutorialState } from '../../../game/types/ui';
 import { NumberFormatter } from '../../../utils/numberFormat';
 import { getGeneratorValueInfo } from '../../../game/systems/generatorValue';
 import { isContentAvailable, calculateTotalCost } from '../../../game/systems/actions';
 import { GAME_CONFIG } from '../../../game/content/config';
+
 
 
 interface ShopFloatingNumber {
@@ -17,6 +19,7 @@ interface ShopFloatingNumber {
 interface GeneratorsProps {
   biomass: number;
   gameState: GameState;
+  tutorialState?: TutorialState;
   onBuyGenerator: (generatorId: string) => void;
   generatorFilter: 'current' | 'all';
   currentLevel: { name: string };
@@ -26,6 +29,7 @@ interface GeneratorsProps {
 export const ShopGenerators: React.FC<GeneratorsProps> = ({ 
   biomass,
   gameState,
+  tutorialState,
   onBuyGenerator,
   generatorFilter,
   currentLevel,
@@ -47,8 +51,13 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
   };
   // Sort generators by affordability and value
   const sortedGenerators = useMemo(() => {
-    const filteredGenerators = Object.values(gameState.generators)
+    let filteredGenerators = Object.values(gameState.generators)
       .filter(generator => {
+        // Always show tutorial generator during tutorial
+        if (generator.id === 'tutorial-generator') {
+          return tutorialState?.isActive && tutorialState.currentStep?.type === 'shop-intro' && !tutorialState.completedSteps.has('shop-intro');
+        }
+        
         if (generatorFilter === 'current') {
           // Only show generators from current level
           return generator.unlockedAtLevel === currentLevel.name;
@@ -79,7 +88,7 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
       
       return 0;
     });
-  }, [gameState.generators, generatorFilter, currentLevel.name, biomass, buyMultiplier, gameState]);
+  }, [gameState.generators, generatorFilter, currentLevel.name, biomass, buyMultiplier, gameState, tutorialState]);
 
   return (
     <>
@@ -88,6 +97,9 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
 
         const totalCost = calculateTotalCost(generator, buyMultiplier);
         const canAfford = biomass >= totalCost;
+        
+        // Tutorial generator is considered "purchased" after 1 level
+        const isTutorialPurchased = generator.id === 'tutorial-generator' && generator.level >= 1;
         
         // Check if this is the first affordable generator
         const isFirstAffordable = canAfford && index === sortedGenerators.findIndex(g => biomass >= calculateTotalCost(g, buyMultiplier));
@@ -113,29 +125,35 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
           <div key={generator.id} 
             className="generator-card"
             style={{
-                          background: canAfford 
-              ? `linear-gradient(20deg, rgba(74, 222, 128, 0.2) 0%, rgba(74, 222, 128, 0.2) 70%, ${levelColor}20 70%, ${levelColor}20 100%)`
-              : `linear-gradient(20deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 70%, ${levelColor}15 70%, ${levelColor}15 100%)`,
+              background: isTutorialPurchased 
+                ? 'rgba(59, 130, 246, 0.2)' // blue for purchased tutorial generator
+                : canAfford 
+                  ? `linear-gradient(20deg, rgba(74, 222, 128, 0.2) 0%, rgba(74, 222, 128, 0.2) 70%, ${levelColor}20 70%, ${levelColor}20 100%)`
+                  : `linear-gradient(20deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 70%, ${levelColor}15 70%, ${levelColor}15 100%)`,
               border: `2px solid ${
-                canAfford 
-                  ? '#4ade80' 
-                  : '#666'
+                isTutorialPurchased 
+                  ? '#3b82f6' // blue border for purchased tutorial generator
+                  : canAfford 
+                    ? '#4ade80' 
+                    : '#666'
               }`,
               borderRadius: '8px',
               padding: '12px',
               marginBottom: '10px',
-              cursor: canAfford ? 'pointer' : 'default',
+              cursor: canAfford && !isTutorialPurchased ? 'pointer' : 'default',
               fontSize: '12px',
               position: 'relative',
               transition: 'all 0.3s ease-in-out',
               transform: 'scale(1)',
-              boxShadow: canAfford 
-                ? '0 2px 8px rgba(74, 222, 128, 0.3)' 
-                : 'none',
+              boxShadow: isTutorialPurchased 
+                ? '0 2px 8px rgba(59, 130, 246, 0.3)' // blue shadow for purchased tutorial generator
+                : canAfford 
+                  ? '0 2px 8px rgba(74, 222, 128, 0.3)' 
+                  : 'none',
               animation: isFirstAffordable ? 'generatorPulse 2s ease-in-out infinite' : 'none'
             }}
           onClick={(e) => {
-            if (canAfford) {
+            if (canAfford && !isTutorialPurchased) {
               // Calculate growth increase before purchase
               const growthIncrease = generator.growthPerTick * buyMultiplier; // This is per tick
               const growthPerSecond = growthIncrease * (1000 / GAME_CONFIG.tickRate); // Convert to per-second
@@ -167,7 +185,10 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.01)';
-            if (canAfford) {
+            if (isTutorialPurchased) {
+              e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.3)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.4)';
+            } else if (canAfford) {
               e.currentTarget.style.backgroundColor = 'rgba(74, 222, 128, 0.3)';
               e.currentTarget.style.boxShadow = '0 4px 12px rgba(74, 222, 128, 0.4)';
             } else {
@@ -182,12 +203,17 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.backgroundColor = canAfford 
-              ? 'rgba(74, 222, 128, 0.2)' 
-              : 'rgba(255, 255, 255, 0.1)';
-            e.currentTarget.style.boxShadow = canAfford 
-              ? '0 2px 8px rgba(74, 222, 128, 0.3)' 
-              : 'none';
+            if (isTutorialPurchased) {
+              e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(59, 130, 246, 0.3)';
+            } else {
+              e.currentTarget.style.backgroundColor = canAfford 
+                ? 'rgba(74, 222, 128, 0.2)' 
+                : 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.boxShadow = canAfford 
+                ? '0 2px 8px rgba(74, 222, 128, 0.3)' 
+                : 'none';
+            }
             // Hide stats on leave
             const statsElement = e.currentTarget.querySelector('.generator-stats') as HTMLElement;
             if (statsElement) {
@@ -248,6 +274,9 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
             
             <div style={{ fontWeight: 'bold', marginBottom: '5px', fontSize: '15px' }}>
               {generator.name}
+              {isTutorialPurchased && (
+                <span style={{ marginLeft: '5px', color: '#3b82f6' }}>✓</span>
+              )}
             </div>
             <div style={{ opacity: 0.8, marginBottom: '5px', lineHeight: '1.3', fontSize: '13px' }}>
               {generator.description}

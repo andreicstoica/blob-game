@@ -14,6 +14,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   onBuyGenerator,
   onBuyUpgrade,
   onEvolve,
+  onTutorialStepComplete,
   zoom,
 }) => {
   return (
@@ -55,6 +56,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
         <Shop
           biomass={biomass}
           gameState={gameState}
+          tutorialState={tutorialState}
           onBuyGenerator={onBuyGenerator}
           onBuyUpgrade={onBuyUpgrade}
         />
@@ -76,6 +78,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
               x: window.innerWidth / 2,
               y: window.innerHeight / 2
             }}
+            onTutorialStepComplete={onTutorialStepComplete}
           />
         );
       })()}

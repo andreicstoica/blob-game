@@ -19,6 +19,7 @@ export interface GameHUDProps {
   onBuyGenerator?: (generatorId: string) => void;
   onBuyUpgrade?: (upgradeId: string) => void;
   onEvolve?: () => void;
+  onTutorialStepComplete?: (stepId: string) => void;
   blobSize?: number;
   zoom?: number;
 }

@@ -3,9 +3,11 @@
 // Tutorial system types
 export interface TutorialStep {
   id: string
-  type: 'click-blob' | 'buy-generator' | 'evolve'
+  type: 'click-blob' | 'buy-generator' | 'evolve' | 'shop-intro' | 'evolution-intro'
   target?: { x: number, y: number }
   completed: boolean
+  popupPosition?: 'shop' | 'evolution'
+  popupMessage?: string
 }
 
 export interface TutorialState {

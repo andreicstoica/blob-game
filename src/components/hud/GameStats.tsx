@@ -81,7 +81,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
               marginBottom: '2px',
               fontWeight: 'bold'
             }}>
-              GROWTH / SEC
+              GROWTH
             </div>
             <div style={{ 
               fontSize: '18px', 
@@ -89,7 +89,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
               color: '#4ade80',
               marginBottom: '5px'
             }}>
-              {NumberFormatter.rate(gameState.growth * (1000 / GAME_CONFIG.tickRate), gameState)}
+              +{NumberFormatter.rate(gameState.growth * (1000 / GAME_CONFIG.tickRate), gameState)}<span style={{ fontSize: '14px', color: 'white' }}> / sec</span>
             </div>
           </div>
           

@@ -89,6 +89,7 @@ function GameComponent({
         onBuyGenerator={handleBuyGenerator}
         onBuyUpgrade={handleBuyUpgrade}
         onEvolve={handleEvolve}
+        onTutorialStepComplete={gameHook.handleTutorialStepComplete}
         blobSize={blobSize}
       />
 

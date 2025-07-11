@@ -68,6 +68,23 @@ export function buyGenerator(state: GameState, generatorId: string): GameState {
     const generator = state.generators[generatorId];
     if (!generator) return state;
 
+    // Tutorial generator is always free and purchasable
+    if (generatorId === 'tutorial-generator') {
+        // Play UI click sound for generator purchase
+        playSound('uiClick');
+
+        return {
+            ...state,
+            generators: {
+                ...state.generators,
+                [generatorId]: {
+                    ...generator,
+                    level: generator.level + 1
+                }
+            }
+        };
+    }
+
     const cost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
 
     if (state.biomass >= cost) {
@@ -104,6 +121,26 @@ export function buyGenerator(state: GameState, generatorId: string): GameState {
 export function buyUpgrade(state: GameState, upgradeId: string): GameState {
     const upgrade = state.upgrades[upgradeId];
     if (!upgrade) return state;
+
+    // Tutorial upgrade is always free and purchasable
+    if (upgradeId === 'tutorial-upgrade') {
+        if (!upgrade.purchased) {
+            // Play UI click sound for upgrade purchase
+            playSound('uiClick');
+
+            return {
+                ...state,
+                upgrades: {
+                    ...state.upgrades,
+                    [upgradeId]: {
+                        ...upgrade,
+                        purchased: true
+                    }
+                }
+            };
+        }
+        return state;
+    }
 
     if (!upgrade.purchased && state.biomass >= upgrade.cost) {
         // Play UI click sound for upgrade purchase
