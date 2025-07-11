@@ -39,6 +39,7 @@ const Blob = React.memo(
     const visualSizeRef = useRef(stableSize);
     const [scale, setScale] = useState(1);
     const [isPressed, setIsPressed] = useState(false);
+    const [rotation, setRotation] = useState(0); // Add rotation state
 
     const animationValuesRef = useRef<BlobAnimationValues>(
       createBlobAnimationValues()
@@ -134,6 +135,9 @@ const Blob = React.memo(
         // Update all blob animations
         updateBlobAnimations(animValues, currentVisualSize, now, biomass);
 
+        // Update rotation - slow rotation (360 degrees in 30 seconds)
+        setRotation(prev => (prev + 0.2) % 360);
+
         // Notify parent of animation state changes for ripple system
         if (onAnimationStateChange) {
           onAnimationStateChange({
@@ -200,7 +204,7 @@ const Blob = React.memo(
             position: "absolute",
             left: "50%",
             top: "50%",
-            transform: "translate(-50%, -50%)",
+            transform: `translate(-50%, -50%) rotate(${rotation}deg)`, // Add rotation
             pointerEvents: "none", // Let the parent div handle clicks
           }}
         >

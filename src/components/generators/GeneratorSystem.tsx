@@ -36,10 +36,18 @@ export const GeneratorSystem: React.FC<GeneratorSystemProps> = ({
       zIndex: 80
     }}>
       {generators.map((generator) => (
-        <GeneratorElement key={generator.id} generator={generator} />
+        <GeneratorElement 
+          key={generator.id} 
+          generator={generator} 
+          blobSize={blobSize} 
+        />
       ))}
       {stackedGenerators.map((generator) => (
-        <StackedGeneratorElement key={generator.id} generator={generator} />
+        <StackedGeneratorElement 
+          key={generator.id} 
+          generator={generator} 
+          blobSize={blobSize} 
+        />
       ))}
     </div>
   );

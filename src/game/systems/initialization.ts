@@ -14,7 +14,7 @@ export const initializeGenerators = (): Record<string, GeneratorState> => {
             level: 0
         };
     });
-    
+
     // Add tutorial generator
     generators[TUTORIAL_GENERATOR.id] = {
         ...TUTORIAL_GENERATOR,
@@ -39,13 +39,13 @@ export const initializeUpgrades = () => {
             targetLevel: upgrade.targetLevel
         };
     });
-    
+
     // Add tutorial upgrade
     upgrades[TUTORIAL_UPGRADE.id] = {
         ...TUTORIAL_UPGRADE,
         purchased: false
     };
-    
+
     return upgrades;
 };
 

@@ -91,7 +91,7 @@ export function checkClickMilestones(state: GameState): { state: GameState; noti
         return {
             state: markMilestoneAsShown(state, "click-legend"),
             notification: {
-                message: "Click Legend! You've clicked 1,000 times.",
+                message: "Legend! You've clicked 1,000 times!",
                 id: "click-legend"
             }
         };
@@ -101,8 +101,28 @@ export function checkClickMilestones(state: GameState): { state: GameState; noti
         return {
             state: markMilestoneAsShown(state, "clicker-master"),
             notification: {
-                message: "Clicker Master! Your dedication is admirable.",
+                message: "Clicker Master! Your dedication is admirable for clicking 100 times.",
                 id: "clicker-master"
+            }
+        };
+    }
+
+    if (state.notifications.totalClicks >= 500 && !state.notifications.shownMilestones.has("clicker-expert")) {
+        return {
+            state: markMilestoneAsShown(state, "clicker-expert"),
+            notification: {
+                message: "500 clicks—you're unstoppable.",
+                id: "clicker-expert"
+            }
+        };
+    }
+
+    if (state.notifications.totalClicks >= 50 && !state.notifications.shownMilestones.has("clicker-novice")) {
+        return {
+            state: markMilestoneAsShown(state, "clicker-novice"),
+            notification: {
+                message: "Clicker Novice! 50 clicks and counting...",
+                id: "clicker-novice"
             }
         };
     }
