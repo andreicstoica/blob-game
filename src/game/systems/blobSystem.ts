@@ -10,9 +10,9 @@ export const calculateBlobSize = (
     propSize ||
     (biomass
       ? Math.max(
-          GAME_CONFIG.minBlobSize,
-          biomass * GAME_CONFIG.blobSizeMultiplier
-        )
+        GAME_CONFIG.minBlobSize,
+        biomass * GAME_CONFIG.blobSizeMultiplier
+      )
       : 100)
   );
 };
@@ -22,10 +22,10 @@ export const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-      }
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16),
+    }
     : { r: 0, g: 0, b: 0 };
 };
 
@@ -45,14 +45,14 @@ export const rgbToHex = (r: number, g: number, b: number): string => {
 
 export const getHeatColor = (baseColor: string, heat: number): string => {
   if (heat === 0) return baseColor;
-  
+
   const greenRgb = hexToRgb(baseColor);
   const orangeRgb = { r: 255, g: 140, b: 0 };
-  
+
   const r = greenRgb.r + (orangeRgb.r - greenRgb.r) * heat;
   const g = greenRgb.g + (orangeRgb.g - greenRgb.g) * heat;
   const b = greenRgb.b + (orangeRgb.b - greenRgb.b) * heat;
-  
+
   return rgbToHex(r, g, b);
 };
 
@@ -60,25 +60,44 @@ export const getHeatColor = (baseColor: string, heat: number): string => {
 export const updateBlobAnimations = (
   animValues: BlobAnimationValues,
   stableSize: number,
-  currentTime: number
+  currentTime: number,
+  biomass?: number
 ): void => {
   const time = currentTime * 0.001;
   const stableRadius = stableSize * 0.35;
 
   // Update breathing animation
   animValues.breathing = Math.abs(Math.sin(time * 0.6)) * (stableRadius * 0.1);
-  
-  // Generate amoeba noise
+
+  // Generate amoeba noise with ripple effect
   const amoebaNoise = [];
   for (let i = 0; i < 8; i++) {
     const angle = (i / 8) * Math.PI * 2;
     const noiseFreq = time * 0.4 + angle * 3;
-    const noise =
-      Math.sin(noiseFreq) * 0.15 + Math.cos(noiseFreq * 1.7) * 0.1;
+    let noise = Math.sin(noiseFreq) * 0.15 + Math.cos(noiseFreq * 1.7) * 0.1;
+
+    // Add ripple effect to the noise
+    if (animValues.rippleIntensity > 0) {
+      // Scale ripple intensity up with biomass - larger blobs ripple more
+      const biomassFactor = biomass ? Math.min(3.0, 1 + (biomass / 5000)) : 1;
+      const rippleAmplitude = 0.08 * biomassFactor; // Base amplitude, scales with biomass
+      const rippleWave = Math.sin(animValues.ripplePhase + angle * 4) * animValues.rippleIntensity * rippleAmplitude;
+      noise += rippleWave;
+    }
+
     amoebaNoise.push(noise);
   }
   animValues.amoebaNoise = amoebaNoise;
-  
+
+  // Update ripple animation
+  if (animValues.rippleIntensity > 0) {
+    animValues.ripplePhase += 0.08; // Slow ripple speed
+    animValues.rippleIntensity *= 0.985; // Slower decay - longer lasting ripples
+    if (animValues.rippleIntensity < 0.01) {
+      animValues.rippleIntensity = 0;
+    }
+  }
+
   // Click animation (pressure decay)
   const timeSinceLastClick = currentTime - animValues.lastClickTime;
   const recoveryDelay = 150;
@@ -91,7 +110,7 @@ export const updateBlobAnimations = (
       }
     }
   }
-  
+
   // Heat/color decay
   if (timeSinceLastClick > 500) {
     animValues.clickHeat *= 0.97;
@@ -99,9 +118,9 @@ export const updateBlobAnimations = (
       animValues.clickHeat = 0;
     }
   }
-  
-  // Calculate click boost for size
-  const maxShrinkAmount = Math.min(15, stableRadius * 0.15);
+
+  // Calculate click boost for size - reduced to max 10% shrink
+  const maxShrinkAmount = stableRadius * 0.1; // Max 10% shrink
   animValues.clickBoost = -animValues.pressure * maxShrinkAmount;
 };
 
@@ -119,15 +138,19 @@ export const handleBlobClick = (
   );
   animValues.lastClickTime = currentTime;
 
+  // Add to ripple effect (don't interrupt existing ripples)
+  animValues.rippleIntensity = Math.min(1.0, animValues.rippleIntensity + 0.25);
+  // Don't reset ripplePhase - let the wave continue naturally
+
   // Track click for heat/color effect
   animValues.clickTimes.push(currentTime);
-  
+
   // Remove old clicks (older than 2 seconds)
   const heatWindow = 2000;
   animValues.clickTimes = animValues.clickTimes.filter(
     (time) => currentTime - time < heatWindow
   );
-  
+
   // Calculate click heat based on recent click frequency
   if (animValues.clickTimes.length >= 3) {
     const clickFrequency =
@@ -146,15 +169,15 @@ export const generateAmoebePath = (
   const centerY = currentSize;
   const baseRadius = currentSize * 0.35;
   const { breathing, clickBoost, amoebaNoise } = animValues;
-  
+
   const numPoints = 8;
   const points = [];
   for (let i = 0; i < numPoints; i++) {
     const angle = (i / numPoints) * Math.PI * 2;
     const noise = (amoebaNoise && amoebaNoise[i]) || 0;
     const radius = baseRadius + breathing + clickBoost + noise * baseRadius;
-    points.push({ 
-      x: centerX + Math.cos(angle) * radius, 
+    points.push({
+      x: centerX + Math.cos(angle) * radius,
       y: centerY + Math.sin(angle) * radius,
     });
   }
@@ -162,9 +185,8 @@ export const generateAmoebePath = (
   if (points.length < 2) return "";
   const firstPoint = points[0];
   const lastPoint = points[points.length - 1];
-  let path = `M ${(lastPoint.x + firstPoint.x) / 2} ${
-    (lastPoint.y + firstPoint.y) / 2
-  }`;
+  let path = `M ${(lastPoint.x + firstPoint.x) / 2} ${(lastPoint.y + firstPoint.y) / 2
+    }`;
 
   for (let i = 0; i < points.length; i++) {
     const currentPoint = points[i];
@@ -186,4 +208,6 @@ export const createBlobAnimationValues = (): BlobAnimationValues => ({
   lastClickTime: 0,
   clickHeat: 0,
   clickTimes: [],
+  ripplePhase: 0,
+  rippleIntensity: 0,
 }); 

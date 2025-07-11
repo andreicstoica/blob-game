@@ -49,6 +49,8 @@ export interface BlobAnimationValues {
   lastClickTime: number;
   clickHeat: number;
   clickTimes: number[];
+  ripplePhase: number;
+  rippleIntensity: number;
 }
 
 // Generator visualization interfaces
