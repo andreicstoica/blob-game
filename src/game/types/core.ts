@@ -1,19 +1,23 @@
 // Core game state, mechanics, and utility types
 
 export interface BlobState {
-    size: number
+  size: number
 }
 
 export interface GameState {
-    blobs: BlobState[]
-    biomass: number
-    growth: number
-    clickPower: number
-    generators: Record<string, GeneratorState>
-    upgrades: Record<string, UpgradeState>
-    currentLevelId: number
-    highestLevelReached: number
-    gameMode: 'tutorial' | 'main' | 'endless'
+  blobs: BlobState[]
+  biomass: number
+  growth: number
+  clickPower: number
+  generators: Record<string, GeneratorState>
+  upgrades: Record<string, UpgradeState>
+  currentLevelId: number
+  highestLevelReached: number
+  gameMode: 'tutorial' | 'main' | 'endless'
+  notifications: {
+    shownMilestones: Set<string>
+    totalClicks: number
+  }
 }
 
 export type NumberType = 'biomass' | 'cost' | 'rate' | 'power' | 'threshold' | 'owned';
