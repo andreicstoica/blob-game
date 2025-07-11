@@ -51,9 +51,6 @@ const calculateLevelZoom = (
 
     const calculatedZoom = start - easedProgress * (start - end);
 
-    // Debug logging
-    console.log(`Zoom calculation: biomass=${biomass}, progress=${progressRatio.toFixed(3)}, easedProgress=${easedProgress.toFixed(3)}, zoom=${calculatedZoom.toFixed(3)}`);
-
     return calculatedZoom;
 };
 

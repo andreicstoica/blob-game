@@ -40,8 +40,6 @@ export const initializeUpgrades = () => {
 };
 
 export const initializeNutrients = (): NutrientState[] => {
-    console.log('Initializing nutrients...');
-
     // Generate nutrients in a large area around center (stored as offsets from center)
     const gameAreaWidth = 2000;
     const gameAreaHeight = 1500;
@@ -54,7 +52,6 @@ export const initializeNutrients = (): NutrientState[] => {
         consumed: false
     }));
 
-    console.log('Created nutrients:', nutrients.slice(0, 3));
     return nutrients;
 };
 
