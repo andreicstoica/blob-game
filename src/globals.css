@@ -104,21 +104,29 @@ button, input, textarea, select {
 
 /* Toast Notification Styles */
 .blob-toast {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  border: 2px solid #dc2626;
-  border-radius: 20px;
-  color: #f1f5f9;
-  font-weight: 500;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #1f2937 0%, #166534 100%) !important; /* Dark green gradient */
+  border: 2px solid #4ade80 !important; /* Biomass primary color */
+  border-radius: 8px !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3) !important; /* Green shadow */
+  margin: 2px !important;
+  padding: 16px !important;
+  font-size: 14px !important;
+  line-height: 1.3 !important;
+  transition: all 0.3s ease-in-out !important;
 }
 
+.blob-toast:hover {
+  box-shadow: 0 6px 16px rgba(74, 222, 128, 0.4) !important; /* Enhanced green shadow on hover */
+}
+
+/* Ensure padding between text and close button */
 .blob-toast .Toastify__toast-body {
-  padding: 20px;
-  font-size: 12px;
-  line-height: 1.4;
+  padding-right: 10px !important;
 }
 
 .blob-toast .Toastify__progress-bar {
-  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
-  height: 4px;
+  background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%) !important; /* Biomass color gradient */
+  height: 4px !important;
 }

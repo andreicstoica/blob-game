@@ -17,7 +17,8 @@ export interface GameState {
   notifications: {
     shownMilestones: Set<string>
     totalClicks: number
-    recentClicks: number[] // Timestamps of recent clicks for CPM calculation
+    recentClicks: number[]
+    maxCPM: number
   }
 }
 

@@ -105,12 +105,12 @@ function GameComponent({
       {/* Toast Notifications - Aligned with blob horizontally */}
       <div
         style={{
-          position: 'fixed',
-          bottom: '20px',
+          position: "fixed",
+          bottom: "20px",
           left: `${blobPosition.x}px`,
-          transform: 'translateX(-50%)',
+          transform: "translateX(-50%)",
           zIndex: 9999,
-          pointerEvents: 'none', // Allow clicks to pass through
+          pointerEvents: "none", // Allow clicks to pass through
         }}
       >
         <ToastContainer
@@ -126,8 +126,8 @@ function GameComponent({
           theme="dark"
           toastClassName="blob-toast"
           style={{
-            position: 'relative',
-            pointerEvents: 'auto', // Re-enable pointer events for the toasts themselves
+            position: "relative",
+            pointerEvents: "auto", // Re-enable pointer events for the toasts themselves
           }}
         />
       </div>

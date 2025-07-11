@@ -129,26 +129,43 @@ export function checkClickMilestones(state: GameState): { state: GameState; noti
     return { state };
 }
 
-// Calculate clicks per minute from recent clicks
+// Calculate clicks per second from recent clicks (1 second window)
 export function calculateCPM(recentClicks: number[]): number {
     const now = Date.now();
-    const oneMinuteAgo = now - 60000;
+    const oneSecondAgo = now - 1000; // Back to 1 second
 
-    // Count clicks in the last minute
-    return recentClicks.filter(timestamp => timestamp > oneMinuteAgo).length;
+    // Count clicks in the last 1 second (no scaling needed for CPS)
+    return recentClicks.filter(timestamp => timestamp > oneSecondAgo).length;
+}
+
+// Update max CPM if current CPM is higher
+export function updateMaxCPM(state: GameState): GameState {
+    const currentCPM = calculateCPM(state.notifications.recentClicks);
+    
+    if (currentCPM > (state.notifications.maxCPM || 0)) {
+        return {
+            ...state,
+            notifications: {
+                ...state.notifications,
+                maxCPM: currentCPM,
+            },
+        };
+    }
+    
+    return state;
 }
 
 export function incrementClickCount(state: GameState): GameState {
     const now = Date.now();
-    const oneMinuteAgo = now - 60000; // 60 seconds ago
+    const oneSecondAgo = now - 1000; // Back to 1 second
 
     // Add current click timestamp
     const updatedRecentClicks = [...state.notifications.recentClicks, now];
 
-    // Remove clicks older than 1 minute
-    const filteredRecentClicks = updatedRecentClicks.filter(timestamp => timestamp > oneMinuteAgo);
+    // Remove clicks older than 1 second
+    const filteredRecentClicks = updatedRecentClicks.filter(timestamp => timestamp > oneSecondAgo);
 
-    return {
+    const updatedState = {
         ...state,
         notifications: {
             ...state.notifications,
@@ -156,4 +173,7 @@ export function incrementClickCount(state: GameState): GameState {
             recentClicks: filteredRecentClicks,
         },
     };
+
+    // Update max CPM after adding the click
+    return updateMaxCPM(updatedState);
 } 
