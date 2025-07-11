@@ -3,11 +3,12 @@ import type { GameSceneProps } from "../game/types";
 import { getCurrentLevel } from "../game/systems/actions";
 import { ParticleSystem } from "./particles/ParticleSystem";
 import { BlobContainer } from "./blob/BlobContainer";
-import { GeneratorSystem } from "./generators/GeneratorSystem";
+import { GeneratorFloatingNumbers } from "./generators/GeneratorFloatingNumbers";
 import { FloatingNumber } from "./animations/FloatingNumber";
 import { RippleSystem } from "./particles/RippleSystem";
 import type { FloatingNumberAnimation } from "../game/types";
 import Map from "./map/Map";
+import { calculateBlobPosition } from "../game/systems/calculations";
 
 export const GameScene: React.FC<GameSceneProps> = ({
   gameState,
@@ -85,11 +86,10 @@ export const GameScene: React.FC<GameSceneProps> = ({
         onAnimationStateChange={setBlobAnimationState}
       />
 
-      {/* Generator System - z-index: 80 */}
-      <GeneratorSystem
+      {/* Generator Floating Numbers - z-index: 80 */}
+      <GeneratorFloatingNumbers
         gameState={gameState}
-        blobSize={blobSize}
-        addFloatingNumber={addFloatingNumber}
+        blobPosition={calculateBlobPosition()}
       />
 
       {/* Ripple Effects Layer - z-index: 75 (above blob, below generators) */}

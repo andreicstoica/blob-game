@@ -134,7 +134,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
                 fontWeight: "bold",
               }}
             >
-              CLICK POWER
+              CLICK PWR
             </div>
             <div
               style={{
@@ -165,7 +165,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
                 fontWeight: "bold",
               }}
             >
-              CPM
+              CLICKS / MIN
             </div>
             <div
               style={{

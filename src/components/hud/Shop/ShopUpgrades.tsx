@@ -126,7 +126,11 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
                     : tutorialState?.currentStep?.type === "click-blob"
                     ? "rgba(128, 128, 128, 0.3)" // gray background during click-blob phase
                     : `${Colors.upgrades.primary}30` // purple background for unpurchased tutorial upgrade
-                  : "rgba(128, 128, 128, 0.2)", // Consistent gray background for other upgrades
+                  : upgrade.purchased
+                    ? "rgba(128, 128, 128, 0.3)" // gray background for purchased upgrades
+                    : canAfford
+                    ? `${Colors.upgrades.primary}30` // purple background for affordable upgrades
+                    : "rgba(128, 128, 128, 0.2)", // gray background for unaffordable upgrades
                 border: `2px solid ${
                   upgrade.purchased
                     ? Colors.upgrades.light // purple border for purchased tutorial upgrade
