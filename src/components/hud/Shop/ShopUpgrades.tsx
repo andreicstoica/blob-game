@@ -88,10 +88,10 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
         return (
           <div key={upgrade.id} style={{
             background: upgrade.purchased 
-              ? `linear-gradient(150deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.2) 70%, rgba(59, 130, 246, 0.18) 73%, rgba(59, 130, 246, 0.15) 75%, rgba(59, 130, 246, 0.12) 76%, rgba(59, 130, 246, 0.08) 76.5%, rgba(59, 130, 246, 0.05) 77%, ${levelColor}30 77%, ${levelColor}50 80%, ${levelColor}70 85%, ${levelColor}80 100%)` // blue for purchased
+              ? 'rgba(59, 130, 246, 0.2)' // blue for purchased
               : canAfford 
-                ? `linear-gradient(150deg, rgba(74, 222, 128, 0.2) 0%, rgba(74, 222, 128, 0.2) 70%, rgba(74, 222, 128, 0.18) 73%, rgba(74, 222, 128, 0.15) 75%, rgba(74, 222, 128, 0.12) 76%, rgba(74, 222, 128, 0.08) 76.5%, rgba(74, 222, 128, 0.05) 77%, ${levelColor}30 77%, ${levelColor}50 80%, ${levelColor}70 85%, ${levelColor}80 100%)`
-                : `linear-gradient(150deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 70%, rgba(255, 255, 255, 0.09) 73%, rgba(255, 255, 255, 0.08) 75%, rgba(255, 255, 255, 0.06) 76%, rgba(255, 255, 255, 0.04) 76.5%, rgba(255, 255, 255, 0.02) 77%, ${levelColor}30 77%, ${levelColor}50 80%, ${levelColor}70 85%, ${levelColor}80 100%)`,
+                ? 'rgba(74, 222, 128, 0.2)'
+                : 'rgba(255, 255, 255, 0.1)',
             border: `2px solid ${
               upgrade.purchased 
                 ? '#3b82f6' // blue border for purchased
