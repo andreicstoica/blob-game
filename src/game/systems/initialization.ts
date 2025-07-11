@@ -63,5 +63,6 @@ export const INITIAL_STATE: GameState = {
         shownMilestones: new Set<string>(),
         totalClicks: 0,
         recentClicks: [],
+        maxCPM: 0,
     },
 }; 
