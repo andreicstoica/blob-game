@@ -1,6 +1,7 @@
 import React from "react";
 import { NumberFormatter } from "../../../utils/numberFormat";
 import type { GameState } from '../../../game/types';
+import { Colors } from "../../../styles/colors";
 
 interface NextEvolutionProps {
   nextLevel: any;
@@ -54,7 +55,7 @@ export const NextEvolution: React.FC<NextEvolutionProps> = ({
         style={{
           fontSize: "16px",
           fontWeight: "bold",
-          color: canEvolve ? "#4ade80" : "#ef4444",
+          color: canEvolve ? Colors.biomass.primary : "#ef4444",
         }}
       >
         {NumberFormatter.threshold(nextLevel.biomassThreshold, gameState)}
@@ -72,7 +73,7 @@ export const NextEvolution: React.FC<NextEvolutionProps> = ({
         style={{
           fontSize: "16px",
           fontWeight: "bold",
-          color: canEvolve ? "#4ade80" : "#9ca3af",
+          color: canEvolve ? Colors.biomass.primary : "#9ca3af",
         }}
       >
         {NumberFormatter.biomass(biomass, gameState)}

@@ -1,4 +1,5 @@
 import type { ScaleLevel } from '../types';
+import { Colors } from '../../styles/colors';
 
 export const getScaleLevel = (biomass: number): ScaleLevel => {
   if (biomass < 1) {
@@ -6,7 +7,7 @@ export const getScaleLevel = (biomass: number): ScaleLevel => {
       name: "Primordial",
       description: "The very beginning of existence",
       unit: "Pre-cellular",
-      color: "#10b981",
+      color: Colors.biomass.primary,
       icon: "⚪",
     };
   } else if (biomass < 2500) {
@@ -14,7 +15,7 @@ export const getScaleLevel = (biomass: number): ScaleLevel => {
       name: "Microscopic",
       description: "Single cells and microorganisms",
       unit: "1-10 μm",
-      color: "#3b82f6",
+      color: Colors.shop.primary,
       icon: "🦠",
     };
   } else if (biomass < 2250000) {
@@ -22,7 +23,7 @@ export const getScaleLevel = (biomass: number): ScaleLevel => {
       name: "Petri Scale",
       description: "Visible colonies and cultures",
       unit: "10-100 μm",
-      color: "#8b5cf6",
+      color: Colors.upgrades.primary,
       icon: "🔍",
     };
   } else if (biomass < 50000000) {
@@ -30,7 +31,7 @@ export const getScaleLevel = (biomass: number): ScaleLevel => {
       name: "Laboratory",
       description: "Experimental scale organisms",
       unit: "0.1-1 mm",
-      color: "#f59e0b",
+      color: Colors.evolution.primary,
       icon: "🧪",
     };
   } else if (biomass < 800000000) {
@@ -38,7 +39,7 @@ export const getScaleLevel = (biomass: number): ScaleLevel => {
       name: "Neighborhood",
       description: "Community-scale spread",
       unit: "1-100 m",
-      color: "#ef4444",
+      color: Colors.headlines.primary,
       icon: "🏘️",
     };
   } else if (biomass < 15000000000) {
@@ -46,7 +47,7 @@ export const getScaleLevel = (biomass: number): ScaleLevel => {
       name: "Urban",
       description: "City-wide influence",
       unit: "100 m - 10 km",
-      color: "#84cc16",
+      color: Colors.biomass.secondary,
       icon: "🏙️",
     };
   } else if (biomass < 300000000000) {
@@ -54,7 +55,7 @@ export const getScaleLevel = (biomass: number): ScaleLevel => {
       name: "Continental",
       description: "Continent-spanning presence",
       unit: "10-1000 km",
-      color: "#06b6d4",
+      color: Colors.shop.secondary,
       icon: "🗺️",
     };
   } else if (biomass < 100000000000000) {
@@ -62,7 +63,7 @@ export const getScaleLevel = (biomass: number): ScaleLevel => {
       name: "Planetary",
       description: "Planet-wide dominance",
       unit: "1000-10000 km",
-      color: "#f97316",
+      color: Colors.generators.primary,
       icon: "🌍",
     };
   } else {
@@ -70,7 +71,7 @@ export const getScaleLevel = (biomass: number): ScaleLevel => {
       name: "Cosmic",
       description: "Solar system and beyond",
       unit: "10000+ km",
-      color: "#8b5cf6",
+      color: Colors.upgrades.primary,
       icon: "🚀",
     };
   }

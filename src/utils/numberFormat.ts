@@ -172,13 +172,14 @@ function formatStandard(value: number, numberType: NumberType): string {
       } else {
         return formatLargeNumber(value, 3);
       }
-    case 'cost':
+    case 'cost': {
       // Integer until 1B, then large number format with 3 decimals
       const intValue = Math.floor(value);
       if (intValue < 1_000_000_000) {
         return intValue.toLocaleString();
       } else {
         return formatLargeNumber(intValue, 3);
+      }
       }
     case 'owned':
       // Always integer, no formatting

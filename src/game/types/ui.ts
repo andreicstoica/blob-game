@@ -32,7 +32,7 @@ export interface BlobProps {
   isDisabled?: boolean;
   isActive?: boolean;
   clickPower?: number;
-  addFloatingNumber?: (position: { x: number; y: number }, value: number, color?: string) => void;
+  addFloatingNumber?: (position: { x: number; y: number }, value: number, color?: string, emoji?: string) => void;
   onAnimationStateChange?: (animationState: { clickBoost: number; pressure: number }) => void;
 }
 
@@ -78,6 +78,7 @@ export interface FloatingNumberData {
   y: number;
   value: number;
   color: string;
+  emoji?: string;
 }
 
 export interface GeneratorEmoji {
@@ -121,6 +122,7 @@ export interface FloatingNumberAnimation {
   value: number;
   color?: string;
   startTime: number;
+  emoji?: string;
 }
 
 export interface ParticleData {

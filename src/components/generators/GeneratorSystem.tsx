@@ -7,7 +7,7 @@ import { StackedGeneratorElement } from "./StackedGeneratorElement";
 interface GeneratorSystemProps {
   gameState: GameState;
   blobSize: number;
-  addFloatingNumber: (position: { x: number; y: number }, value: number, color?: string) => void;
+  addFloatingNumber: (position: { x: number; y: number }, value: number, color?: string, emoji?: string) => void;
 }
 
 export const GeneratorSystem: React.FC<GeneratorSystemProps> = ({

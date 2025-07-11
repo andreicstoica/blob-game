@@ -3,6 +3,7 @@ import type { GameState } from '../../../game/types';
 import type { TutorialState } from '../../../game/types/ui';
 import { getCurrentLevel, getUnlockedGenerators } from '../../../game/systems/actions';
 import { ShopGenerators, ShopUpgrades, FilterToggle, BuyMultiplierToggle, ValueScale } from './index';
+import { Colors } from '../../../styles/colors';
 
 
 interface ShopProps {
@@ -82,7 +83,7 @@ export const Shop: React.FC<ShopProps> = ({
   return (
     <div style={{ 
       userSelect: 'none',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: 'rgba(0, 0, 0, 0.4)',
       color: 'white',
       fontFamily: 'Arial, sans-serif',
       height: '100vh',
@@ -97,11 +98,13 @@ export const Shop: React.FC<ShopProps> = ({
         <h2 style={{
           margin: '0 0 20px 0',
           fontSize: '24px',
-          color: '#93c5fd',
+          color: Colors.shop.light,
           textAlign: 'center',
-          userSelect: 'none'
+          userSelect: 'none',
+          textTransform: 'uppercase',
+          textShadow: '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)'
         }}>
-          Shop
+          SHOP
         </h2>
         
         {/* Filter and Buy Multiplier Row */}

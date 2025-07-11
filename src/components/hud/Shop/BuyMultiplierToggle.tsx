@@ -1,4 +1,5 @@
 import React from 'react';
+import { Colors } from '../../../styles/colors';
 
 interface BuyMultiplierToggleProps {
   multiplier: 1 | 10 | 100;
@@ -19,7 +20,7 @@ export const BuyMultiplierToggle: React.FC<BuyMultiplierToggleProps> = ({ multip
         style={{
           padding: '4px 8px',
           fontSize: '12px',
-          backgroundColor: multiplier === 1 ? '#f59e0b' : 'transparent',
+          backgroundColor: multiplier === 1 ? Colors.shop.primary : 'transparent',
           color: multiplier === 1 ? '#000' : '#fff',
           border: 'none',
           borderRadius: '4px',
@@ -36,7 +37,7 @@ export const BuyMultiplierToggle: React.FC<BuyMultiplierToggleProps> = ({ multip
         style={{
           padding: '4px 8px',
           fontSize: '12px',
-          backgroundColor: multiplier === 10 ? '#f59e0b' : 'transparent',
+          backgroundColor: multiplier === 10 ? Colors.shop.primary : 'transparent',
           color: multiplier === 10 ? '#000' : '#fff',
           border: 'none',
           borderRadius: '4px',
@@ -53,7 +54,7 @@ export const BuyMultiplierToggle: React.FC<BuyMultiplierToggleProps> = ({ multip
         style={{
           padding: '4px 8px',
           fontSize: '12px',
-          backgroundColor: multiplier === 100 ? '#f59e0b' : 'transparent',
+          backgroundColor: multiplier === 100 ? Colors.shop.primary : 'transparent',
           color: multiplier === 100 ? '#000' : '#fff',
           border: 'none',
           borderRadius: '4px',

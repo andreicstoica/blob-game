@@ -1,6 +1,7 @@
 import type { GameState } from '../types';
 import { getNextLevel } from '../content/levels';
 import { getCurrentLevel } from './actions';
+import { Colors } from '../../styles/colors';
 
 export interface ParticleSystemConfig {
     spawnRate: number; // particles per second
@@ -16,25 +17,25 @@ const BASE_PARTICLE_CONFIGS = {
         spawnRate: 3,
         speed: 80,
         size: 14,
-        color: '#4ade80',
+        color: Colors.biomass.primary,
     },
     microscopic: {
         spawnRate: 1,
         speed: 100,
         size: 60,
-        color: '#22c55e',
+        color: Colors.biomass.secondary,
     },
     'petri-dish': {
         spawnRate: 1,
         speed: 120,
         size: 10,
-        color: '#eab308',
+        color: Colors.evolution.primary,
     },
     lab: {
         spawnRate: .5,
         speed: 80,
         size: 100,
-        color: '#3b82f6',
+        color: Colors.shop.primary,
     },
     neighborhood: {
         spawnRate: .25,
@@ -64,7 +65,7 @@ const BASE_PARTICLE_CONFIGS = {
         spawnRate: .1,
         speed: 100,
         size: 24,
-        color: '#f59e0b',
+        color: Colors.evolution.primary,
     },
 };
 

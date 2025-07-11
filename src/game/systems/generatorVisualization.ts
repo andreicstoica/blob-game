@@ -187,8 +187,8 @@ export function calculateFloatingNumbers(
   const totalGrowth = getTotalGrowth(gameState);
 
   generators.forEach((generator) => {
-    // Check if it's time for a floating number (every 0.5 seconds)
-    if (currentTime - generator.lastFloatingNumber >= 250) {
+    // Check if it's time for a floating number (every 1 second)
+    if (currentTime - generator.lastFloatingNumber >= 1000) {
       const contributionRatio = generator.totalEffect / totalGrowth;
       
       let color = colors.lowContribution; // Default green (least)
@@ -206,14 +206,15 @@ export function calculateFloatingNumbers(
       const x = blobPosition.x + generator.position.x;
       const y = blobPosition.y + generator.position.y;
 
-      // Show per-animation value
-      const perAnimationValue = generator.totalEffect / 4;
+      // Show per-animation value (once per second, so show the full growth per second)
+      const perAnimationValue = generator.totalEffect;
 
       floatingNumbers.push({
         x,
         y,
         value: perAnimationValue,
-        color
+        color,
+        emoji: generator.emoji
       });
     }
   });
@@ -229,8 +230,8 @@ export function updateFloatingNumberTimestamps(
   currentTime: number
 ): GeneratorVisualization[] {
   return generators.map((generator) => {
-    // Update timestamp if it's time for a floating number (every 0.25 seconds)
-    if (currentTime - generator.lastFloatingNumber >= 250) {
+    // Update timestamp if it's time for a floating number (every 1 second)
+    if (currentTime - generator.lastFloatingNumber >= 1000) {
       return { ...generator, lastFloatingNumber: currentTime };
     }
     return generator;

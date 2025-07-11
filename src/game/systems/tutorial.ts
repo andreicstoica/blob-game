@@ -11,13 +11,13 @@ export const TUTORIAL_STEPS: Record<string, Omit<TutorialStep, 'completed'>> = {
     id: 'shop-intro',
     type: 'shop-intro',
     popupPosition: 'shop',
-    popupMessage: 'Generators work like auto-clickers.\n\nUpgrades make Generators stronger!'
+    popupMessage: 'Spend Biomass in the Shop:\n\nGenerators function as auto-clickers,\n\nUpgrades make Generators stronger!'
   },
   'evolution-intro': {
     id: 'evolution-intro',
     type: 'evolution-intro',
     popupPosition: 'evolution',
-    popupMessage: 'Growing enough unlocks Evolution, leading to new Levels and Upgrades.\n\nHow far can you go?'
+    popupMessage: 'Growing your Biomass unlocks Evolutions.\n\nHow far can you go?'
   },
   'first-evolution': {
     id: 'first-evolution',
@@ -140,7 +140,7 @@ export const forceCompleteTutorial = (tutorialState: TutorialState): TutorialSta
     currentStep: null,
     completedSteps: new Set(['click-blob', 'first-evolution']), // Mark all intro steps as completed
   };
-};
+}; 
 
 // Progress tutorial based on a game event
 export function progressTutorial(

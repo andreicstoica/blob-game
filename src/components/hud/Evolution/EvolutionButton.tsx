@@ -1,6 +1,7 @@
 import React from "react";
 import { useIntroStore } from "../../../store/introStore";
 import { playSound } from "../../../utils/sound";
+import { Colors } from "../../../styles/colors";
 
 interface EvolutionButtonProps {
   canEvolve: boolean;
@@ -32,7 +33,7 @@ export const EvolutionButton: React.FC<EvolutionButtonProps> = ({
           style={{
             margin: "0",
             fontSize: "14px",
-            color: "#4ade80",
+            color: Colors.evolution.primary,
           }}
         >
           🏆 You've reached the maximum evolution level! There are no more
@@ -69,7 +70,7 @@ export const EvolutionButton: React.FC<EvolutionButtonProps> = ({
           padding: "15px",
           fontSize: "16px",
           fontWeight: "bold",
-          backgroundColor: canEvolve ? "#4ade80" : "#374151",
+          backgroundColor: canEvolve ? Colors.evolution.primary : "#374151",
           color: "white",
           border: "none",
           borderRadius: "8px",
@@ -81,12 +82,12 @@ export const EvolutionButton: React.FC<EvolutionButtonProps> = ({
         }}
         onMouseEnter={(e) => {
           if (canEvolve) {
-            e.currentTarget.style.backgroundColor = "#22c55e";
+            e.currentTarget.style.backgroundColor = Colors.evolution.secondary;
           }
         }}
         onMouseLeave={(e) => {
           if (canEvolve) {
-            e.currentTarget.style.backgroundColor = "#4ade80";
+            e.currentTarget.style.backgroundColor = Colors.evolution.primary;
           }
         }}
       >
@@ -96,18 +97,18 @@ export const EvolutionButton: React.FC<EvolutionButtonProps> = ({
       <style>{`
               @keyframes evolvePulse {
         0% {
-          background-color: #4ade80;
-          box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+          background-color: ${Colors.evolution.primary};
+          box-shadow: 0 0 20px ${Colors.evolution.primary}80;
           transform: scale(1);
         }
         50% {
-          background-color: #16a34a;
-          box-shadow: 0 0 30px rgba(22, 163, 74, 0.8);
+          background-color: ${Colors.evolution.secondary};
+          box-shadow: 0 0 30px ${Colors.evolution.secondary}cc;
           transform: scale(1.05);
         }
         100% {
-          background-color: #4ade80;
-          box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+          background-color: ${Colors.evolution.primary};
+          box-shadow: 0 0 20px ${Colors.evolution.primary}80;
           transform: scale(1);
         }
       }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Colors } from '../../styles/colors';
 
 interface ClickIndicatorProps {
   position: { x: number; y: number };
@@ -18,7 +19,7 @@ export const ClickIndicator: React.FC<ClickIndicatorProps> = ({
     left: position.x,
     top: position.y,
     transform: 'translate(-50%, -50%)',
-    zIndex: 1000,
+    zIndex: 9999,
     pointerEvents: 'none',
   };
 
@@ -31,7 +32,7 @@ export const ClickIndicator: React.FC<ClickIndicatorProps> = ({
         {`
           @keyframes leftButtonFlicker {
             0%, 50% {
-              fill: #60a5fa;
+              fill: ${Colors.biomass.dark};
             }
             51%, 100% {
               fill: white;
@@ -45,7 +46,7 @@ export const ClickIndicator: React.FC<ClickIndicatorProps> = ({
           @media (prefers-reduced-motion: reduce) {
             .left-button-flicker {
               animation: none;
-              fill: #60a5fa;
+              fill: ${Colors.biomass.dark};
             }
           }
         `}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useIntroStore } from '../store/introStore';
+import { Colors } from '../styles/colors';
 import { playSound } from '../utils/sound';
 
 interface IntroScreenProps {
@@ -9,7 +10,6 @@ interface IntroScreenProps {
 }
 
 export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onComplete, onEvolve }) => {
-  const [_visibleWords, setVisibleWords] = useState<string[]>([]);
   const [startTime] = useState(() => Date.now());
   const [isTransitioning, setIsTransitioning] = useState(false);
   const endIntro = useIntroStore(state => state.endIntro);
@@ -39,21 +39,16 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
   const now = Date.now();
   const elapsed = now - startTime;
   
-  const currentWords: string[] = [];
-  if (elapsed >= 0) currentWords.push('THE');      // Immediately
-  if (elapsed >= 500) currentWords.push('BLOB');   // After 0.5s
-  if (elapsed >= 1500) currentWords.push('MUST');  // After 1.5s
-  if (elapsed >= 2500) currentWords.push('GROW');  // After 2.5s
+  // Track which words should be visible
+  const showThe = elapsed >= 0;
+  const showBlob = elapsed >= 150; // 150ms after THE
+  const showMust = elapsed >= 1000; // 1 second after start
+  const showGrow = elapsed >= 2000; // 2 seconds after start
 
   // Auto-complete after 4.5 seconds
   if (elapsed >= 4500 && !isTransitioning) {
     handleTransition();
   }
-
-  // Force re-render every 100ms to update the animation
-  setTimeout(() => {
-    setVisibleWords([...currentWords]);
-  }, 100);
 
   // Custom animations
   const animations = `
@@ -84,15 +79,38 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
 
     @keyframes grow {
       0% {
-        transform: scale(0.5);
+        transform: scale(0.05);
         opacity: 0;
       }
-      50% {
-        transform: scale(1.2);
+      80% {
+        transform: scale(2.0);
+        opacity: 1;
+      }
+      90% {
+        transform: scale(2.2);
         opacity: 1;
       }
       100% {
-        transform: scale(1);
+        transform: scale(1.8);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slam {
+      0% {
+        transform: translateY(-80px) scale(0.6);
+        opacity: 0;
+      }
+      60% {
+        transform: translateY(5px) scale(1.05);
+        opacity: 1;
+      }
+      80% {
+        transform: translateY(-2px) scale(0.98);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(0) scale(1);
         opacity: 1;
       }
     }
@@ -123,29 +141,32 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
     ...baseWordStyle,
     fontSize: '4.5rem', // 10% smaller (was 5rem)
     color: 'white',
+    opacity: showThe ? 1 : 0,
+    transition: 'opacity 0.3s ease-in-out'
   };
 
   // BLOB - drops fast and then jiggles
   const blobWordStyle = {
     ...baseWordStyle,
     fontSize: '6.3rem', // 10% smaller (was 7rem)
-    color: '#4ade80',
+    color: Colors.biomass.primary,
     animation: 'blobDrop 0.4s ease-out, jiggle 2s ease-in-out infinite 0.4s'
   };
 
-  // MUST - no animations, just appears
+  // MUST - dramatic slam entrance
   const mustWordStyle = {
     ...baseWordStyle,
-    fontSize: '4.5rem', // 10% smaller (was 5rem)
+    fontSize: '6.6rem', // 20% bigger (was 5.5rem)
     color: 'white',
+    animation: 'slam 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
   };
 
   // GROW - actually grows in size
   const growWordStyle = {
     ...baseWordStyle,
-    fontSize: '6.3rem', // 10% smaller (was 7rem)
-    color: '#fb923c',
-    animation: 'grow 1.5s ease-out'
+    fontSize: '8rem', // Much bigger base size
+    color: '#fb923c', // Keep the old orange color
+    animation: 'grow 3s cubic-bezier(0.34, 1.56, 0.64, 1)'
   };
 
   return (
@@ -172,33 +193,79 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
         onClick={handleClick}
       >
         <div style={{ 
-          display: 'flex', 
-          flexWrap: 'wrap', 
-          justifyContent: 'center', 
-          gap: '8px', // Increased from 6px to 8px for better spacing
+          position: 'relative',
+          width: '100%',
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-start', 
           alignItems: 'center',
-          textAlign: 'center'
+          textAlign: 'center',
+          paddingTop: '10vh'
         }}>
-          {currentWords.includes('THE') && (
-            <span style={theWordStyle}>
-              THE
-            </span>
-          )}
-          {currentWords.includes('BLOB') && (
-            <span style={blobWordStyle}>
-              BLOB
-            </span>
-          )}
-          {currentWords.includes('MUST') && (
-            <span style={mustWordStyle}>
-              MUST
-            </span>
-          )}
-          {currentWords.includes('GROW') && (
-            <span style={growWordStyle}>
-              GROW
-            </span>
-          )}
+          {/* First row: THE and BLOB - fixed position */}
+          <div style={{ 
+            position: 'absolute',
+            top: '8vh',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            gap: '30px',
+            minHeight: '120px'
+          }}>
+            <div style={{ width: '200px', textAlign: 'center' }}>
+              {showThe && (
+                <span style={theWordStyle}>
+                  THE
+                </span>
+              )}
+            </div>
+            <div style={{ width: '200px', textAlign: 'center', transform: 'translateX(-20%)' }}>
+              {showBlob && (
+                <span style={blobWordStyle}>
+                  BLOB
+                </span>
+              )}
+            </div>
+          </div>
+          
+          {/* Second row: MUST - fixed position */}
+          <div style={{ 
+            position: 'absolute',
+            top: 'calc(8vh + 140px)',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            minHeight: '120px'
+          }}>
+            {showMust && (
+              <span style={mustWordStyle}>
+                MUST
+              </span>
+            )}
+          </div>
+          
+          {/* Third row: GROW - fixed position */}
+          <div style={{ 
+            position: 'absolute',
+            top: 'calc(8vh + 280px)',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            minHeight: '200px'
+          }}>
+            {showGrow && (
+              <span style={growWordStyle}>
+                GROW
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </>

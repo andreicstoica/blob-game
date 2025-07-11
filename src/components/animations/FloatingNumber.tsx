@@ -7,6 +7,7 @@ interface FloatingNumberProps {
   color?: string;
   startTime: number; // Pass start time from parent
   onComplete?: () => void;
+  emoji?: string;
 }
 
 export const FloatingNumber: React.FC<FloatingNumberProps> = ({
@@ -14,7 +15,8 @@ export const FloatingNumber: React.FC<FloatingNumberProps> = ({
   position,
   color = '#4ade80',
   startTime,
-  onComplete
+  onComplete,
+  emoji
 }) => {
   const [opacity, setOpacity] = useState(1);
   const [offsetY, setOffsetY] = useState(0);
@@ -71,7 +73,7 @@ export const FloatingNumber: React.FC<FloatingNumberProps> = ({
         zIndex: 1000
       }}
     >
-      +{NumberFormatter.compact(value)}
+      {NumberFormatter.rate(value)}{emoji ? ` ${emoji}` : ''}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import type { BlobProps } from "../../game/types";
+import { Colors } from "../../styles/colors";
 import {
   calculateBlobSize,
   getHeatColor,
@@ -16,9 +17,9 @@ const Blob = React.memo(
     position,
     size: propSize,
     biomass,
-    color = "#1adaac",
-    strokeColor = "#cfffb1",
-    glowColor = "#cfffb1",
+    color = Colors.biomass.primary,
+    strokeColor = Colors.biomass.light,
+    glowColor = Colors.biomass.light,
     isDisabled = false,
     onBlobClick,
     onBlobPress,

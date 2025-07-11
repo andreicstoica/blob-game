@@ -30,21 +30,21 @@ export const TutorialManager: React.FC<TutorialManagerProps> = ({
   };
 
   return (
-    <div className="tutorial-overlay fixed inset-0 pointer-events-none z-50">
+    <div className="tutorial-overlay fixed inset-0 pointer-events-none" style={{ zIndex: 9999 }}>
       {/* Click blob tutorial */}
       {currentStep.type === 'click-blob' && (
         <>
-          <TutorialArrow
-            targetPosition={blobPosition}
-            isVisible={true}
-          />
-          <ClickIndicator
-            position={{
-              x: blobPosition.x,
+      <TutorialArrow
+        targetPosition={blobPosition}
+        isVisible={true}
+      />
+      <ClickIndicator
+        position={{
+          x: blobPosition.x,
               y: blobPosition.y + 130
-            }}
-            isVisible={true}
-          />
+        }}
+        isVisible={true}
+      />
         </>
       )}
 

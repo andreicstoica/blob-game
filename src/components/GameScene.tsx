@@ -30,7 +30,7 @@ export const GameScene: React.FC<GameSceneProps> = ({
   });
 
   const addFloatingNumber = useCallback(
-    (position: { x: number; y: number }, value: number, color?: string) => {
+    (position: { x: number; y: number }, value: number, color?: string, emoji?: string) => {
       const id = Math.random().toString();
       const startTime = Date.now();
 
@@ -43,6 +43,7 @@ export const GameScene: React.FC<GameSceneProps> = ({
           value,
           color,
           startTime,
+          emoji,
         },
       ]);
     },
@@ -114,6 +115,7 @@ export const GameScene: React.FC<GameSceneProps> = ({
             color={anim.color}
             startTime={anim.startTime}
             onComplete={() => removeFloatingNumber(anim.id)}
+            emoji={anim.emoji}
           />
         ))}
       </div>

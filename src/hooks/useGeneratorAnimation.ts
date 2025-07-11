@@ -15,7 +15,7 @@ import { calculateBlobPosition } from "../game/systems/calculations";
 export const useGeneratorAnimation = (
   gameState: GameState,
   blobSize: number,
-  addFloatingNumber: (position: { x: number; y: number }, value: number, color?: string) => void
+  addFloatingNumber: (position: { x: number; y: number }, value: number, color?: string, emoji?: string) => void
 ) => {
   const currentLevel = useMapSelector((s) => s.currentLevel);
   const [generators, setGenerators] = useState<GeneratorVisualization[]>([]);
@@ -49,7 +49,7 @@ export const useGeneratorAnimation = (
   // Calculate generator groups with stable dependencies
   const generatorGroups = useMemo(() => {
     return calculateGeneratorGroups(gameState, currentLevel.name);
-  }, [gameState.generators, currentLevel.name]);
+  }, [gameState, currentLevel.name]);
 
   // Create stable keys for dependency tracking
   const currentLevelKey = useMemo(() => {
@@ -73,7 +73,7 @@ export const useGeneratorAnimation = (
       setGenerators(newGenerators);
       initializedRef.current = true;
     }
-  }, [currentLevelKey, blobSize]);
+  }, [currentLevelKey, blobSize, generatorGroups]);
 
   // Initialize movement for stacked generators (only when data changes)
   useEffect(() => {
@@ -86,7 +86,7 @@ export const useGeneratorAnimation = (
       setStackedGenerators(newStackedGenerators);
       initializedRef.current = true;
     }
-  }, [previousLevelsKey, blobSize]);
+  }, [previousLevelsKey, blobSize, generatorGroups]);
 
   // Animation loop for movement and floating numbers
   useEffect(() => {
@@ -125,7 +125,7 @@ export const useGeneratorAnimation = (
 
       // Trigger floating number animations
       floatingNumbers.forEach((data) => {
-        addFloatingNumber({ x: data.x, y: data.y }, data.value, data.color);
+        addFloatingNumber({ x: data.x, y: data.y }, data.value, data.color, data.emoji);
       });
 
       // Update floating number timestamps

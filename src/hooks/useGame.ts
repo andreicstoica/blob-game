@@ -16,8 +16,17 @@ import type { TutorialState } from '../game/types/ui';
 export const useGame = () => {
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
   const [tutorialState, setTutorialState] = useState<TutorialState>(() => {
-    // Force tutorial reset for testing (remove this later)
-    return createTutorialState();
+    // Force tutorial to be active for testing
+    const initialState = createTutorialState();
+    return {
+      ...initialState,
+      isActive: true,
+      currentStep: {
+        id: 'click-blob',
+        type: 'click-blob',
+        completed: false,
+      },
+    };
   });
   const mapEvolveToNextLevel = useMap(state => state.evolveToNextLevel);
 

@@ -5,6 +5,7 @@ import { NumberFormatter } from '../../../utils/numberFormat';
 import { getGeneratorValueInfo } from '../../../game/systems/generatorValue';
 import { isContentAvailable, calculateTotalCost } from '../../../game/systems/actions';
 import { GAME_CONFIG } from '../../../game/content/config';
+import { Colors } from '../../../styles/colors';
 
 
 
@@ -51,7 +52,7 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
   };
   // Sort generators by affordability and value
   const sortedGenerators = useMemo(() => {
-    let filteredGenerators = Object.values(gameState.generators)
+    const filteredGenerators = Object.values(gameState.generators)
       .filter(generator => {
         // Always show tutorial generator during tutorial
         if (generator.id === 'tutorial-generator') {
@@ -126,15 +127,15 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
             className="generator-card"
             style={{
               background: isTutorialPurchased 
-                ? 'rgba(59, 130, 246, 0.2)' // blue for purchased tutorial generator
+                ? `${Colors.tutorial.primary}30` // purple for purchased tutorial generator
                 : canAfford 
-                  ? `linear-gradient(20deg, rgba(74, 222, 128, 0.2) 0%, rgba(74, 222, 128, 0.2) 70%, ${levelColor}20 70%, ${levelColor}20 100%)`
+                  ? `linear-gradient(20deg, ${Colors.generators.primary}30 0%, ${Colors.generators.primary}30 70%, ${levelColor}20 70%, ${levelColor}20 100%)`
                   : `linear-gradient(20deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 70%, ${levelColor}15 70%, ${levelColor}15 100%)`,
               border: `2px solid ${
                 isTutorialPurchased 
-                  ? '#3b82f6' // blue border for purchased tutorial generator
+                  ? Colors.tutorial.primary // purple border for purchased tutorial generator
                   : canAfford 
-                    ? '#4ade80' 
+                    ? Colors.generators.primary 
                     : '#666'
               }`,
               borderRadius: '8px',
@@ -146,9 +147,9 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
               transition: 'all 0.3s ease-in-out',
               transform: 'scale(1)',
               boxShadow: isTutorialPurchased 
-                ? '0 2px 8px rgba(59, 130, 246, 0.3)' // blue shadow for purchased tutorial generator
+                ? `0 2px 8px ${Colors.tutorial.primary}40` // purple shadow for purchased tutorial generator
                 : canAfford 
-                  ? '0 2px 8px rgba(74, 222, 128, 0.3)' 
+                  ? `0 2px 8px ${Colors.generators.primary}40` 
                   : 'none',
               animation: isFirstAffordable ? 'generatorPulse 2s ease-in-out infinite' : 'none'
             }}
@@ -175,7 +176,7 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
               if (gameStatsElement) {
                 const gameStatsRect = gameStatsElement.getBoundingClientRect();
                 addFloatingNumber(
-                  `+${NumberFormatter.rate(growthPerSecond, gameState)}`,
+                  `${NumberFormatter.rate(growthPerSecond, gameState)}`,
                   gameStatsRect.left + gameStatsRect.width / 2 + 80, // Right of the GROWTH/SEC number
                   gameStatsRect.top + 80, // Aligned with the growth rate value
                   '#4ade80'
@@ -186,11 +187,11 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.01)';
             if (isTutorialPurchased) {
-              e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.3)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.4)';
+              e.currentTarget.style.backgroundColor = `${Colors.tutorial.primary}40`;
+              e.currentTarget.style.boxShadow = `0 4px 12px ${Colors.tutorial.primary}60`;
             } else if (canAfford) {
-              e.currentTarget.style.backgroundColor = 'rgba(74, 222, 128, 0.3)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(74, 222, 128, 0.4)';
+              e.currentTarget.style.backgroundColor = `${Colors.generators.primary}40`;
+              e.currentTarget.style.boxShadow = `0 4px 12px ${Colors.generators.primary}60`;
             } else {
               e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
               e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 255, 255, 0.1)';
@@ -204,14 +205,14 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'scale(1)';
             if (isTutorialPurchased) {
-              e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(59, 130, 246, 0.3)';
+              e.currentTarget.style.backgroundColor = `${Colors.tutorial.primary}30`;
+              e.currentTarget.style.boxShadow = `0 2px 8px ${Colors.tutorial.primary}40`;
             } else {
               e.currentTarget.style.backgroundColor = canAfford 
-                ? 'rgba(74, 222, 128, 0.2)' 
+                ? `${Colors.generators.primary}30` 
                 : 'rgba(255, 255, 255, 0.1)';
               e.currentTarget.style.boxShadow = canAfford 
-                ? '0 2px 8px rgba(74, 222, 128, 0.3)' 
+                ? `0 2px 8px ${Colors.generators.primary}40` 
                 : 'none';
             }
             // Hide stats on leave
@@ -257,14 +258,14 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
               }}
             >
               <div style={{ 
-                color: '#60a5fa',
+                color: Colors.biomass.primary,
                 fontSize: '13px',
                 fontWeight: 'normal'
               }}>
                 Per: <span style={{ fontSize: '15px' }}>{NumberFormatter.rate(generator.growthPerTick * 10, gameState)}</span> / sec
               </div>
               <div style={{ 
-                color: '#60a5fa',
+                color: Colors.biomass.primary,
                 fontSize: '13px',
                 fontWeight: 'bold'
               }}>
@@ -275,7 +276,7 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
             <div style={{ fontWeight: 'bold', marginBottom: '5px', fontSize: '15px' }}>
               {generator.name}
               {isTutorialPurchased && (
-                <span style={{ marginLeft: '5px', color: '#3b82f6' }}>✓</span>
+                <span style={{ marginLeft: '5px', color: Colors.tutorial.primary }}>✓</span>
               )}
             </div>
             <div style={{ opacity: 0.8, marginBottom: '5px', lineHeight: '1.3', fontSize: '13px' }}>
@@ -355,15 +356,15 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
         
         @keyframes generatorPulse {
           0% {
-            box-shadow: 0 2px 8px rgba(74, 222, 128, 0.3);
+            box-shadow: 0 2px 8px ${Colors.generators.primary}40;
             transform: scale(1);
           }
           50% {
-            box-shadow: 0 4px 16px rgba(74, 222, 128, 0.5);
+            box-shadow: 0 4px 16px ${Colors.generators.primary}80;
             transform: scale(1.02);
           }
           100% {
-            box-shadow: 0 2px 8px rgba(74, 222, 128, 0.3);
+            box-shadow: 0 2px 8px ${Colors.generators.primary}40;
             transform: scale(1);
           }
         }

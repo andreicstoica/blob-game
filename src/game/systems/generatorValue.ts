@@ -1,10 +1,11 @@
 import type { GameState, GeneratorState } from '../types';
 import type { GeneratorValue } from '../types';
 import { getUnlockedGenerators } from './actions';
+import { Colors } from '../../styles/colors';
 
 // Calculate the value of purchasing the next level of a generator: Value = (cost of next generator) / (increase in growth)
 // Lower values are better (cheaper per unit of growth)
-export function calculateGeneratorValue(generator: GeneratorState, _gameState: GameState): number {
+export function calculateGeneratorValue(generator: GeneratorState): number {
     const growthIncrease = generator.growthPerTick; // Each level adds growthPerTick growth
     const cost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
     
@@ -19,7 +20,7 @@ export function calculateAllGeneratorValues(gameState: GameState): GeneratorValu
   const values: GeneratorValue[] = [];
   
   Object.values(gameState.generators).forEach(generator => {
-    const value = calculateGeneratorValue(generator, gameState);
+    const value = calculateGeneratorValue(generator);
     values.push({
       generatorId: generator.id,
       value,
@@ -37,7 +38,7 @@ export function calculateAllGeneratorValues(gameState: GameState): GeneratorValu
     
     if (values.length === 1) {
       // Only one generator, make it green
-      item.color = '#22c55e';
+      item.color = Colors.biomass.primary;
     } else {
       // Find min and max values for color assignment
       const allValues = values.map(v => v.value).filter(v => v !== Infinity);
@@ -47,20 +48,20 @@ export function calculateAllGeneratorValues(gameState: GameState): GeneratorValu
       
       if (valueRange === 0) {
         // All values are the same
-        item.color = '#22c55e';
+        item.color = Colors.biomass.primary;
       } else {
         // Normalize value to 0-1 range
         const normalizedValue = (item.value - minValue) / valueRange;
         
         if (normalizedValue <= 0.33) {
           // Lowest third: red (worst value - highest cost/growth)
-          item.color = '#ef4444';
+          item.color = Colors.headlines.primary;
         } else if (normalizedValue <= 0.66) {
           // Middle third: yellow
-          item.color = '#f59e0b';
+          item.color = Colors.evolution.primary;
         } else {
           // Highest third: green (best value - lowest cost/growth)
-          item.color = '#22c55e';
+          item.color = Colors.biomass.primary;
         }
       }
     }
@@ -82,7 +83,7 @@ export function getGeneratorValueInfo(
   const values: GeneratorValue[] = [];
   
   unlockedGenerators.forEach(generator => {
-    const value = calculateGeneratorValue(generator, gameState);
+    const value = calculateGeneratorValue(generator);
     values.push({
       generatorId: generator.id,
       value,
@@ -100,7 +101,7 @@ export function getGeneratorValueInfo(
     
     if (values.length === 1) {
       // Only one generator, make it green
-      item.color = '#22c55e';
+      item.color = Colors.biomass.primary;
     } else {
       // Find min and max values for color assignment
       const allValues = values.map(v => v.value).filter(v => v !== Infinity);
@@ -110,20 +111,20 @@ export function getGeneratorValueInfo(
       
       if (valueRange === 0) {
         // All values are the same
-        item.color = '#22c55e';
+        item.color = Colors.biomass.primary;
       } else {
         // Normalize value to 0-1 range
         const normalizedValue = (item.value - minValue) / valueRange;
         
         if (normalizedValue <= 0.33) {
           // Lowest third: green (best value - lowest cost/growth)
-          item.color = '#22c55e';
+          item.color = Colors.biomass.primary;
         } else if (normalizedValue <= 0.66) {
           // Middle third: yellow
-          item.color = '#f59e0b';
+          item.color = Colors.evolution.primary;
         } else {
           // Highest third: red (worst value - highest cost/growth)
-          item.color = '#ef4444';
+          item.color = Colors.headlines.primary;
         }
       }
     }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Colors } from '../../../styles/colors';
 
 interface FilterToggleProps {
   filter: 'current' | 'all';
@@ -18,7 +19,7 @@ export const FilterToggle: React.FC<FilterToggleProps> = ({ filter, onFilterChan
         style={{
           padding: '4px 8px',
           fontSize: '12px',
-          backgroundColor: filter === 'current' ? '#60a5fa' : 'transparent',
+          backgroundColor: filter === 'current' ? Colors.shop.primary : 'transparent',
           color: filter === 'current' ? '#000' : '#fff',
           border: 'none',
           borderRadius: '4px',
@@ -34,7 +35,7 @@ export const FilterToggle: React.FC<FilterToggleProps> = ({ filter, onFilterChan
         style={{
           padding: '4px 12px',
           fontSize: '12px',
-          backgroundColor: filter === 'all' ? '#60a5fa' : 'transparent',
+          backgroundColor: filter === 'all' ? Colors.shop.primary : 'transparent',
           color: filter === 'all' ? '#000' : '#fff',
           border: 'none',
           borderRadius: '4px',

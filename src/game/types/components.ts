@@ -105,7 +105,7 @@ export interface BlobContainerProps extends Omit<BlobProps, "position"> {
   size: number;
   onBlobClick: (blobId: string, clickPosition: { x: number; y: number }) => void;
   clickPower: number;
-  addFloatingNumber: (position: { x: number; y: number }, value: number, color?: string) => void;
+  addFloatingNumber: (position: { x: number; y: number }, value: number, color?: string, emoji?: string) => void;
   onAnimationStateChange?: (animationState: { clickBoost: number; pressure: number }) => void;
 }
 
@@ -118,7 +118,7 @@ export interface BlobRippleContainerProps {
 export interface GeneratorSystemProps {
   gameState: GameState;
   blobSize: number;
-  addFloatingNumber: (position: { x: number; y: number }, value: number, color?: string) => void;
+  addFloatingNumber: (position: { x: number; y: number }, value: number, color?: string, emoji?: string) => void;
 }
 
 export interface GeneratorElementProps {

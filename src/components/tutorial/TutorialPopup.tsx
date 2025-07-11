@@ -1,4 +1,5 @@
 import React from 'react';
+import { Colors } from '../../styles/colors';
 
 interface TutorialPopupProps {
   position: 'shop' | 'evolution';
@@ -21,14 +22,13 @@ export const TutorialPopup: React.FC<TutorialPopupProps> = ({
       position: 'fixed' as const,
       background: 'rgba(64, 64, 64, 0.9)',
       color: 'white',
-      padding: '16px',
+      padding: '20px 16px',
       borderRadius: '8px',
       fontSize: '15px',
       fontWeight: 'normal',
       maxWidth: '280px',
       zIndex: 1000,
-      boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)',
-      border: '2px solid #3b82f6',
+
       cursor: onClose ? 'pointer' : 'default',
       transition: 'all 0.3s ease-in-out',
       transform: 'scale(1)',
@@ -41,14 +41,18 @@ export const TutorialPopup: React.FC<TutorialPopupProps> = ({
         left: '400px', // Position next to shop panel (shop is 370px wide)
         top: '40%',
         transform: 'translateY(-50%)',
-        maxWidth: '320px'
+        maxWidth: '320px',
+        boxShadow: `0 2px 8px ${Colors.shop.primary}40`,
+        border: `2px solid ${Colors.shop.primary}`
       };
     } else if (position === 'evolution') {
       return {
         ...baseStyle,
         right: '400px', // Position next to evolution panel
         top: '45%',
-        transform: 'translateY(-50%)'
+        transform: 'translateY(-50%)',
+        boxShadow: `0 2px 8px ${Colors.evolution.primary}40`,
+        border: `2px solid ${Colors.evolution.primary}`
       };
     }
 
@@ -63,16 +67,18 @@ export const TutorialPopup: React.FC<TutorialPopupProps> = ({
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'scale(1.01)';
           e.currentTarget.style.background = 'rgba(80, 80, 80, 0.95)';
-          e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.4)';
+          const borderColor = position === 'shop' ? Colors.shop.primary : Colors.evolution.primary;
+          e.currentTarget.style.boxShadow = `0 4px 12px ${borderColor}60`;
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'scale(1)';
           e.currentTarget.style.background = 'rgba(64, 64, 64, 0.9)';
-          e.currentTarget.style.boxShadow = '0 2px 8px rgba(59, 130, 246, 0.3)';
+          const borderColor = position === 'shop' ? Colors.shop.primary : Colors.evolution.primary;
+          e.currentTarget.style.boxShadow = `0 2px 8px ${borderColor}40`;
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-          <span style={{ fontSize: '16px', marginTop: '2px' }}>💡</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '28px' }}>💡</span>
           <div style={{ opacity: 0.8, lineHeight: '1.3', fontSize: '15px', whiteSpace: 'pre-line' }}>
             {message.split('\n').map((line, index) => (
               <div key={index} style={{ marginBottom: index === message.split('\n').length - 2 ? '12px' : '0px' }}>
@@ -82,35 +88,57 @@ export const TutorialPopup: React.FC<TutorialPopupProps> = ({
                   
                   if (cleanWord === 'Generators') {
                     return (
-                      <span key={wordIndex} style={{ fontWeight: 'bold', color: '#4ade80' }}>
+                      <span key={wordIndex} style={{ fontWeight: 'bold', color: Colors.generators.light }}>
                         {word}{' '}
                       </span>
                     );
                   }
-                  if (cleanWord === 'Evolution') {
+                  if (cleanWord === 'Evolution' || cleanWord === 'Evolutions') {
                     return (
-                      <span key={wordIndex} style={{ fontWeight: 'bold', color: '#4ade80' }}>
+                      <span key={wordIndex} style={{ fontWeight: 'bold', color: Colors.evolution.primary }}>
                         {word}{' '}
                       </span>
                     );
                   }
                   if (cleanWord === 'Levels') {
                     return (
-                      <span key={wordIndex} style={{ fontWeight: 'bold', color: '#fbbf24' }}>
+                      <span key={wordIndex} style={{ fontWeight: 'bold', color: Colors.evolution.primary }}>
                         {word}{' '}
                       </span>
                     );
                   }
                   if (cleanWord === 'Upgrades') {
                     return (
-                      <span key={wordIndex} style={{ fontWeight: 'bold', color: '#60a5fa' }}>
+                      <span key={wordIndex} style={{ fontWeight: 'bold', color: Colors.upgrades.light }}>
                         {word}{' '}
                       </span>
                     );
                   }
-                  if (cleanWord === 'How' || cleanWord === 'far' || cleanWord === 'can' || cleanWord === 'you' || cleanWord === 'go') {
+                  if (cleanWord === 'Biomass') {
                     return (
-                      <span key={wordIndex} style={{ fontWeight: 'bold', color: '#fbbf24' }}>
+                      <span key={wordIndex} style={{ fontWeight: 'bold', color: Colors.biomass.primary }}>
+                        {word}{' '}
+                      </span>
+                    );
+                  }
+                  
+                  // Special handling for "How far can you go?" phrase
+                  if (line.includes('How far can you go?')) {
+                    const phraseStart = line.indexOf('How far can you go?');
+                    const phraseEnd = phraseStart + 'How far can you go?'.length;
+                    const wordStart = line.indexOf(word);
+                    
+                    if (wordStart >= phraseStart && wordStart < phraseEnd) {
+                      return (
+                        <span key={wordIndex} style={{ fontWeight: 'bold' }}>
+                          {word}{' '}
+                        </span>
+                      );
+                    }
+                  }
+                  if (cleanWord === 'Shop') {
+                    return (
+                      <span key={wordIndex} style={{ fontWeight: 'bold', color: Colors.shop.primary }}>
                         {word}{' '}
                       </span>
                     );

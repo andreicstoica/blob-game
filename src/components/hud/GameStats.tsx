@@ -2,6 +2,7 @@ import React from 'react';
 import type { GameState } from '../../game/types';
 import { NumberFormatter } from '../../utils/numberFormat';
 import { GAME_CONFIG } from '../../game/content/config';
+import { Colors } from '../../styles/colors';
 
 interface GameStatsProps {
   biomass: number;
@@ -31,7 +32,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
       width: 'fit-content',
       minWidth: '100px',
       maxWidth: '100%',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: 'rgba(0, 0, 0, 0.4)',
       padding: `20px ${horizontalPadding}px`,
       borderRadius: '0 0 18px 18px',
       color: 'white',
@@ -52,8 +53,8 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
         <div style={{ 
           fontSize: `${fontSize}px`, 
           fontWeight: 'bold', 
-          color: '#4ade80',
-          textShadow: '0 0 20px rgba(74, 222, 128, 0.5)',
+          color: Colors.biomass.primary,
+          textShadow: `0 0 20px ${Colors.biomass.primary}80`,
           lineHeight: '1',
           padding: '0 10px',
           whiteSpace: 'nowrap',
@@ -86,10 +87,10 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
             <div style={{ 
               fontSize: '18px', 
               fontWeight: 'bold', 
-              color: '#4ade80',
+              color: Colors.biomass.primary,
               marginBottom: '5px'
             }}>
-              +{NumberFormatter.rate(gameState.growth * (1000 / GAME_CONFIG.tickRate), gameState)}<span style={{ fontSize: '14px', color: 'white' }}> / sec</span>
+              +{NumberFormatter.rate(gameState.growth * (1000 / GAME_CONFIG.tickRate), gameState)}<span style={{ fontSize: '12px', color: 'white' }}> / sec</span>
             </div>
           </div>
           
@@ -111,7 +112,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
             <div style={{ 
               fontSize: '18px', 
               fontWeight: 'bold', 
-              color: '#4ade80',
+              color: Colors.biomass.primary,
               marginBottom: '5px'
             }}>
               {NumberFormatter.power(gameState.clickPower, gameState)}

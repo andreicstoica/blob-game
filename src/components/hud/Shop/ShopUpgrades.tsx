@@ -3,6 +3,7 @@ import type { GameState } from '../../../game/types';
 import type { TutorialState } from '../../../game/types/ui';
 import { NumberFormatter } from '../../../utils/numberFormat';
 import { LEVELS } from '../../../game/content/levels';
+import { Colors } from '../../../styles/colors';
 
 
 interface ShopFloatingNumber {
@@ -54,20 +55,20 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
     <>
       <h3 style={{ margin: '30px 0 15px 0', fontSize: '16px' }}>Upgrades</h3>
       {(() => {
-        let upgrades = Object.values(gameState.upgrades)
-          .filter(upgrade => {
+        const upgrades = Object.values(gameState.upgrades)
+        .filter(upgrade => {
             // Always show tutorial upgrade during tutorial
             if (upgrade.id === 'tutorial-upgrade') {
               return tutorialState?.isActive && tutorialState.currentStep?.type === 'shop-intro' && !tutorialState.completedSteps.has('shop-intro');
             }
             
-            if (generatorFilter === 'current') {
-              // Only show upgrades from current level
-              return upgrade.unlockedAtLevel === currentLevel.name;
-            } else {
-              // Show all unlocked upgrades
-              return isContentAvailable(upgrade.unlockedAtLevel);
-            }
+          if (generatorFilter === 'current') {
+            // Only show upgrades from current level
+            return upgrade.unlockedAtLevel === currentLevel.name;
+          } else {
+            // Show all unlocked upgrades
+            return isContentAvailable(upgrade.unlockedAtLevel);
+          }
           });
 
         // Tutorial upgrade is now included in game state, so no need to add it here
@@ -86,15 +87,15 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
         return (
           <div key={upgrade.id} style={{
             background: upgrade.purchased 
-              ? 'rgba(59, 130, 246, 0.2)' // blue for purchased
+              ? `${Colors.upgrades.primary}30` // purple for purchased
               : canAfford 
-                ? 'rgba(74, 222, 128, 0.2)'
+                ? `${Colors.upgrades.primary}30`
                 : 'rgba(255, 255, 255, 0.1)',
             border: `2px solid ${
               upgrade.purchased 
-                ? '#3b82f6' // blue border for purchased
+                ? Colors.upgrades.primary // purple border for purchased
                 : canAfford 
-                  ? '#4ade80' 
+                  ? Colors.upgrades.primary 
                   : '#666'
             }`,
             borderRadius: '8px',
@@ -105,9 +106,9 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
             transition: 'all 0.2s ease',
             transform: 'scale(1)',
             boxShadow: upgrade.purchased 
-              ? '0 2px 8px rgba(59, 130, 246, 0.3)' // blue shadow for purchased
+              ? `0 2px 8px ${Colors.upgrades.primary}40` // purple shadow for purchased
               : canAfford 
-                ? '0 2px 8px rgba(74, 222, 128, 0.3)' 
+                ? `0 2px 8px ${Colors.upgrades.primary}40` 
                 : 'none'
           }}
           onClick={(e) => {
@@ -116,28 +117,28 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
               
               // Add floating number animation - position outside shop panel (skip for tutorial upgrade)
               if (upgrade.id !== 'tutorial-upgrade') {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const shopPanel = e.currentTarget.closest('[style*="height: 100vh"]');
-                const shopRect = shopPanel?.getBoundingClientRect();
-                
-                // Position the floating number outside the shop panel on the right
-                const x = shopRect ? shopRect.right + 20 : rect.right + 20;
-                const y = rect.top + rect.height / 2;
-                
-                addFloatingNumber(
-                  `-${NumberFormatter.biomass(upgrade.cost, gameState)}`,
-                  x,
-                  y,
-                  '#ef4444'
-                );
+              const rect = e.currentTarget.getBoundingClientRect();
+              const shopPanel = e.currentTarget.closest('[style*="height: 100vh"]');
+              const shopRect = shopPanel?.getBoundingClientRect();
+              
+              // Position the floating number outside the shop panel on the right
+              const x = shopRect ? shopRect.right + 20 : rect.right + 20;
+              const y = rect.top + rect.height / 2;
+              
+              addFloatingNumber(
+                `-${NumberFormatter.biomass(upgrade.cost, gameState)}`,
+                x,
+                y,
+                '#ef4444'
+              );
               }
             }
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.01)';
             if (canAfford && !upgrade.purchased) {
-              e.currentTarget.style.backgroundColor = 'rgba(74, 222, 128, 0.3)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(74, 222, 128, 0.4)';
+              e.currentTarget.style.backgroundColor = `${Colors.upgrades.primary}40`;
+              e.currentTarget.style.boxShadow = `0 4px 12px ${Colors.upgrades.primary}60`;
             } else if (!upgrade.purchased) {
               e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
               e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 255, 255, 0.1)';
@@ -147,10 +148,10 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
             e.currentTarget.style.transform = 'scale(1)';
             if (!upgrade.purchased) {
               e.currentTarget.style.backgroundColor = canAfford 
-                ? 'rgba(74, 222, 128, 0.2)' 
+                ? `${Colors.upgrades.primary}30` 
                 : 'rgba(255, 255, 255, 0.1)';
               e.currentTarget.style.boxShadow = canAfford 
-                ? '0 2px 8px rgba(74, 222, 128, 0.3)' 
+                ? `0 2px 8px ${Colors.upgrades.primary}40` 
                 : 'none';
             }
           }}
@@ -158,7 +159,7 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
             <div style={{ fontWeight: 'bold', marginBottom: '5px', fontSize: '15px' }}>
               {upgrade.name}
               {upgrade.purchased && (
-                <span style={{ marginLeft: '5px', color: '#3b82f6' }}>✓</span>
+                <span style={{ marginLeft: '5px', color: Colors.upgrades.primary }}>✓</span>
               )}
             </div>
             <div style={{ opacity: 0.8, marginBottom: '5px', lineHeight: '1.3', fontSize: '13px' }}>
@@ -166,7 +167,7 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
             </div>
             {!upgrade.purchased && (
               <div style={{ 
-                color: canAfford ? '#4ade80' : '#ef4444',
+                color: canAfford ? Colors.biomass.primary : '#ef4444',
                 fontWeight: 'bold',
                 fontSize: '13px'
               }}>

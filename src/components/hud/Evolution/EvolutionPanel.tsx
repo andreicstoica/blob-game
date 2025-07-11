@@ -1,5 +1,6 @@
 import React from "react";
 import type { GameState } from "../../../game/types";
+import { Colors } from "../../../styles/colors";
 import {
   getNextLevel,
   canEvolveToNextLevel,
@@ -38,7 +39,7 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
         right: 0,
         width: "300px",
         height: "100vh",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.4)",
         color: "white",
         fontFamily: "Arial, sans-serif",
         padding: "20px",
@@ -51,11 +52,13 @@ export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
         style={{
           margin: "0 0 20px 0",
           fontSize: "24px",
-          color: "#93c5fd",
+          color: Colors.evolution.primary,
           textAlign: "center",
+          textTransform: "uppercase",
+          textShadow: "0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)"
         }}
       >
-        Evolution
+        EVOLUTION
       </h2>
 
       <CurrentLevel
