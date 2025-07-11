@@ -6,6 +6,7 @@ import { EvolutionPanel } from "./Evolution/EvolutionPanel";
 import { TutorialManager } from "../tutorial/TutorialManager";
 import { SlimeTrail } from "../particles/SlimeTrail";
 import { calculateBlobPosition } from "../../game/systems/calculations";
+import { Colors } from "../../styles/colors";
 
 export const GameHUD: React.FC<GameHUDProps> = ({
   biomass,
@@ -31,6 +32,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           transform: "translateX(-50%)",
           zIndex: 1000,
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
           color: "white",
@@ -38,6 +40,27 @@ export const GameHUD: React.FC<GameHUDProps> = ({
         }}
       >
         <GameStats biomass={biomass} gameState={gameState} />
+        
+        {/* Tutorial indicator - only show when tutorial is active */}
+        {tutorialState?.isActive && (
+          <div
+            style={{
+              marginTop: "10px",
+              fontSize: "14px",
+              color: Colors.biomass.dark,
+              textAlign: "center",
+              textTransform: "uppercase",
+              fontWeight: "bold",
+              backgroundColor: "rgba(0, 0, 0, 0.7)",
+              padding: "4px 12px",
+              borderRadius: "6px",
+              border: `2px solid ${Colors.biomass.dark}`,
+              textShadow: "0 0 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.8), 0 0 24px rgba(22, 163, 74, 0.6)",
+            }}
+          >
+            TUTORIAL
+          </div>
+        )}
       </div>
 
       {/* Shop Section - Left side */}
