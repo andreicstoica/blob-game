@@ -10,7 +10,10 @@ interface GameStatsProps {
   gameState?: GameState;
 }
 
-export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
+export const GameStats: React.FC<GameStatsProps> = ({ 
+  biomass, 
+  gameState
+}) => {
   const formattedBiomass = NumberFormatter.biomass(biomass, gameState);
   const biomassLength = formattedBiomass.length;
   
@@ -29,7 +32,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
   return (
     <div style={{ 
       textAlign: 'center',
-      minHeight: '120px',
+      minHeight: '80px',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
@@ -46,10 +49,9 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
       {/* Main Biomass Display */}
       <div style={{ marginBottom: '15px' }}>
         <div style={{ 
-          fontSize: '18px', 
+          fontSize: '16px',
           opacity: 0.8, 
           marginBottom: '5px',
-          marginTop: '30px',
           fontWeight: 'bold'
         }}>
           BIOMASS
@@ -80,15 +82,15 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
         }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ 
-              fontSize: '12px', 
+              fontSize: '12px',
               opacity: 0.7, 
-              marginBottom: '2px',
+              marginBottom: '3px',
               fontWeight: 'bold'
             }}>
               GROWTH
             </div>
             <div style={{ 
-              fontSize: '18px', 
+              fontSize: '16px',
               fontWeight: 'bold', 
               color: Colors.biomass.primary,
               marginBottom: '5px'
@@ -99,21 +101,21 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
           
           <div style={{ 
             width: '1px', 
-            height: '30px', 
+            height: '30px',
             backgroundColor: 'rgba(255, 255, 255, 0.2)' 
           }} />
           
           <div style={{ textAlign: 'center' }}>
             <div style={{ 
-              fontSize: '12px', 
+              fontSize: '12px',
               opacity: 0.7, 
-              marginBottom: '2px',
+              marginBottom: '3px',
               fontWeight: 'bold'
             }}>
               CLICK POWER
             </div>
             <div style={{ 
-              fontSize: '18px', 
+              fontSize: '16px',
               fontWeight: 'bold', 
               color: Colors.biomass.primary,
               marginBottom: '5px'

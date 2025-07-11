@@ -66,8 +66,8 @@ export function calculateClickPower(state: GameState): number {
 export function calculateBlobPosition(): { x: number; y: number } {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
-    const hudWidth = 350;
-    const rightHudWidth = 350;
+    const hudWidth = 300; // Reduced shop width
+    const rightHudWidth = 0; // No right panel anymore
 
     const playableWidth = screenWidth - hudWidth - rightHudWidth;
     const centerX = hudWidth + playableWidth / 2;

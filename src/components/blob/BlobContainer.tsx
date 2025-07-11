@@ -1,11 +1,11 @@
 import React from "react";
-import Blob from "./Blob";
 import type { BlobProps } from "../../game/types";
+import Blob from "./Blob";
+import { calculateBlobPosition } from "../../game/systems/calculations";
 
-interface BlobContainerProps extends Omit<BlobProps, "position"> {
+interface BlobContainerProps extends Omit<BlobProps, 'position'> {
   zoomRate?: number;
   currentZoom?: number;
-  onAnimationStateChange?: (animationState: { clickBoost: number; pressure: number }) => void;
 }
 
 export const BlobContainer: React.FC<BlobContainerProps> = ({
@@ -14,12 +14,14 @@ export const BlobContainer: React.FC<BlobContainerProps> = ({
   onAnimationStateChange,
   ...blobProps
 }) => {
+  const blobPosition = calculateBlobPosition();
+  
   return (
     <div
       className="absolute cursor-pointer select-none"
       style={{
-        left: "50%",
-        top: "50%",
+        left: `${blobPosition.x}px`,
+        top: `${blobPosition.y}px`,
         transform: `translate(-50%, -50%) scale(${zoomRate / currentZoom})`,
         zIndex: 70,
       }}

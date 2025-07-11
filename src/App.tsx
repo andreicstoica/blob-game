@@ -7,6 +7,7 @@ import { useCameraZoom } from "./hooks/useCameraZoom";
 import { useBlobSize } from "./hooks/useBlobSize";
 import { getCurrentLevel } from "./game/systems/actions";
 import { useIntroStore } from "./store/introStore";
+import { calculateBlobPosition } from "./game/systems/calculations"; // Add this import
 
 // Toast imports for GameComponent
 import { ToastContainer } from "react-toastify";
@@ -62,6 +63,7 @@ function GameComponent({
   const currentLevel = getCurrentLevel(gameState);
   const currentZoom = useCameraZoom({ gameState, currentLevel });
   const blobSize = useBlobSize(gameState);
+  const blobPosition = calculateBlobPosition(); // Calculate blob position for toast alignment
 
   return (
     <div
@@ -93,20 +95,35 @@ function GameComponent({
         blobSize={blobSize}
       />
 
-      {/* Toast Notifications */}
-      <ToastContainer
-        position="bottom-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={true}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss={false}
-        draggable
-        pauseOnHover
-        theme="dark"
-        toastClassName="blob-toast"
-      />
+      {/* Toast Notifications - Aligned with blob horizontally */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          left: `${blobPosition.x}px`,
+          transform: 'translateX(-50%)',
+          zIndex: 9999,
+          pointerEvents: 'none', // Allow clicks to pass through
+        }}
+      >
+        <ToastContainer
+          position="top-center" // Use top-center since we're positioning the container manually
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={true}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss={false}
+          draggable
+          pauseOnHover
+          theme="dark"
+          toastClassName="blob-toast"
+          style={{
+            position: 'relative',
+            pointerEvents: 'auto', // Re-enable pointer events for the toasts themselves
+          }}
+        />
+      </div>
     </div>
   );
 }
