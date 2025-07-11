@@ -19,3 +19,5 @@ This is a React Typescript project using Vite hosted on Netlify.
 - Cookie Clicker
 - A Dark Room
 - Universal Paperclip
+
+PUSH
