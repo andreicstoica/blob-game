@@ -102,19 +102,6 @@ export interface Particle {
   state?: 'approaching' | 'attracted' | 'spiraling';
   spiralAngle?: number; // For spiral absorption
   magneticForce?: number; // Strength of magnetic attraction
-  trailHistory?: { x: number; y: number; timestamp: number }[]; // For nutrient trails
-}
-
-// Trail particle for nutrient trails effect
-export interface TrailParticle {
-  id: string;
-  x: number;
-  y: number;
-  size: number;
-  color: string;
-  opacity: number;
-  life: number; // 0 to 1
-  maxLife: number;
 }
 
 // Combo system for enhanced feeding effects
