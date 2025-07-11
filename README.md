@@ -1,4 +1,4 @@
-# Blob
+# Blob must grow
 
 <div align="center">
 
@@ -9,7 +9,7 @@
 
 ## Project Information
 
-This is a React Typescript project using Vite hosted on Netlify.
+This is a React Typescript project using Vite hosted on Netlify. We want wanted to juice the clicking and make number go up.
 
 ## Inspiration
 
