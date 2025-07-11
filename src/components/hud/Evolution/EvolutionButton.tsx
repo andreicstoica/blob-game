@@ -1,6 +1,6 @@
 import React from "react";
 import { useIntroStore } from "../../../store/introStore";
-import { playSound } from "../../../utils/sound";
+import { playSound, playBackgroundMusic } from "../../../utils/sound"; // Add playBackgroundMusic to the import
 import { Colors } from "../../../styles/colors";
 
 interface EvolutionButtonProps {
@@ -50,8 +50,9 @@ export const EvolutionButton: React.FC<EvolutionButtonProps> = ({
 
   const handleClick = () => {
     if (isIntroLevel) {
-      // For intro level: play sound immediately, start intro animation
+      // For intro level: play sound effect and start background music
       playSound('gameStart');
+      playBackgroundMusic(0.3); // Start background music at 30% volume
       startIntro();
       // Game progression will happen after animation completes via IntroScreen
     } else {

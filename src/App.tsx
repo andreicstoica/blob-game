@@ -7,7 +7,9 @@ import { useCameraZoom } from "./hooks/useCameraZoom";
 import { useBlobSize } from "./hooks/useBlobSize";
 import { getCurrentLevel } from "./game/systems/actions";
 import { useIntroStore } from "./store/introStore";
-import { calculateBlobPosition } from "./game/systems/calculations"; // Add this import
+import { calculateBlobPosition } from "./game/systems/calculations";
+import { initSounds } from "./utils/sound"; // Add this import
+import { useEffect } from "react"; // Add this import
 
 // Toast imports for GameComponent
 import { ToastContainer } from "react-toastify";
@@ -17,6 +19,11 @@ function App() {
   const showIntro = useIntroStore((state) => state.showIntro);
   const endIntro = useIntroStore((state) => state.endIntro);
   const gameHook = useGame();
+
+  // Initialize sounds when app loads
+  useEffect(() => {
+    initSounds();
+  }, []);
 
   const handleIntroTransition = () => {
     // Placeholder for any transition logic
