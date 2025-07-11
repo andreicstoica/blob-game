@@ -1,10 +1,10 @@
-import React from "react";
-import type { GeneratorVisualization } from "../../game/types/ui";
+// import React from "react";
+// import type { GeneratorVisualization } from "../../game/types/ui";
 
-interface GeneratorElementProps {
-  generator: GeneratorVisualization;
-  blobSize: number; // Add blobSize prop
-}
+// interface GeneratorElementProps {
+//   generator: GeneratorVisualization;
+//   blobSize: number; // Add blobSize prop
+// }
 
 // This component is no longer needed since we're only showing floating numbers
 // Keeping the file for potential future use
@@ -55,5 +55,5 @@ interface GeneratorElementProps {
 //       {generator.emoji}
 //     </div>
 //   );
-
-}; 
+//
+// }; 

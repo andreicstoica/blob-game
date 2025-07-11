@@ -3,7 +3,7 @@ import type { GameSceneProps } from "../game/types";
 import { getCurrentLevel } from "../game/systems/actions";
 import { ParticleSystem } from "./particles/ParticleSystem";
 import { BlobContainer } from "./blob/BlobContainer";
-import { GeneratorSystem } from "./generators/GeneratorSystem";
+// import { GeneratorSystem } from "./generators/GeneratorSystem";
 import { FloatingNumber } from "./animations/FloatingNumber";
 import { RippleSystem } from "./particles/RippleSystem";
 import type { FloatingNumberAnimation } from "../game/types";
@@ -85,13 +85,6 @@ export const GameScene: React.FC<GameSceneProps> = ({
       <RippleSystem
         blobSize={blobSize}
         blobAnimationState={blobAnimationState}
-      />
-
-      {/* Generator System - z-index: 80+ */}
-      <GeneratorSystem
-        gameState={gameState}
-        blobSize={blobSize}
-        addFloatingNumber={addFloatingNumber}
       />
 
       {/* Animation Layer - z-index: 90+ */}
