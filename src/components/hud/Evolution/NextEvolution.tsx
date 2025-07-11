@@ -1,6 +1,7 @@
 import React from "react";
 import { NumberFormatter } from "../../../utils/numberFormat";
 import type { GameState, Level } from '../../../game/types';
+import { Colors } from "../../../styles/colors";
 
 interface NextEvolutionProps {
   nextLevel: Level;
@@ -52,7 +53,7 @@ export const NextEvolution: React.FC<NextEvolutionProps> = ({
   const valueStyle: React.CSSProperties = {
     fontSize: "12px",
     fontWeight: "bold",
-    color: canEvolve ? "#4ade80" : "#ef4444",
+    color: canEvolve ? Colors.biomass.primary : Colors.headlines.primary,
   };
 
   return (
