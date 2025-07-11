@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { GameState, GeneratorState } from '../../game/types';
 import { NumberFormatter } from '../../utils/numberFormat';
-import { GAME_CONFIG } from '../../game/content/config';
 import { Colors } from '../../styles/colors';
 
 interface FloatingNumber {

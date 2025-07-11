@@ -1,5 +1,4 @@
 import React from 'react';
-import { Colors } from '../../styles/colors';
 
 interface SpacebarIndicatorProps {
   position: { x: number; y: number };
