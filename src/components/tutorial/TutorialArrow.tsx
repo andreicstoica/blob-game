@@ -1,5 +1,4 @@
 import React from 'react';
-import { Colors } from '../../styles/colors';
 
 interface TutorialArrowProps {
   targetPosition: { x: number; y: number };
@@ -66,7 +65,7 @@ export const TutorialArrow: React.FC<TutorialArrowProps> = ({
                 dx="0"
                 dy="0"
                 stdDeviation="3"
-                floodColor="${Colors.biomass.dark}"
+                floodColor="#16a34a"
                 floodOpacity="0.8"
               />
             </filter>
@@ -75,7 +74,7 @@ export const TutorialArrow: React.FC<TutorialArrowProps> = ({
           {/* Arrow body - now pointing upward */}
           <path
             d="M30 25 L30 70"
-            stroke="${Colors.biomass.dark}"
+            stroke="#16a34a"
             strokeWidth="4"
             strokeLinecap="round"
             filter="url(#arrowGlow)"
@@ -84,7 +83,7 @@ export const TutorialArrow: React.FC<TutorialArrowProps> = ({
           {/* Arrow head - now pointing upward */}
           <path
             d="M20 35 L30 20 L40 35"
-            stroke="${Colors.biomass.dark}"
+            stroke="#16a34a"
             strokeWidth="4"
             strokeLinecap="round"
             strokeLinejoin="round"
