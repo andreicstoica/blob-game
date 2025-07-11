@@ -12,7 +12,6 @@ import { getScaleLevel } from "../../../game/systems/scaleLevels";
 
 interface EvolutionPanelProps {
   biomass: number;
-  blobSize: number;
   gameState?: GameState;
   onEvolve?: () => void;
   zoom?: number;
@@ -20,19 +19,16 @@ interface EvolutionPanelProps {
 
 export const EvolutionPanel: React.FC<EvolutionPanelProps> = ({
   biomass,
-  blobSize,
   gameState,
   onEvolve,
-  zoom,
 }) => {
   if (!gameState) return null;
 
   const currentLevel = getCurrentLevel(gameState);
   const nextLevel = getNextLevel(gameState);
-  const canEvolve = canEvolveToNextLevel(gameState);
+    const canEvolve = canEvolveToNextLevel(gameState);
   const scale = getScaleLevel(biomass);
-  const currentZoom =
-    zoom ?? Math.max(0.15, 1.0 - Math.log10(biomass + 1) * 0.3);
+
 
   return (
     <div

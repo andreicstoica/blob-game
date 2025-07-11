@@ -3,7 +3,7 @@ import type { GameState } from '../../../game/types';
 import { NumberFormatter } from '../../../utils/numberFormat';
 import { getGeneratorValueInfo } from '../../../game/systems/generatorValue';
 import { isContentAvailable, calculateTotalCost } from '../../../game/systems/actions';
-import { GAME_CONFIG } from '../../../game/content/config';
+
 
 interface ShopFloatingNumber {
   id: string;
@@ -135,9 +135,12 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
             }}
           onClick={(e) => {
             if (canAfford) {
+              // Calculate growth increase before purchase
+              const growthIncrease = generator.baseEffect * buyMultiplier * 10; // Convert to per-second
+              
               onBuyGenerator(generator.id);
               
-              // Add floating number animation
+              // Add floating number animation for cost
               const rect = e.currentTarget.getBoundingClientRect();
               addFloatingNumber(
                 `-${NumberFormatter.biomass(totalCost, gameState)}`,
@@ -145,6 +148,19 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
                 rect.top + rect.height / 2,
                 '#ef4444'
               );
+              
+              // Add floating number animation for growth increase - position next to GameStats
+              // Find the GameStats element and position relative to it
+              const gameStatsElement = document.querySelector('[style*="position: fixed"][style*="top: 0"][style*="left: 600px"]');
+              if (gameStatsElement) {
+                const gameStatsRect = gameStatsElement.getBoundingClientRect();
+                addFloatingNumber(
+                  `+${NumberFormatter.rate(growthIncrease, gameState)}`,
+                  gameStatsRect.left + gameStatsRect.width / 2 + 80, // Right of the GROWTH/SEC number
+                  gameStatsRect.top + 80, // Aligned with the growth rate value
+                  '#4ade80'
+                );
+              }
             }
           }}
           onMouseEnter={(e) => {

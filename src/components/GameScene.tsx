@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import type { GameState } from "../game/types";
+import type { GameSceneProps } from "../game/types";
 import { getCurrentLevel } from "../game/systems/actions";
 import { ParticleSystem } from "./particles/ParticleSystem";
 import { BlobContainer } from "./blob/BlobContainer";
@@ -9,12 +9,7 @@ import { RippleSystem } from "./particles/RippleSystem";
 import type { FloatingNumberAnimation } from "../game/types";
 import Map from "./map/Map";
 
-interface GameSceneProps {
-  gameState: GameState;
-  blobSize: number;
-  onBlobClick: () => void;
-  zoom: number;
-}
+
 
 export const GameScene: React.FC<GameSceneProps> = ({
   gameState,

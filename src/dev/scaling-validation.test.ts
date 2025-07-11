@@ -3,6 +3,7 @@ import { UPGRADES } from '../game/content/upgrades';
 import { LEVELS } from '../game/content/levels';
 
 // Test rules for game scaling validation
+// @ts-ignore - Defined for documentation purposes
 const SCALING_RULES = {
   // Evolution/Level Progression Rules
   EVOLUTION: {
@@ -62,10 +63,12 @@ function getUpgradesForLevel(levelName: string) {
   return Object.values(UPGRADES).filter(u => u.unlockedAtLevel === levelName);
 }
 
+// @ts-ignore - Defined for potential future use
 function calculateGeneratorCost(generator: any, level: number = 1) {
   return generator.baseCost * Math.pow(generator.costMultiplier, level - 1);
 }
 
+// @ts-ignore - Defined for potential future use
 function calculateGeneratorEffect(generator: any, level: number = 1) {
   return generator.baseEffect * level;
 }
@@ -116,6 +119,7 @@ function testGeneratorScaling() {
     }
     
     // Test effect/cost scaling
+    // @ts-ignore - Calculated for analysis
     const effects = generators.map(g => g.baseEffect);
     const effectCostRatios = generators.map(g => g.baseEffect / g.baseCost);
     const avgEffectCostRatio = effectCostRatios.reduce((a, b) => a + b, 0) / effectCostRatios.length;

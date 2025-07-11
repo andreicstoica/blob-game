@@ -94,7 +94,6 @@ export const useGeneratorAnimation = (
       const currentGenerators = generatorsRef.current;
       const currentStackedGenerators = stackedGeneratorsRef.current;
       const currentGameState = gameStateRef.current;
-      const currentBlobSize = blobSizeRef.current;
 
       if (currentGenerators.length === 0 && currentStackedGenerators.length === 0) return;
 
@@ -105,14 +104,12 @@ export const useGeneratorAnimation = (
       // Update generator positions
       const updatedGenerators = updateGeneratorPositions(
         currentGenerators,
-        currentBlobSize,
         deltaTime
       );
 
       // Update stacked generator positions
       const updatedStackedGenerators = updateGeneratorPositions(
         currentStackedGenerators,
-        currentBlobSize,
         deltaTime
       );
 

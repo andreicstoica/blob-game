@@ -1,21 +1,11 @@
 import React from "react";
-import type { GameState } from "../../game/types";
-import type { TutorialState } from "../../game/types/ui";
+import type { GameHUDProps } from "../../game/types";
 import { GameStats } from "./GameStats";
 import { Shop } from "./Shop";
 import { EvolutionPanel } from "./Evolution";
 import { TutorialManager } from "../tutorial/TutorialManager";
 
-interface GameHUDProps {
-  biomass: number;
-  gameState?: GameState;
-  tutorialState?: TutorialState;
-  onBuyGenerator?: (generatorId: string) => void;
-  onBuyUpgrade?: (upgradeId: string) => void;
-  onEvolve?: () => void;
-  blobSize?: number;
-  zoom?: number;
-}
+
 
 export const GameHUD: React.FC<GameHUDProps> = ({
   biomass,
@@ -24,7 +14,6 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   onBuyGenerator,
   onBuyUpgrade,
   onEvolve,
-  blobSize = 50,
   zoom,
 }) => {
   return (
@@ -73,7 +62,6 @@ export const GameHUD: React.FC<GameHUDProps> = ({
 
       <EvolutionPanel
         biomass={biomass}
-        blobSize={blobSize}
         gameState={gameState}
         onEvolve={onEvolve}
         zoom={zoom}
