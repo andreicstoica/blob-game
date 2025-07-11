@@ -39,6 +39,7 @@ interface BurstParticle {
 
 // Visual assets for different particle types
 const VISUAL_ASSETS = {
+  circle: [],
   bacteria: [brownBacteria, greenBacteria, purpleBacteria],
   mice: [mouse1, mouse2, mouse3],
   spaceships: [spaceship1, spaceship2, spaceship3],
@@ -217,6 +218,7 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
 
     // Determine visual type and image based on current level
     let visualType:
+      | "circle"
       | "bacteria"
       | "mice"
       | "spaceships"
@@ -228,6 +230,11 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
 
     // Map level to specific visual types
     switch (currentLevel.name) {
+      case "intro":
+        visualType = "circle";
+        useImage = false;
+        image = "";
+        break;
       case "microscopic":
         visualType = "bacteria";
         image =
@@ -318,9 +325,6 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
   // Spawn particles based on engine configuration
   useEffect(() => {
     if (!currentLevel) return;
-
-    // Intro level has no particles
-    if (currentLevel.name === "intro") return;
 
     const spawnInterval = setInterval(() => {
       const shouldSpawn = Math.random() < (particleConfig.spawnRate * 0.4) / 60; // 60fps, reduced to 40% of original
