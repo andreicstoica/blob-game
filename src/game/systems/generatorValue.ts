@@ -4,7 +4,7 @@ import { getUnlockedGenerators } from './actions';
 
 // Calculate the value of purchasing the next level of a generator: Value = (cost of next generator) / (increase in growth)
 // Lower values are better (cheaper per unit of growth)
-export function calculateGeneratorValue(generator: GeneratorState, gameState: GameState): number {
+export function calculateGeneratorValue(generator: GeneratorState, _gameState: GameState): number {
     const growthIncrease = generator.growthPerTick; // Each level adds growthPerTick growth
     const cost = generator.baseCost * Math.pow(generator.costMultiplier, generator.level);
     

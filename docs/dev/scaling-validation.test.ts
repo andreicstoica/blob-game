@@ -121,7 +121,7 @@ function testGeneratorScaling() {
     // Test effect/cost scaling
     // @ts-ignore - Calculated for analysis
     const effects = generators.map(g => g.baseEffect);
-    const effectCostRatios = generators.map(g => g.baseEffect / g.baseCost);
+    const effectCostRatios = generators.map(g => g.growthPerTick / g.baseCost);
     const avgEffectCostRatio = effectCostRatios.reduce((a, b) => a + b, 0) / effectCostRatios.length;
     
     console.log(`  Average effect/cost ratio: ${avgEffectCostRatio.toFixed(6)}`);
@@ -130,7 +130,7 @@ function testGeneratorScaling() {
     const sortedByCost = generators.sort((a, b) => a.baseCost - b.baseCost);
     let effectsIncrease = true;
     for (let i = 1; i < sortedByCost.length; i++) {
-      if (sortedByCost[i].baseEffect <= sortedByCost[i-1].baseEffect) {
+      if (sortedByCost[i].growthPerTick <= sortedByCost[i-1].growthPerTick) {
         effectsIncrease = false;
         break;
       }
@@ -254,7 +254,7 @@ function testExponentialGrowthPattern() {
     
     if (!current || !previous) continue;
     
-    const effectRatio = current.baseEffect / previous.baseEffect;
+    const effectRatio = current.growthPerTick / previous.growthPerTick;
     console.log(`  ${previous.unlockedAtLevel} → ${current.unlockedAtLevel}: ${effectRatio.toFixed(1)}x`);
     
     if (effectRatio < 2) {

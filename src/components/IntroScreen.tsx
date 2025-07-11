@@ -6,7 +6,7 @@ interface IntroScreenProps {
 }
 
 export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onComplete }) => {
-  const [visibleWords, setVisibleWords] = useState<string[]>([]);
+  const [_visibleWords, setVisibleWords] = useState<string[]>([]);
   const [startTime] = useState(() => Date.now());
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -204,7 +204,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onTransitionStart, onC
             </span>
           )}
           {/* Dots appear one by one */}
-          {dots.map((dot, index) => (
+          {dots.map((_dot, index) => (
             <span key={index} style={dotStyle}>
               .
             </span>
