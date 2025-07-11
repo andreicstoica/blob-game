@@ -56,6 +56,5 @@ This table helps Cursor understand our general coding conventions.
 1. **Receive a good prompt** and read all necessary files to start working.
 2. **Allow the agent to generate code** and review it locally.
 3. **Commit** following the message convention.
-4. **Open PR → CI → Merge**.
 
 ---
