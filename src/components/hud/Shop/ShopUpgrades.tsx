@@ -68,23 +68,6 @@ export const ShopUpgrades: React.FC<UpgradesProps> = ({
         .map(upgrade => {
         const canAfford = biomass >= upgrade.cost && !upgrade.purchased;
         
-        // Get level color for gradient
-        const getLevelColor = (levelName: string) => {
-          switch (levelName) {
-            case 'microscopic': return '#c0c0c0'; // Silver
-            case 'petri-dish': return '#3b82f6'; // Blue
-            case 'lab': return '#84cc16'; // Lime
-            case 'neighborhood': return '#f59e0b'; // Amber
-            case 'city': return '#8b5cf6'; // Purple
-            case 'continent': return '#06b6d4'; // Cyan
-            case 'earth': return '#10b981'; // Emerald
-            case 'solar-system': return '#f97316'; // Orange
-            default: return '#6b7280'; // Gray
-          }
-        };
-
-        const levelColor = getLevelColor(upgrade.unlockedAtLevel);
-        
         return (
           <div key={upgrade.id} style={{
             background: upgrade.purchased 

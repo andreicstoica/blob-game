@@ -24,7 +24,7 @@ export const Shop: React.FC<ShopProps> = ({
     return null;
   }
 
-  const currentLevel = getCurrentLevel(gameState);
+    const currentLevel = getCurrentLevel(gameState);
 
   // Calculate value thresholds for the scale - use useMemo to recalculate when gameState changes
   const valueThresholds = useMemo(() => {
@@ -62,6 +62,8 @@ export const Shop: React.FC<ShopProps> = ({
     
     return { highThreshold, lowThreshold };
   }, [gameState, currentLevel.name]);
+
+  
 
   const handleBuyGenerator = (generatorId: string) => {
     // Buy multiple generators based on multiplier
@@ -117,12 +119,12 @@ export const Shop: React.FC<ShopProps> = ({
           />
         </div>
 
-        {/* Value Scale Display - Hidden for now */}
-        {/* <ValueScale 
+        {/* Value Scale Display */}
+        <ValueScale 
           gameState={gameState}
           highThreshold={valueThresholds.highThreshold}
           lowThreshold={valueThresholds.lowThreshold}
-        /> */}
+        />
       </div>
 
       {/* Scrollable Content */}

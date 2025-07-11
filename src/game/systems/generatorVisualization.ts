@@ -154,7 +154,6 @@ export function initializeStackedGeneratorMovement(
  */
 export function updateGeneratorPositions(
   generators: GeneratorVisualization[],
-  blobSize: number,
   deltaTime: number
 ): GeneratorVisualization[] {
   const currentTime = Date.now() * 0.001; // Convert to seconds
