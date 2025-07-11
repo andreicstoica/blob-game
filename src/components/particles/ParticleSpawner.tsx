@@ -6,6 +6,7 @@ import type {
   ComboTracker,
 } from "../../game/types";
 import { calculateParticleConfig } from "../../game/systems/particles";
+import { calculateBlobPosition } from "../../game/systems/calculations"; // Add this import
 import { VISUAL_ASSETS } from "../../styles/constants";
 
 // Interface for burst particles (firework effect)
@@ -52,14 +53,8 @@ export const ParticleSpawner: React.FC<ParticleSpawnerProps> = ({
     [gameState]
   );
 
-  // Get blob position - match actual blob rendering position
-  const blobPosition = useMemo(() => {
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-    const centerX = screenWidth / 2;
-    const centerY = screenHeight / 2;
-    return { x: centerX, y: centerY };
-  }, []);
+  // Get blob position - use the same calculation as the blob itself
+  const blobPosition = useMemo(() => calculateBlobPosition(), []);
 
   // Use blob size passed from parent (already calculated with all constraints)
   const blobRadius = blobSize * 0.35; // Same calculation as blob component

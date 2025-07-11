@@ -8,32 +8,32 @@ interface GameStatsProps {
   gameState?: GameState;
 }
 
-export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
+export const GameStats: React.FC<GameStatsProps> = ({ 
+  biomass, 
+  gameState
+}) => {
   const formattedBiomass = NumberFormatter.biomass(biomass, gameState);
   const biomassLength = formattedBiomass.length;
   
-  // Dynamic font size based on biomass length to ensure it fits
-  let fontSize = 72;
-  if (biomassLength > 8) fontSize = 54;
-  if (biomassLength > 12) fontSize = 42;
-  if (biomassLength > 16) fontSize = 36;
-  
-  // Scale padding based on biomass number length: Base 20px, add 5px for each character beyond 3
-  const horizontalPadding = Math.max(20, 20 + (biomassLength - 3) * 5);
+  // Font size for biomass display
+  let fontSize = 48;
+  if (biomassLength > 8) fontSize = 36;
+  if (biomassLength > 12) fontSize = 28;
+  if (biomassLength > 16) fontSize = 24;
 
   return (
     <div style={{ 
       textAlign: 'center',
-      minHeight: '120px',
+      minHeight: '80px',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
       width: 'fit-content',
-      minWidth: '100px',
+      minWidth: '320px',
       maxWidth: '100%',
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      padding: `20px ${horizontalPadding}px`,
-      borderRadius: '0 0 18px 18px',
+      padding: '15px',
+      borderRadius: '0 0 12px 12px',
       color: 'white',
       fontFamily: 'Arial, sans-serif',
       userSelect: 'none'
@@ -41,10 +41,9 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
       {/* Main Biomass Display */}
       <div style={{ marginBottom: '15px' }}>
         <div style={{ 
-          fontSize: '18px', 
+          fontSize: '16px',
           opacity: 0.8, 
           marginBottom: '5px',
-          marginTop: '30px',
           fontWeight: 'bold'
         }}>
           BIOMASS
@@ -76,18 +75,17 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
         }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ 
-              fontSize: '12px', 
+              fontSize: '12px',
               opacity: 0.7, 
-              marginBottom: '2px',
+              marginBottom: '3px',
               fontWeight: 'bold'
             }}>
               GROWTH
             </div>
             <div style={{ 
-              fontSize: '18px', 
+              fontSize: '16px',
               fontWeight: 'bold', 
               color: '#4ade80',
-              marginBottom: '5px'
             }}>
               +{NumberFormatter.rate(gameState.growth * (1000 / GAME_CONFIG.tickRate), gameState)}<span style={{ fontSize: '14px', color: 'white' }}> / sec</span>
             </div>
@@ -95,24 +93,23 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
           
           <div style={{ 
             width: '1px', 
-            height: '30px', 
+            height: '30px',
             backgroundColor: 'rgba(255, 255, 255, 0.2)' 
           }} />
           
           <div style={{ textAlign: 'center' }}>
             <div style={{ 
-              fontSize: '12px', 
+              fontSize: '12px',
               opacity: 0.7, 
-              marginBottom: '2px',
+              marginBottom: '3px',
               fontWeight: 'bold'
             }}>
               CLICK POWER
             </div>
             <div style={{ 
-              fontSize: '18px', 
+              fontSize: '16px',
               fontWeight: 'bold', 
               color: '#4ade80',
-              marginBottom: '5px'
             }}>
               {NumberFormatter.power(gameState.clickPower, gameState)}
             </div>

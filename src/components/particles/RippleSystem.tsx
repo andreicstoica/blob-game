@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { calculateBlobPosition } from "../../game/systems/calculations"; // Add this import
 
 // Ripple particle interface
 interface RippleParticle {
@@ -29,14 +30,8 @@ export const RippleSystem: React.FC<RippleSystemProps> = ({
 }) => {
   const [rippleParticles, setRippleParticles] = useState<RippleParticle[]>([]);
 
-  // Get blob position and radius
-  const blobPosition = useMemo(() => {
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-    const centerX = screenWidth / 2;
-    const centerY = screenHeight / 2;
-    return { x: centerX, y: centerY };
-  }, []);
+  // Get blob position - use the same calculation as the blob itself
+  const blobPosition = useMemo(() => calculateBlobPosition(), []);
 
   // Calculate blob radius accounting for heat effect (clickBoost)
   const baseRadius = blobSize * 0.35; // Same calculation as blob component
