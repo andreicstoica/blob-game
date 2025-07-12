@@ -250,7 +250,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
                 fontWeight: "bold",
               }}
             >
-              CLICKS / MIN
+              CLICKS / SEC
             </div>
             <div
               style={{
@@ -260,7 +260,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
                 marginBottom: "5px",
               }}
             >
-              {gameTime < 30 ? "-" : cpm}
+              {gameTime < 30 ? "-" : Math.round(cpm / 60)}
             </div>
           </div>
         </div>

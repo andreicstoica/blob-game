@@ -19,8 +19,10 @@ export const ClickIndicator: React.FC<ClickIndicatorProps> = ({
     left: position.x,
     top: position.y,
     transform: 'translate(-50%, -50%)',
-    zIndex: 9999,
+    zIndex: 1001,
     pointerEvents: 'none',
+    userSelect: 'none',
+    touchAction: 'none',
   };
 
 
@@ -59,6 +61,7 @@ export const ClickIndicator: React.FC<ClickIndicatorProps> = ({
           viewBox="0 0 48 72"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
+          style={{ pointerEvents: 'none' }}
         >
           {/* Mouse shadow/glow effect */}
           <defs>

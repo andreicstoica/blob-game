@@ -94,8 +94,7 @@ export const TutorialPopup: React.FC<TutorialPopupProps> = ({
             <div
               key={index}
               style={{
-                marginBottom:
-                  index === message.split("\n").length - 2 ? "12px" : "0px",
+                marginBottom: "0px",
               }}
             >
               {line.split(" ").map((word, wordIndex) => {

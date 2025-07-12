@@ -91,12 +91,12 @@ export const ShopGenerators: React.FC<GeneratorsProps> = ({
         return canAffordA ? -1 : 1;
       }
 
-      // Then sort by value (better value = lower cost/growth ratio)
+      // Then sort by value (better value = higher growth/cost ratio)
       const valueA = getGeneratorValueInfo(a.id, gameState);
       const valueB = getGeneratorValueInfo(b.id, gameState);
 
       if (valueA && valueB) {
-        return valueA.value - valueB.value; // Lower value = better
+        return valueB.value - valueA.value; // Higher value = better, so put higher values first
       }
 
       return 0;

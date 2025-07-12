@@ -117,14 +117,14 @@ export function getGeneratorValueInfo(
         const normalizedValue = (item.value - minValue) / valueRange;
         
         if (normalizedValue <= 0.33) {
-          // Lowest third: green (best value - lowest cost/growth)
-          item.color = Colors.biomass.primary;
+          // Lowest third: red (worst value - lowest growth/cost ratio)
+          item.color = Colors.headlines.primary;
         } else if (normalizedValue <= 0.66) {
           // Middle third: yellow
           item.color = Colors.evolution.primary;
         } else {
-          // Highest third: red (worst value - highest cost/growth)
-          item.color = Colors.headlines.primary;
+          // Highest third: green (best value - highest growth/cost ratio)
+          item.color = Colors.biomass.primary;
         }
       }
     }
