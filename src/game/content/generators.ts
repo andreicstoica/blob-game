@@ -7,8 +7,8 @@ export const GENERATORS: Record<string, Omit<GeneratorState, 'level'>> = {
     name: '🦠 Microscopic Cloner',
     baseCost: 10,
     description: 'Clones basic slime cells',
-    growthPerTick: 1,
-    costMultiplier: 1.15,
+    growthPerTick: 1.5,
+    costMultiplier: 1.1,
     unlockedAtLevel: 'microscopic'
   },
 

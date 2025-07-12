@@ -11,7 +11,7 @@ export const TUTORIAL_STEPS: Record<string, Omit<TutorialStep, 'completed'>> = {
     id: 'shop-intro',
     type: 'shop-intro',
     popupPosition: 'shop',
-    popupMessage: 'Spend Biomass in the Shop:\n\nGenerators function as auto-clickers,\n\nUpgrades make Generators stronger!'
+    popupMessage: 'Spend Biomass in the Shop:\n\n- Generators function as auto-clickers,\n- Upgrades make Generators stronger!'
   },
   'evolution-intro': {
     id: 'evolution-intro',

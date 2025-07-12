@@ -17,7 +17,7 @@ interface SlimeTrailProps {
 export const SlimeTrail: React.FC<SlimeTrailProps> = ({ isActive }) => {
   const [slimeDrops, setSlimeDrops] = useState<SlimeDrop[]>([]);
   const lastDropTime = useRef(0);
-  const dropInterval = 25; // Drop every 25ms (50% more frequent)
+  const dropInterval = 50; // Increased from 25ms to 50ms to reduce frequency
 
   // Track mouse position
   useEffect(() => {
@@ -33,7 +33,7 @@ export const SlimeTrail: React.FC<SlimeTrailProps> = ({ isActive }) => {
           id: Math.random().toString(36).substr(2, 9),
           x: newPosition.x,
           y: newPosition.y,
-          opacity: 0.8,
+          opacity: 0.6, // Reduced opacity
           scale: 1,
           createdAt: now,
         };
@@ -59,7 +59,7 @@ export const SlimeTrail: React.FC<SlimeTrailProps> = ({ isActive }) => {
       setSlimeDrops(prev => 
         prev.filter(drop => {
           const age = now - drop.createdAt;
-          return age < 1500; // Keep drops for 1.5 seconds (reduced from 2 seconds)
+          return age < 1000; // Reduced lifetime from 1.5s to 1s
         })
       );
     }, 100);
@@ -73,9 +73,9 @@ export const SlimeTrail: React.FC<SlimeTrailProps> = ({ isActive }) => {
     <>
       {slimeDrops.map((drop) => {
         const age = Date.now() - drop.createdAt;
-        const progress = age / 1500; // 1.5 second lifetime
-        const opacity = 0.8 * (1 - progress);
-        const scale = 1 - (progress * 0.3);
+        const progress = age / 1000; // 1 second lifetime
+        const opacity = 0.6 * (1 - progress); // Reduced base opacity
+        const scale = 1 - (progress * 0.2); // Reduced scale change
 
         return (
           <div
@@ -85,15 +85,17 @@ export const SlimeTrail: React.FC<SlimeTrailProps> = ({ isActive }) => {
               left: drop.x,
               top: drop.y,
               transform: `translate(-50%, -50%) scale(${scale})`,
-              width: '8px',
-              height: '8px',
+              width: '6px', // Reduced size
+              height: '6px', // Reduced size
               backgroundColor: Colors.biomass.primary,
               borderRadius: '50%',
               opacity: opacity,
               pointerEvents: 'none',
-              zIndex: 1000,
-              filter: 'blur(1px)',
-              boxShadow: `0 0 4px ${Colors.biomass.primary}80`,
+              zIndex: 50, // Much lower z-index to avoid cursor interference
+              filter: 'blur(0.5px)', // Reduced blur
+              boxShadow: `0 0 2px ${Colors.biomass.primary}40`, // Reduced glow
+              userSelect: 'none',
+              touchAction: 'none',
             }}
           />
         );
