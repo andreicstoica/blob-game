@@ -144,26 +144,6 @@ export const GeneratorFloatingNumbers: React.FC<GeneratorFloatingNumbersProps> =
 
   return (
     <>
-      {/* Test floating number - always visible */}
-      <div
-        style={{
-          position: 'fixed',
-          left: blobPosition.x,
-          top: blobPosition.y - 50,
-          transform: 'translate(-50%, -50%)',
-          color: '#ff0000',
-          fontSize: '20px',
-          fontWeight: 'bold',
-          pointerEvents: 'none',
-          zIndex: 10000,
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: '4px 8px',
-          borderRadius: '4px',
-        }}
-      >
-        TEST FLOAT
-      </div>
-      
       {floatingNumbers.map((floatingNumber) => {
         const age = Date.now() - floatingNumber.createdAt;
         const progress = age / 2000; // 2 second lifetime
