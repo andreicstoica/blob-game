@@ -6,7 +6,6 @@ import { EvolutionPanel } from "./Evolution/EvolutionPanel";
 import { TutorialManager } from "../tutorial/TutorialManager";
 import { SlimeTrail } from "../particles/SlimeTrail";
 import { calculateBlobPosition } from "../../game/systems/calculations";
-import { Colors } from "../../styles/colors";
 
 export const GameHUD: React.FC<GameHUDProps> = ({
   biomass,

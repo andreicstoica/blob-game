@@ -31,11 +31,11 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
     : 0;
 
   // Format time as MM:SS
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
+  // const formatTime = (seconds: number) => {
+  //   const mins = Math.floor(seconds / 60);
+  //   const secs = seconds % 60;
+  //   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  // };
 
   // Dynamic font size based on biomass length to ensure it fits
   let fontSize = 72;
@@ -66,6 +66,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
       }}
     >
       {/* Timer and Click Count Row */}
+      {/* 
       <div
         style={{
           display: "flex",
@@ -129,6 +130,7 @@ export const GameStats: React.FC<GameStatsProps> = ({ biomass, gameState }) => {
           </div>
         </div>
       </div>
+      */}
 
       {/* Main Biomass Display */}
       <div style={{ marginBottom: "15px" }}>
